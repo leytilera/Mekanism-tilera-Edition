@@ -82,6 +82,7 @@ import mekanism.common.tile.TileEntityRotaryCondensentrator;
 import mekanism.common.tile.TileEntitySeismicVibrator;
 import mekanism.common.tile.TileEntitySolarNeutronActivator;
 import mekanism.common.tile.TileEntityTeleporter;
+import mekanism.common.tile.TileEntityTheoreticalElementizer;
 import mekanism.common.util.LangUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.PipeUtils;
@@ -622,7 +623,6 @@ public class BlockMachine extends BlockContainer implements ISpecialBounds, IBlo
 		if(tileEntity != null)
 		{
 			MachineType type = MachineType.get(blockType, metadata);
-
 			switch(type)
 			{
 				case PERSONAL_CHEST:
@@ -1225,7 +1225,8 @@ public class BlockMachine extends BlockContainer implements ISpecialBounds, IBlo
 		OREDICTIONIFICATOR(MachineBlock.MACHINE_BLOCK_3, 3, "Oredictionificator", 52, TileEntityOredictionificator.class, false, false, false),
 		RESISTIVE_HEATER(MachineBlock.MACHINE_BLOCK_3, 4, "ResistiveHeater", 53, TileEntityResistiveHeater.class, true, true, false),
 		FORMULAIC_ASSEMBLICATOR(MachineBlock.MACHINE_BLOCK_3, 5, "FormulaicAssemblicator", 56, TileEntityFormulaicAssemblicator.class, true, false, true),
-		FUELWOOD_HEATER(MachineBlock.MACHINE_BLOCK_3, 6, "FuelwoodHeater", 58, TileEntityFuelwoodHeater.class, false, false, false);
+		FUELWOOD_HEATER(MachineBlock.MACHINE_BLOCK_3, 6, "FuelwoodHeater", 58, TileEntityFuelwoodHeater.class, false, false, false),
+		THEORETICAL_ELEMENTIZER(MachineBlock.MACHINE_BLOCK_3, 7, "TheoreticalElementizer", 60, TileEntityTheoreticalElementizer.class, true, true, false);
 
 		public MachineBlock typeBlock;
 		public int meta;
@@ -1396,6 +1397,8 @@ public class BlockMachine extends BlockContainer implements ISpecialBounds, IBlo
 					return 100;
 				case FORMULAIC_ASSEMBLICATOR:
 					return usage.formulaicAssemblicatorUsage;
+				case THEORETICAL_ELEMENTIZER:
+					return 20000.0;
 				default:
 					return 0;
 			}

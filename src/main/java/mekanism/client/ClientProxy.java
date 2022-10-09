@@ -60,6 +60,7 @@ import mekanism.client.gui.GuiSeismicVibrator;
 import mekanism.client.gui.GuiSideConfiguration;
 import mekanism.client.gui.GuiSolarNeutronActivator;
 import mekanism.client.gui.GuiTeleporter;
+import mekanism.client.gui.GuiTheoreticalElementizer;
 import mekanism.client.gui.GuiThermalEvaporationController;
 import mekanism.client.gui.GuiThermoelectricBoiler;
 import mekanism.client.gui.GuiTransporterConfig;
@@ -108,6 +109,7 @@ import mekanism.client.render.tileentity.RenderSecurityDesk;
 import mekanism.client.render.tileentity.RenderSeismicVibrator;
 import mekanism.client.render.tileentity.RenderSolarNeutronActivator;
 import mekanism.client.render.tileentity.RenderTeleporter;
+import mekanism.client.render.tileentity.RenderTheoreticalElementizer;
 import mekanism.client.render.tileentity.RenderThermalEvaporationController;
 import mekanism.client.render.tileentity.RenderThermoelectricBoiler;
 import mekanism.common.CommonProxy;
@@ -183,6 +185,7 @@ import mekanism.common.tile.TileEntitySeismicVibrator;
 import mekanism.common.tile.TileEntitySolarNeutronActivator;
 import mekanism.common.tile.TileEntityStructuralGlass;
 import mekanism.common.tile.TileEntityTeleporter;
+import mekanism.common.tile.TileEntityTheoreticalElementizer;
 import mekanism.common.tile.TileEntityThermalEvaporationController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -327,6 +330,7 @@ public class ClientProxy extends CommonProxy
 		ClientRegistry.registerTileEntity(TileEntityBoilerValve.class, "BoilerValve", new RenderThermoelectricBoiler());
 		ClientRegistry.registerTileEntity(TileEntitySecurityDesk.class, "SecurityDesk", new RenderSecurityDesk());
 		ClientRegistry.registerTileEntity(TileEntityQuantumEntangloporter.class, "QuantumEntangloporter", new RenderQuantumEntangloporter());
+		ClientRegistry.registerTileEntity(TileEntityTheoreticalElementizer.class, "TheoreticalElementizer", new RenderTheoreticalElementizer());
 		GameRegistry.registerTileEntity(TileEntityFuelwoodHeater.class, "FuelwoodHeater");
 	}
 
@@ -380,7 +384,6 @@ public class ClientProxy extends CommonProxy
 	public GuiScreen getClientGui(int ID, EntityPlayer player, World world, int x, int y, int z)
 	{
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
-
 		switch(ID)
 		{
 			case 0:
@@ -527,6 +530,8 @@ public class ClientProxy extends CommonProxy
 				return new GuiSecurityDesk(player.inventory, (TileEntitySecurityDesk)tileEntity);
 			case 58:
 				return new GuiFuelwoodHeater(player.inventory, (TileEntityFuelwoodHeater)tileEntity);
+			case 60:
+				return new GuiTheoreticalElementizer(player.inventory, (TileEntityTheoreticalElementizer) tileEntity);
 		}
 		
 		return null;

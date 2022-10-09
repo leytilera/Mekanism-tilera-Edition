@@ -7,6 +7,7 @@ import mekanism.api.Coord4D;
 import mekanism.api.MekanismAPI;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.MekanismConfig.machines;
+import mekanism.api.MekanismConfig.theoreticalelementizer;
 import mekanism.api.MekanismConfig.usage;
 import mekanism.api.Pos3D;
 import mekanism.api.util.UnitDisplayUtils.EnergyType;
@@ -118,6 +119,7 @@ import mekanism.common.tile.TileEntitySeismicVibrator;
 import mekanism.common.tile.TileEntitySolarNeutronActivator;
 import mekanism.common.tile.TileEntityStructuralGlass;
 import mekanism.common.tile.TileEntityTeleporter;
+import mekanism.common.tile.TileEntityTheoreticalElementizer;
 import mekanism.common.tile.TileEntityThermalEvaporationController;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -212,6 +214,7 @@ public class CommonProxy implements IGuiProvider
 		GameRegistry.registerTileEntity(TileEntitySecurityDesk.class, "SecurityDesk");
 		GameRegistry.registerTileEntity(TileEntityQuantumEntangloporter.class, "QuantumEntangloporter");
 		GameRegistry.registerTileEntity(TileEntityFuelwoodHeater.class, "FuelwoodHeater");
+		GameRegistry.registerTileEntity(TileEntityTheoreticalElementizer.class, "TheoreticalElementizer");
 	}
 	
 	public void handleTeleporterUpdate(PortableTeleporterMessage message) {}
@@ -393,6 +396,10 @@ public class CommonProxy implements IGuiProvider
 		usage.gasCentrifugeUsage = Mekanism.configuration.get("usage", "GasCentrifugeUsage", 100D).getDouble();
 		usage.heavyWaterElectrolysisUsage = Mekanism.configuration.get("usage", "HeavyWaterElectrolysisUsage", 800D).getDouble();
 		usage.formulaicAssemblicatorUsage = Mekanism.configuration.get("usage", "FormulaicAssemblicatorUsage", 100D).getDouble();
+
+		theoreticalelementizer.items = Mekanism.configuration.get("theoreticalelementizer", "Items", new String[]{}).getStringList();
+		theoreticalelementizer.failChanceMultiplier = Mekanism.configuration.get("theoreticalelementizer", "FailChanceMultiplier", 1).getInt();
+		theoreticalelementizer.fuel = Mekanism.configuration.get("theoreticalelementizer", "FuelItem", "minecraft:diamond").getString();
 
 		Tier.loadConfig();
 		
@@ -586,6 +593,8 @@ public class CommonProxy implements IGuiProvider
 				return new ContainerSecurityDesk(player.inventory, (TileEntitySecurityDesk)tileEntity);
 			case 58:
 				return new ContainerFuelwoodHeater(player.inventory, (TileEntityFuelwoodHeater)tileEntity);
+			case 60:
+				return new ContainerAdvancedElectricMachine(player.inventory, (TileEntityTheoreticalElementizer)tileEntity);
 		}
 
 		return null;

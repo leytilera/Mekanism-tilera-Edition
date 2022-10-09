@@ -21,6 +21,7 @@ import mekanism.client.model.ModelResistiveHeater;
 import mekanism.client.model.ModelRotaryCondensentrator;
 import mekanism.client.model.ModelSeismicVibrator;
 import mekanism.client.model.ModelSolarNeutronActivator;
+import mekanism.client.model.ModelTheoreticalElementizer;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.block.BlockMachine.MachineType;
 import mekanism.common.util.MekanismUtils;
@@ -61,6 +62,7 @@ public class MachineRenderingHandler implements ISimpleBlockRenderingHandler
 	public ModelSolarNeutronActivator solarNeutronActivator = new ModelSolarNeutronActivator();
 	public ModelResistiveHeater resistiveHeater = new ModelResistiveHeater();
 	public ModelQuantumEntangloporter quantumEntangloporter = new ModelQuantumEntangloporter();
+	public ModelTheoreticalElementizer theoreticalElementizer = new ModelTheoreticalElementizer();
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer)
@@ -242,6 +244,13 @@ public class MachineRenderingHandler implements ISimpleBlockRenderingHandler
 			GL11.glTranslatef(0.0F, -1.0F, 0.0F);
 			mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "QuantumEntangloporter.png"));
 			quantumEntangloporter.render(0.0625F, mc.renderEngine);
+		}
+		else if (type == MachineType.THEORETICAL_ELEMENTIZER) {
+			GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glRotatef(180.0F, 0.0F, -1.0F, 0.0F);
+            GL11.glTranslatef(0.0F, -1.0F, 0.0F);
+			mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "TheoreticalElementizer.png"));
+			theoreticalElementizer.render(0.0625F);
 		}
 		else {
 			GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);

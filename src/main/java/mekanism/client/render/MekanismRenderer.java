@@ -106,6 +106,7 @@ public class MekanismRenderer
 			GasRegistry.getGas("sulfuricAcid").setIcon(event.map.registerIcon("mekanism:liquid/LiquidSulfuricAcid"));
 			GasRegistry.getGas("hydrogenChloride").setIcon(event.map.registerIcon("mekanism:liquid/LiquidHydrogenChloride"));
 			GasRegistry.getGas("liquidOsmium").setIcon(event.map.registerIcon("mekanism:liquid/LiquidOsmium"));
+			GasRegistry.getGas("elementizerFuel").setIcon(event.map.registerIcon("mekanism:liquid/LiquidOsmium")); //TODO specific Icon
 			GasRegistry.getGas("liquidStone").setIcon(event.map.registerIcon("mekanism:liquid/LiquidStone"));
 			GasRegistry.getGas("ethene").setIcon(event.map.registerIcon("mekanism:liquid/LiquidEthene"));
 			GasRegistry.getGas("brine").setIcon(event.map.registerIcon("mekanism:liquid/LiquidBrine"));

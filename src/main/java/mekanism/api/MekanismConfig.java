@@ -163,4 +163,11 @@ public class MekanismConfig
 	{
 		public static double armorSpawnRate;
 	}
+
+	public static class theoreticalelementizer //TODO better config for elementizer (maybe MineTweaker support?)
+	{
+		public static String[] items;
+		public static int failChanceMultiplier;
+		public static String fuel;
+	}
 }

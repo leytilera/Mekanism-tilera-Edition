@@ -506,6 +506,10 @@ public class Mekanism
 		MachineType.FUELWOOD_HEATER.addRecipe(new ShapedMekanismRecipe(new ItemStack(MekanismBlocks.MachineBlock3, 1, 6), new Object[] {
 			"SCS", "FHF", "SSS", Character.valueOf('S'), "ingotSteel", Character.valueOf('C'), MekanismUtils.getControlCircuit(BaseTier.BASIC), Character.valueOf('F'), Blocks.furnace, Character.valueOf('H'), new ItemStack(MekanismBlocks.BasicBlock, 1, 8)
 		}));
+		MachineType.THEORETICAL_ELEMENTIZER.addRecipe(new ShapedMekanismRecipe(new ItemStack(MekanismBlocks.MachineBlock3, 1, 7), new Object[] {
+			"AGA", "GDG", "AGA", Character.valueOf('A'), MekanismItems.AtomicAlloy, Character.valueOf('G'), "blockGlass", Character.valueOf('D'), "blockDiamond"
+		}));
+
 
 		//Energy Cube recipes
 		CraftingManager.getInstance().getRecipeList().add(new ShapedMekanismRecipe(MekanismUtils.getEnergyCube(EnergyCubeTier.BASIC), new Object[] {
@@ -1161,6 +1165,7 @@ public class Mekanism
 		GasRegistry.register(new Gas("hydrogenChloride")).registerFluid();
 		GasRegistry.register(new Gas("liquidOsmium").setVisible(false));
 		GasRegistry.register(new Gas("liquidStone").setVisible(false));
+		GasRegistry.register(new Gas("elementizerFuel").setVisible(false));
 		GasRegistry.register(new Gas("ethene").registerFluid());
 		GasRegistry.register(new Gas("sodium").registerFluid());
 		GasRegistry.register(new Gas("brine").registerFluid());

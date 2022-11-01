@@ -1,5 +1,6 @@
 buildscript {
   repositories {
+      mavenCentral()
       maven {
           name = "central"
           url = "https://maven.thorfusion.com/artifactory/central/"
@@ -31,7 +32,9 @@ repositories {
         name 'central'
         url 'https://maven.thorfusion.com/artifactory/central/'
     }
-
+    maven {
+        url 'https://maven.tilera.xyz'
+    }
 }
 
 idea {
@@ -59,6 +62,7 @@ dependencies {
     compile "inventorytweaks:inventory-tweaks:1.7.10-1.60.0:api"
     compile "net.industrial-craft:industrialcraft-2:2.2.828-experimental:api"
     compile "mcp.mobius.waila:Waila:1.5.10_1.7.10:dev"
+    compile "universalelectricity:basiccomponents:1.1.0:deobf"
 }
 
 version = "${config.minecraft_version}-${config.mod_version}"

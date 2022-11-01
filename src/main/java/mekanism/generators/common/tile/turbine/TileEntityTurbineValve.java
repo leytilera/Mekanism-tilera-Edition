@@ -10,6 +10,7 @@ import java.util.EnumSet;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.common.base.IEnergyWrapper;
+import mekanism.common.integration.ue.UEDriverProxy;
 import mekanism.common.tile.TileEntityGasTank.GasMode;
 import mekanism.common.util.CableUtils;
 import mekanism.common.util.LangUtils;
@@ -24,6 +25,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import universalelectricity.core.electricity.ElectricityPack;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
@@ -39,10 +41,13 @@ public class TileEntityTurbineValve extends TileEntityTurbineCasing implements I
 	
 	public TurbineFluidTank fluidTank;
 
+	private UEDriverProxy driver;
+
 	public TileEntityTurbineValve()
 	{
 		super("TurbineValve");
 		fluidTank = new TurbineFluidTank(this);
+		driver = UEDriverProxy.createProxy(this);
 	}
 	
 	@Override
@@ -62,6 +67,7 @@ public class TileEntityTurbineValve extends TileEntityTurbineCasing implements I
 				double prev = getEnergy();
 				CableUtils.emit(this);
 			}
+			driver.tick();
 		}
 	}
 	
@@ -160,6 +166,8 @@ public class TileEntityTurbineValve extends TileEntityTurbineCasing implements I
 			deregister();
 		}
 
+		driver.invalidate();
+
 		super.onChunkUnload();
 	}
 
@@ -167,6 +175,8 @@ public class TileEntityTurbineValve extends TileEntityTurbineCasing implements I
 	public void invalidate()
 	{
 		super.invalidate();
+
+		driver.invalidate();
 
 		if(MekanismUtils.useIC2())
 		{
@@ -407,4 +417,75 @@ public class TileEntityTurbineValve extends TileEntityTurbineCasing implements I
 	{
 		return LangUtils.localize("gui.industrialTurbine");
 	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+	public boolean canConnect(ForgeDirection side) {
+		return getOutputtingSides().contains(side);
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+	public double getVoltage() {
+		return 120.0;
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+	public boolean canInsert() {
+		return false;
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public boolean canExtract() {
+		return getOutputtingSides().size() > 0;
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public boolean canInsertOn(ForgeDirection side) {
+		return false;
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public boolean canExtractOn(ForgeDirection side) {
+		return getOutputtingSides().contains(side);
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public void insert(ElectricityPack pack, ForgeDirection side) {
+
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public void extract(ElectricityPack pack, ForgeDirection side) {
+		setEnergy(Math.max(getEnergy() - pack.getWatts(), 0));
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public ElectricityPack getDemandedJoules() {
+		return new ElectricityPack();
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public ElectricityPack getProvidedJoules() {
+		if (canExtract())
+			return new ElectricityPack(Math.min(getEnergy(), getMaxOutput()) / getVoltage(), getVoltage());
+		else
+			return new ElectricityPack();
+
+	}
+
+	@Override
+	@Method(modid = "basiccomponents")
+    public TileEntity getTile() {
+		return this;
+	}
+
 }

@@ -8,7 +8,11 @@ import java.util.List;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.Range4D;
 import mekanism.common.network.PacketBoxBlacklist;
+import mekanism.common.network.PacketChangeTime;
+import mekanism.common.network.PacketChangeWeather;
 import mekanism.common.network.PacketBoxBlacklist.BoxBlacklistMessage;
+import mekanism.common.network.PacketChangeTime.ChangeTimeMessage;
+import mekanism.common.network.PacketChangeWeather.ChangeWeatherMessage;
 import mekanism.common.network.PacketConfigSync;
 import mekanism.common.network.PacketConfigSync.ConfigSyncMessage;
 import mekanism.common.network.PacketConfigurationUpdate;
@@ -137,6 +141,8 @@ public class PacketHandler
 		netHandler.registerMessage(PacketDropperUse.class, DropperUseMessage.class, 28, Side.SERVER);
 		netHandler.registerMessage(PacketEntityMove.class, EntityMoveMessage.class, 29, Side.CLIENT);
 		netHandler.registerMessage(PacketSecurityUpdate.class, SecurityUpdateMessage.class, 30, Side.CLIENT);
+		netHandler.registerMessage(PacketChangeTime.class, ChangeTimeMessage.class, 31, Side.SERVER);
+		netHandler.registerMessage(PacketChangeWeather.class, ChangeWeatherMessage.class, 32, Side.SERVER);
 	}
 	
 	/**

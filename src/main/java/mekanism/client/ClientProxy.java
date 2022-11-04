@@ -59,12 +59,14 @@ import mekanism.client.gui.GuiSeismicReader;
 import mekanism.client.gui.GuiSeismicVibrator;
 import mekanism.client.gui.GuiSideConfiguration;
 import mekanism.client.gui.GuiSolarNeutronActivator;
+import mekanism.client.gui.GuiStopwatch;
 import mekanism.client.gui.GuiTeleporter;
 import mekanism.client.gui.GuiTheoreticalElementizer;
 import mekanism.client.gui.GuiThermalEvaporationController;
 import mekanism.client.gui.GuiThermoelectricBoiler;
 import mekanism.client.gui.GuiTransporterConfig;
 import mekanism.client.gui.GuiUpgradeManagement;
+import mekanism.client.gui.GuiWeatherOrb;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.RenderGlowPanel;
 import mekanism.client.render.RenderPartTransmitter;
@@ -532,6 +534,10 @@ public class ClientProxy extends CommonProxy
 				return new GuiFuelwoodHeater(player.inventory, (TileEntityFuelwoodHeater)tileEntity);
 			case 60:
 				return new GuiTheoreticalElementizer(player.inventory, (TileEntityTheoreticalElementizer) tileEntity);
+			case 61:
+				return new GuiStopwatch(player);
+			case 62:
+				return new GuiWeatherOrb(player);
 		}
 		
 		return null;

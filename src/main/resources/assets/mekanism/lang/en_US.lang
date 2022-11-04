@@ -49,6 +49,8 @@ item.Flamethrower.name=Flamethrower
 item.GaugeDropper.name=Gauge Dropper
 item.BioFuel.name=Bio Fuel
 item.CraftingFormula.name=Crafting Formula
+item.Stopwatch.name=Steve's Stopwatch
+item.WeatherOrb.name=Weather Orb
 
 //Control Circuits
 item.BasicControlCircuit.name=Basic Control Circuit

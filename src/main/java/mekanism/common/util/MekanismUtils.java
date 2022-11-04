@@ -1630,4 +1630,10 @@ public final class MekanismUtils
 			return prefix + "/";
 		}
 	}
+
+	public static void setHourForward(final World world, final int paramInt) {
+        final long l1 = world.getWorldTime() / 24000L * 24000L;
+        final long l2 = l1 + 24000L + paramInt * 1000;
+        world.setWorldTime(l2);
+    }
 }

@@ -67,6 +67,7 @@ import mekanism.common.network.PacketSimpleGui;
 import mekanism.common.network.PacketTransmitterUpdate.PacketType;
 import mekanism.common.network.PacketTransmitterUpdate.TransmitterUpdateMessage;
 import mekanism.common.recipe.BinRecipe;
+import mekanism.common.recipe.ElementizerRecipeHandler;
 import mekanism.common.recipe.RecipeHandler;
 import mekanism.common.recipe.RecipeHandler.Recipe;
 import mekanism.common.recipe.ShapedMekanismRecipe;
@@ -1245,6 +1246,8 @@ public class Mekanism
 		//Load configuration
 		proxy.loadConfiguration();
 		proxy.onConfigSync(false);
+
+		ElementizerRecipeHandler.loadDefaultItems();
 
 		//Add baby skeleton spawner
 		if(general.spawnBabySkeletons)

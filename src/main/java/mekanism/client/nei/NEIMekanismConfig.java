@@ -84,6 +84,9 @@ public class NEIMekanismConfig implements IConfigureNEI
 		API.registerRecipeHandler(new SolarNeutronRecipeHandler());
 		API.registerUsageHandler(new SolarNeutronRecipeHandler());
 		
+		API.registerRecipeHandler(new TheoreticalElementizerRecipeHandler());
+		API.registerUsageHandler(new TheoreticalElementizerRecipeHandler());
+
 		API.registerRecipeHandler(new ShapedMekanismRecipeHandler());
 		API.registerUsageHandler(new ShapedMekanismRecipeHandler());
 		

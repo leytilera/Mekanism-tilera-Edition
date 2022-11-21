@@ -7,7 +7,6 @@ import mekanism.api.Coord4D;
 import mekanism.api.MekanismAPI;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.MekanismConfig.machines;
-import mekanism.api.MekanismConfig.theoreticalelementizer;
 import mekanism.api.MekanismConfig.usage;
 import mekanism.api.Pos3D;
 import mekanism.api.util.UnitDisplayUtils.EnergyType;
@@ -364,6 +363,7 @@ public class CommonProxy implements IGuiProvider
 		general.laserRange = Mekanism.configuration.get("general", "LaserRange", 64).getInt();
 		general.laserEnergyNeededPerHardness = Mekanism.configuration.get("general", "LaserDiggingEnergy", 100000).getInt();
 		general.destroyDisabledBlocks = Mekanism.configuration.get("general", "DestroyDisabledBlocks", true).getBoolean();
+		general.elementizerFailChanceMultiplier = Mekanism.configuration.get("general", "ElementizerFailChanceMultiplier", 1).getInt();
 
 		
 		for(MachineType type : MachineType.getValidMachines())
@@ -396,10 +396,6 @@ public class CommonProxy implements IGuiProvider
 		usage.gasCentrifugeUsage = Mekanism.configuration.get("usage", "GasCentrifugeUsage", 100D).getDouble();
 		usage.heavyWaterElectrolysisUsage = Mekanism.configuration.get("usage", "HeavyWaterElectrolysisUsage", 800D).getDouble();
 		usage.formulaicAssemblicatorUsage = Mekanism.configuration.get("usage", "FormulaicAssemblicatorUsage", 100D).getDouble();
-
-		theoreticalelementizer.items = Mekanism.configuration.get("theoreticalelementizer", "Items", new String[]{}).getStringList();
-		theoreticalelementizer.failChanceMultiplier = Mekanism.configuration.get("theoreticalelementizer", "FailChanceMultiplier", 1).getInt();
-		theoreticalelementizer.fuel = Mekanism.configuration.get("theoreticalelementizer", "FuelItem", "minecraft:diamond").getString();
 
 		Tier.loadConfig();
 		

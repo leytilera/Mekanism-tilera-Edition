@@ -60,6 +60,7 @@ import mekanism.common.frequency.Frequency;
 import mekanism.common.frequency.FrequencyManager;
 import mekanism.common.integration.MekanismHooks;
 import mekanism.common.integration.OreDictManager;
+import mekanism.common.integration.UECompatModule;
 import mekanism.common.multiblock.MultiblockManager;
 import mekanism.common.multipart.MultipartMekanism;
 import mekanism.common.network.PacketDataRequest.DataRequestMessage;
@@ -109,6 +110,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
+import universalelectricity.api.CompatibilityModule;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -136,7 +138,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
  *
  */
 @Mod(modid = "Mekanism", name = "Mekanism", version = "GRADLE_MODVERSION", guiFactory = "mekanism.client.gui.ConfigGuiFactory",
-		dependencies = "after:basiccomponents;after:ForgeMultipart;after:BuildCraft;after:BuildCraftAPI;after:IC2;after:CoFHCore;" +
+		dependencies = "after:universalelectricity;after:ForgeMultipart;after:BuildCraft;after:BuildCraftAPI;after:IC2;after:CoFHCore;" +
 				"after:ComputerCraft;after:Galacticraft;after:MineTweaker3")
 public class Mekanism
 {
@@ -1185,6 +1187,10 @@ public class Mekanism
 
 			OreGas clean = (OreGas)GasRegistry.register(new OreGas("clean" + name, "oregas." + name.toLowerCase()).setVisible(false));
 			GasRegistry.register(new OreGas(name.toLowerCase(), "oregas." + name.toLowerCase()).setCleanGas(clean).setVisible(false));
+		}
+
+		if (Loader.isModLoaded("universalelectricity")) {
+			CompatibilityModule.register(new UECompatModule());
 		}
 
 		Mekanism.proxy.preInit();

@@ -19,7 +19,6 @@ import mekanism.api.transmitters.ITransmitterTile;
 import mekanism.common.Mekanism;
 import mekanism.common.base.IActiveState;
 import mekanism.common.base.IEnergyWrapper;
-import mekanism.common.integration.ue.UEDriverProxy;
 import mekanism.common.network.PacketTileEntity.TileEntityMessage;
 import mekanism.common.util.CableUtils;
 import mekanism.common.util.LangUtils;
@@ -47,12 +46,9 @@ public class TileEntityInductionPort extends TileEntityInductionCasing implement
 	/** false = input, true = output */
 	public boolean mode;
 
-	private UEDriverProxy driver;
-
 	public TileEntityInductionPort()
 	{
 		super("InductionPort");
-		driver = UEDriverProxy.createProxy(this);
 	}
 
 	@Override
@@ -73,7 +69,6 @@ public class TileEntityInductionPort extends TileEntityInductionCasing implement
 				CableUtils.emit(this);
 				structure.remainingOutput -= (prev-getEnergy());
 			}
-			driver.tick();
 		}
 	}
 
@@ -201,8 +196,6 @@ public class TileEntityInductionPort extends TileEntityInductionCasing implement
 			deregister();
 		}
 
-		driver.invalidate();
-
 		super.onChunkUnload();
 	}
 
@@ -210,8 +203,6 @@ public class TileEntityInductionPort extends TileEntityInductionCasing implement
 	public void invalidate()
 	{
 		super.invalidate();
-
-		driver.invalidate();
 
 		if(MekanismUtils.useIC2())
 		{
@@ -481,79 +472,6 @@ public class TileEntityInductionPort extends TileEntityInductionCasing implement
 	public boolean lightUpdate()
 	{
 		return false;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-	public boolean canConnect(ForgeDirection side) {
-		return getConsumingSides().contains(side) || getOutputtingSides().contains(side);
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-	public double getVoltage() {
-		return 120.0;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-	public boolean canInsert() {
-		return getConsumingSides().size() > 0;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public boolean canExtract() {
-		return getOutputtingSides().size() > 0;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public boolean canInsertOn(ForgeDirection side) {
-		return getConsumingSides().contains(side);
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public boolean canExtractOn(ForgeDirection side) {
-		return getOutputtingSides().contains(side);
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public void insert(ElectricityPack pack, ForgeDirection side) {
-		setEnergy(Math.min(getEnergy() + pack.getWatts(), getMaxEnergy()));
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public void extract(ElectricityPack pack, ForgeDirection side) {
-		setEnergy(Math.max(getEnergy() - pack.getWatts(), 0));
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public ElectricityPack getDemandedJoules() {
-		if (canInsert()) 
-			return new ElectricityPack((getMaxEnergy() - getEnergy()) / getVoltage(), getVoltage());
-		else 
-			return new ElectricityPack();
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public ElectricityPack getProvidedJoules() {
-		if (canExtract())
-			return new ElectricityPack(Math.min(getEnergy(), getMaxOutput()) / getVoltage(), getVoltage());
-		else
-			return new ElectricityPack();
-
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public TileEntity getTile() {
-		return this;
 	}
 
 }

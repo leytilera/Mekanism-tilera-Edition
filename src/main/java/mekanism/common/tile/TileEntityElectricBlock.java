@@ -14,13 +14,11 @@ import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.transmitters.ITransmitterTile;
 import mekanism.common.base.IEnergyWrapper;
-import mekanism.common.integration.ue.UEDriverProxy;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import universalelectricity.core.electricity.ElectricityPack;
 import cpw.mods.fml.common.Optional.Method;
 
 public abstract class TileEntityElectricBlock extends TileEntityContainerBlock implements IEnergyWrapper
@@ -37,8 +35,6 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 	/** Is this registered with IC2 */
 	public boolean ic2Registered = false;
 
-	private UEDriverProxy driver;
-
 	/**
 	 * The base of all blocks that deal with electricity. It has a facing state, initialized state,
 	 * and a current amount of stored energy.
@@ -50,7 +46,6 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 		super(name);
 		BASE_MAX_ENERGY = baseMaxEnergy;
 		maxEnergy = BASE_MAX_ENERGY;
-		driver = UEDriverProxy.createProxy(this);
 	}
 
 	@Method(modid = "IC2")
@@ -96,9 +91,6 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 		{
 			register();
 		}
-		if (!this.worldObj.isRemote) {
-            driver.tick();
-        }
 	}
 
 	@Override
@@ -177,7 +169,6 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 		{
 			deregister();
 		}
-		driver.invalidate();
 		super.onChunkUnload();
 	}
 
@@ -185,7 +176,6 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 	public void invalidate()
 	{
 		super.invalidate();
-		driver.invalidate();
 		if(MekanismUtils.useIC2())
 		{
 			deregister();
@@ -407,79 +397,6 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 		setEnergy(getEnergy() + toUse);
 
 		return toUse;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-	public boolean canConnect(ForgeDirection side) {
-		return getConsumingSides().contains(side) || getOutputtingSides().contains(side);
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-	public double getVoltage() {
-		return 120.0;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-	public boolean canInsert() {
-		return getConsumingSides().size() > 0;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public boolean canExtract() {
-		return getOutputtingSides().size() > 0;
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public boolean canInsertOn(ForgeDirection side) {
-		return getConsumingSides().contains(side);
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public boolean canExtractOn(ForgeDirection side) {
-		return getOutputtingSides().contains(side);
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public void insert(ElectricityPack pack, ForgeDirection side) {
-		setEnergy(Math.min(getEnergy() + pack.getWatts(), getMaxEnergy()));
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public void extract(ElectricityPack pack, ForgeDirection side) {
-		setEnergy(Math.max(getEnergy() - pack.getWatts(), 0));
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public ElectricityPack getDemandedJoules() {
-		if (canInsert()) 
-			return new ElectricityPack((getMaxEnergy() - getEnergy()) / getVoltage(), getVoltage());
-		else 
-			return new ElectricityPack();
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public ElectricityPack getProvidedJoules() {
-		if (canExtract())
-			return new ElectricityPack(Math.min(getEnergy(), getMaxOutput()) / getVoltage(), getVoltage());
-		else
-			return new ElectricityPack();
-
-	}
-
-	@Override
-	@Method(modid = "basiccomponents")
-    public TileEntity getTile() {
-		return this;
 	}
 
 }

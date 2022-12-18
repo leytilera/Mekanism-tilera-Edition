@@ -22,7 +22,6 @@ public class GuiCredits extends GuiScreen
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 72 + 12, "Update"));
 		buttonList.add(new GuiButton(1, width / 2 - 100, height / 4 + 96 + 12, "Cancel"));
-		((GuiButton)buttonList.get(0)).enabled = !MekanismUtils.noUpdates() && !ThreadClientUpdate.hasUpdated;
 	}
 
 	public static void updateInfo(String info)
@@ -35,16 +34,7 @@ public class GuiCredits extends GuiScreen
 	{
 		if(guibutton.id == 0)
 		{
-			if(!MekanismUtils.noUpdates())
-			{
-				updateProgress = "Preparing to update...";
-				guibutton.enabled = false;
-
-				new ThreadClientUpdate();
-			}
-			else {
-				updateProgress = "You already have the latest version.";
-			}
+			updateProgress = "You already have the latest version.";
 		}
 		else if(guibutton.id == 1)
 		{

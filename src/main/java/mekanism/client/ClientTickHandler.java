@@ -55,7 +55,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClientTickHandler
 {
-	public boolean hasNotified = false;
 	public boolean initHoliday = false;
 
 	public boolean preloadedSounds = false;
@@ -86,12 +85,6 @@ public class ClientTickHandler
 	public void tickStart()
 	{
 		MekanismClient.ticksPassed++;
-
-		if(!hasNotified && mc.theWorld != null && Mekanism.latestVersionNumber != null && Mekanism.recentNews != null)
-		{
-			MekanismUtils.checkForUpdates(mc.thePlayer);
-			hasNotified = true;
-		}
 
 		if(!Mekanism.proxy.isPaused())
 		{

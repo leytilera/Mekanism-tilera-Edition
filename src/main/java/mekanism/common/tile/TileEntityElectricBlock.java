@@ -273,7 +273,7 @@ public abstract class TileEntityElectricBlock extends TileEntityContainerBlock i
 	@Method(modid = "IC2")
 	public int getSourceTier()
 	{
-		return 4;
+		return 1;
 	}
 
 	@Override

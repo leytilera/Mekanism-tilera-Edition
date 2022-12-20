@@ -17,8 +17,7 @@ import net.minecraft.util.AxisAlignedBB;
 public class TileEntityTheoreticalElementizer extends TileEntityAdvancedElectricMachine<TheoreticalElementizerRecipe> {
 
     public TileEntityTheoreticalElementizer() {
-        super("elementizer", "TheoreticalElementizer", 24, 1, 1000, BlockMachine.MachineType.THEORETICAL_ELEMENTIZER.baseEnergy);
-        MAX_GAS = 1000;
+        super("elementizer", "TheoreticalElementizer", 24, 1, 1000, BlockMachine.MachineType.THEORETICAL_ELEMENTIZER.baseEnergy, 1000);
     }
     
     @Override

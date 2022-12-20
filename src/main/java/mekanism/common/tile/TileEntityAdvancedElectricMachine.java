@@ -47,8 +47,13 @@ public abstract class TileEntityAdvancedElectricMachine<RECIPE extends AdvancedM
 
 	public static int MAX_GAS = 210;
 
+	public int maxGas;
 	public GasTank gasTank;
 	public Gas prevGas;
+
+	public TileEntityAdvancedElectricMachine(String soundPath, String name, double perTick, int secondaryPerTick, int ticksRequired, double maxEnergy) {
+		this(soundPath, name, perTick, secondaryPerTick, ticksRequired, maxEnergy, MAX_GAS);
+	}
 
 	/**
 	 * Advanced Electric Machine -- a machine like this has a total of 4 slots. Input slot (0), fuel slot (1), output slot (2),
@@ -62,7 +67,7 @@ public abstract class TileEntityAdvancedElectricMachine<RECIPE extends AdvancedM
 	 * @param ticksRequired - how many ticks it takes to smelt an item.
 	 * @param maxEnergy - maximum amount of energy this machine can hold.
 	 */
-	public TileEntityAdvancedElectricMachine(String soundPath, String name, double perTick, int secondaryPerTick, int ticksRequired, double maxEnergy)
+	public TileEntityAdvancedElectricMachine(String soundPath, String name, double perTick, int secondaryPerTick, int ticksRequired, double maxEnergy, int maxGas)
 	{
 		super(soundPath, name, MekanismUtils.getResource(ResourceType.GUI, "GuiAdvancedMachine.png"), perTick, ticksRequired, maxEnergy);
 
@@ -77,7 +82,8 @@ public abstract class TileEntityAdvancedElectricMachine<RECIPE extends AdvancedM
 		configComponent.setConfig(TransmissionType.ITEM, new byte[] {4, 1, 0, 3, 0, 2});
 		configComponent.setInputConfig(TransmissionType.ENERGY);
 
-		gasTank = new GasTank(MAX_GAS);
+		this.maxGas = maxGas;
+		gasTank = new GasTank(maxGas);
 
 		inventory = new ItemStack[5];
 
@@ -360,7 +366,7 @@ public abstract class TileEntityAdvancedElectricMachine<RECIPE extends AdvancedM
 		super.readFromNBT(nbtTags);
 
 		gasTank.read(nbtTags.getCompoundTag("gasTank"));
-		gasTank.setMaxGas(MAX_GAS);
+		gasTank.setMaxGas(maxGas);
 	}
 
 	@Override

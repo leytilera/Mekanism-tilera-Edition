@@ -1,11 +1,10 @@
 package mekanism.common.frequency;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.common.PacketHandler;
 import mekanism.common.security.ISecurityTile;
@@ -67,7 +66,8 @@ public class Frequency {
                 continue;
             }
 
-            if (coord.dimensionId != closest.dimensionId && coord.dimensionId == iterCoord.dimensionId) {
+            if (coord.dimensionId != closest.dimensionId
+                && coord.dimensionId == iterCoord.dimensionId) {
                 closest = iterCoord;
                 continue;
             } else if (coord.dimensionId == closest.dimensionId && coord.dimensionId != iterCoord.dimensionId) {
@@ -134,6 +134,7 @@ public class Frequency {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Frequency && ((Frequency) obj).name.equals(name)
-                && ((Frequency) obj).owner.equals(owner) && ((Frequency) obj).access == access;
+            && ((Frequency) obj).owner.equals(owner)
+            && ((Frequency) obj).access == access;
     }
 }

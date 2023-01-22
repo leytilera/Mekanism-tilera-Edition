@@ -1,5 +1,6 @@
 package mekanism.common.base;
 
+import cofh.api.energy.IEnergyReceiver;
 import ic2.api.energy.tile.IEnergySink;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
@@ -8,211 +9,177 @@ import mekanism.common.util.CableUtils;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import cofh.api.energy.IEnergyReceiver;
 
-public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor
-{
-	public Coord4D coord;
+public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
+    public Coord4D coord;
 
-	public static EnergyAcceptorWrapper get(TileEntity tileEntity)
-	{
-		if(tileEntity != null && tileEntity.getWorldObj() == null)
-		{
-			return null;
-		}
-		
-		EnergyAcceptorWrapper wrapper = null;
-		
-		if(tileEntity instanceof IStrictEnergyAcceptor)
-		{
-			wrapper = new MekanismAcceptor((IStrictEnergyAcceptor)tileEntity);
-		}
-		else if(MekanismUtils.useRF() && tileEntity instanceof IEnergyReceiver)
-		{
-			wrapper = new RFAcceptor((IEnergyReceiver)tileEntity);
-		}
-		else if(MekanismUtils.useIC2() && CableUtils.getIC2Tile(tileEntity) instanceof IEnergySink)
-		{
-			wrapper = new IC2Acceptor((IEnergySink)CableUtils.getIC2Tile(tileEntity));
-		}
-		
-		if(wrapper != null)
-		{
-			wrapper.coord = Coord4D.get(tileEntity);
-		}
-		
-		return wrapper;
-	}
+    public static EnergyAcceptorWrapper get(TileEntity tileEntity) {
+        if (tileEntity != null && tileEntity.getWorldObj() == null) {
+            return null;
+        }
 
-	public abstract boolean needsEnergy(ForgeDirection side);
+        EnergyAcceptorWrapper wrapper = null;
 
-	public static class MekanismAcceptor extends EnergyAcceptorWrapper
-	{
-		private IStrictEnergyAcceptor acceptor;
+        if (tileEntity instanceof IStrictEnergyAcceptor) {
+            wrapper = new MekanismAcceptor((IStrictEnergyAcceptor) tileEntity);
+        } else if (MekanismUtils.useRF() && tileEntity instanceof IEnergyReceiver) {
+            wrapper = new RFAcceptor((IEnergyReceiver) tileEntity);
+        } else if (MekanismUtils.useIC2() && CableUtils.getIC2Tile(tileEntity) instanceof IEnergySink) {
+            wrapper = new IC2Acceptor((IEnergySink) CableUtils.getIC2Tile(tileEntity));
+        }
 
-		public MekanismAcceptor(IStrictEnergyAcceptor mekAcceptor)
-		{
-			acceptor = mekAcceptor;
-		}
+        if (wrapper != null) {
+            wrapper.coord = Coord4D.get(tileEntity);
+        }
 
-		@Override
-		public double transferEnergyToAcceptor(ForgeDirection side, double amount)
-		{
-			return acceptor.transferEnergyToAcceptor(side, amount);
-		}
+        return wrapper;
+    }
 
-		@Override
-		public boolean canReceiveEnergy(ForgeDirection side)
-		{
-			return acceptor.canReceiveEnergy(side);
-		}
+    public abstract boolean needsEnergy(ForgeDirection side);
 
-		@Override
-		public double getEnergy()
-		{
-			return acceptor.getEnergy();
-		}
+    public static class MekanismAcceptor extends EnergyAcceptorWrapper {
+        private IStrictEnergyAcceptor acceptor;
 
-		@Override
-		public void setEnergy(double energy)
-		{
-			acceptor.setEnergy(energy);
-		}
+        public MekanismAcceptor(IStrictEnergyAcceptor mekAcceptor) {
+            acceptor = mekAcceptor;
+        }
 
-		@Override
-		public double getMaxEnergy()
-		{
-			return acceptor.getMaxEnergy();
-		}
+        @Override
+        public double transferEnergyToAcceptor(ForgeDirection side, double amount) {
+            return acceptor.transferEnergyToAcceptor(side, amount);
+        }
 
-		@Override
-		public boolean needsEnergy(ForgeDirection side)
-		{
-			return acceptor.getMaxEnergy() - acceptor.getEnergy() > 0;
-		}
-	}
+        @Override
+        public boolean canReceiveEnergy(ForgeDirection side) {
+            return acceptor.canReceiveEnergy(side);
+        }
 
-	public static class RFAcceptor extends EnergyAcceptorWrapper
-	{
-		private IEnergyReceiver acceptor;
+        @Override
+        public double getEnergy() {
+            return acceptor.getEnergy();
+        }
 
-		public RFAcceptor(IEnergyReceiver rfAcceptor)
-		{
-			acceptor = rfAcceptor;
-		}
+        @Override
+        public void setEnergy(double energy) {
+            acceptor.setEnergy(energy);
+        }
 
-		@Override
-		public double transferEnergyToAcceptor(ForgeDirection side, double amount)
-		{
-			int transferred = acceptor.receiveEnergy(side, Math.min(Integer.MAX_VALUE, toRF(amount)), false);
-			
-			return fromRF(transferred);
-		}
+        @Override
+        public double getMaxEnergy() {
+            return acceptor.getMaxEnergy();
+        }
 
-		@Override
-		public boolean canReceiveEnergy(ForgeDirection side)
-		{
-			return acceptor.canConnectEnergy(side);
-		}
+        @Override
+        public boolean needsEnergy(ForgeDirection side) {
+            return acceptor.getMaxEnergy() - acceptor.getEnergy() > 0;
+        }
+    }
 
-		@Override
-		public double getEnergy()
-		{
-			return fromRF(acceptor.getEnergyStored(ForgeDirection.UNKNOWN));
-		}
+    public static class RFAcceptor extends EnergyAcceptorWrapper {
+        private IEnergyReceiver acceptor;
 
-		@Override
-		public void setEnergy(double energy)
-		{
-			int rfToSet = toRF(energy);
-			int amountToReceive = rfToSet - acceptor.getEnergyStored(ForgeDirection.UNKNOWN);
-			acceptor.receiveEnergy(ForgeDirection.UNKNOWN, amountToReceive, false);
-		}
+        public RFAcceptor(IEnergyReceiver rfAcceptor) {
+            acceptor = rfAcceptor;
+        }
 
-		@Override
-		public double getMaxEnergy()
-		{
-			return fromRF(acceptor.getMaxEnergyStored(ForgeDirection.UNKNOWN));
-		}
+        @Override
+        public double transferEnergyToAcceptor(ForgeDirection side, double amount) {
+            int transferred = acceptor.receiveEnergy(
+                side, Math.min(Integer.MAX_VALUE, toRF(amount)), false
+            );
 
-		@Override
-		public boolean needsEnergy(ForgeDirection side)
-		{
-			return acceptor.receiveEnergy(side, 1, true) > 0 || getEnergyNeeded(side) > 0;
-		}
+            return fromRF(transferred);
+        }
 
-		public int toRF(double joules)
-		{
-			return (int)Math.round(joules * general.TO_TE);
-		}
+        @Override
+        public boolean canReceiveEnergy(ForgeDirection side) {
+            return acceptor.canConnectEnergy(side);
+        }
 
-		public double fromRF(int rf)
-		{
-			return rf * general.FROM_TE;
-		}
-		
-		public int getEnergyNeeded(ForgeDirection side)
-		{
-			return acceptor.getMaxEnergyStored(side) - acceptor.getEnergyStored(side);
-		}
-	}
+        @Override
+        public double getEnergy() {
+            return fromRF(acceptor.getEnergyStored(ForgeDirection.UNKNOWN));
+        }
 
-	public static class IC2Acceptor extends EnergyAcceptorWrapper
-	{
-		private IEnergySink acceptor;
+        @Override
+        public void setEnergy(double energy) {
+            int rfToSet = toRF(energy);
+            int amountToReceive
+                = rfToSet - acceptor.getEnergyStored(ForgeDirection.UNKNOWN);
+            acceptor.receiveEnergy(ForgeDirection.UNKNOWN, amountToReceive, false);
+        }
 
-		public IC2Acceptor(IEnergySink ic2Acceptor)
-		{
-			acceptor = ic2Acceptor;
-		}
+        @Override
+        public double getMaxEnergy() {
+            return fromRF(acceptor.getMaxEnergyStored(ForgeDirection.UNKNOWN));
+        }
 
-		@Override
-		public double transferEnergyToAcceptor(ForgeDirection side, double amount)
-		{
-			double toTransfer = Math.min(Math.min(acceptor.getDemandedEnergy(), toEU(amount)), Integer.MAX_VALUE);
-			double rejects = acceptor.injectEnergy(side, toTransfer, 0);
-			
-			return fromEU(toTransfer - rejects);
-		}
+        @Override
+        public boolean needsEnergy(ForgeDirection side) {
+            return acceptor.receiveEnergy(side, 1, true) > 0 || getEnergyNeeded(side) > 0;
+        }
 
-		@Override
-		public boolean canReceiveEnergy(ForgeDirection side)
-		{
-			return acceptor.acceptsEnergyFrom(null, side);
-		}
+        public int toRF(double joules) {
+            return (int) Math.round(joules * general.TO_TE);
+        }
 
-		@Override
-		public double getEnergy()
-		{
-			return 0;
-		}
+        public double fromRF(int rf) {
+            return rf * general.FROM_TE;
+        }
 
-		@Override
-		public void setEnergy(double energy)
-		{
-			return;
-		}
+        public int getEnergyNeeded(ForgeDirection side) {
+            return acceptor.getMaxEnergyStored(side) - acceptor.getEnergyStored(side);
+        }
+    }
 
-		@Override
-		public double getMaxEnergy()
-		{
-			return 0;
-		}
+    public static class IC2Acceptor extends EnergyAcceptorWrapper {
+        private IEnergySink acceptor;
 
-		@Override
-		public boolean needsEnergy(ForgeDirection side)
-		{
-			return acceptor.getDemandedEnergy() > 0;
-		}
+        public IC2Acceptor(IEnergySink ic2Acceptor) {
+            acceptor = ic2Acceptor;
+        }
 
-		public double toEU(double joules)
-		{
-			return joules * general.TO_IC2;
-		}
-		
-		public double fromEU(double eu)
-		{
-			return eu * general.FROM_IC2;
-		}
-	}
+        @Override
+        public double transferEnergyToAcceptor(ForgeDirection side, double amount) {
+            double toTransfer = Math.min(
+                Math.min(acceptor.getDemandedEnergy(), toEU(amount)), Integer.MAX_VALUE
+            );
+            double rejects = acceptor.injectEnergy(side, toTransfer, 0);
+
+            return fromEU(toTransfer - rejects);
+        }
+
+        @Override
+        public boolean canReceiveEnergy(ForgeDirection side) {
+            return acceptor.acceptsEnergyFrom(null, side);
+        }
+
+        @Override
+        public double getEnergy() {
+            return 0;
+        }
+
+        @Override
+        public void setEnergy(double energy) {
+            return;
+        }
+
+        @Override
+        public double getMaxEnergy() {
+            return 0;
+        }
+
+        @Override
+        public boolean needsEnergy(ForgeDirection side) {
+            return acceptor.getDemandedEnergy() > 0;
+        }
+
+        public double toEU(double joules) {
+            return joules * general.TO_IC2;
+        }
+
+        public double fromEU(double eu) {
+            return eu * general.FROM_IC2;
+        }
+    }
 }

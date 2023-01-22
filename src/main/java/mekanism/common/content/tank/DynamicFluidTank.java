@@ -8,190 +8,158 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
 
-public class DynamicFluidTank implements IFluidTank
-{
-	public TileEntityDynamicTank dynamicTank;
+public class DynamicFluidTank implements IFluidTank {
+    public TileEntityDynamicTank dynamicTank;
 
-	public DynamicFluidTank(TileEntityDynamicTank tileEntity)
-	{
-		dynamicTank = tileEntity;
-	}
+    public DynamicFluidTank(TileEntityDynamicTank tileEntity) {
+        dynamicTank = tileEntity;
+    }
 
-	@Override
-	public FluidStack getFluid()
-	{
-		return dynamicTank.structure != null ? dynamicTank.structure.fluidStored : null;
-	}
+    @Override
+    public FluidStack getFluid() {
+        return dynamicTank.structure != null ? dynamicTank.structure.fluidStored : null;
+    }
 
-	@Override
-	public int getCapacity()
-	{
-		return dynamicTank.structure != null ? dynamicTank.structure.volume*TankUpdateProtocol.FLUID_PER_TANK : 0;
-	}
+    @Override
+    public int getCapacity() {
+        return dynamicTank.structure != null
+            ? dynamicTank.structure.volume * TankUpdateProtocol.FLUID_PER_TANK
+            : 0;
+    }
 
-	@Override
-	public int fill(FluidStack resource, boolean doFill)
-	{
-		if(dynamicTank.structure != null && !dynamicTank.getWorldObj().isRemote)
-		{
-			if(resource == null || resource.getFluidID() <= 0)
-			{
-				return 0;
-			}
-			
-			if(dynamicTank.structure.fluidStored != null && !dynamicTank.structure.fluidStored.isFluidEqual(resource))
-			{
-				return 0;
-			}
+    @Override
+    public int fill(FluidStack resource, boolean doFill) {
+        if (dynamicTank.structure != null && !dynamicTank.getWorldObj().isRemote) {
+            if (resource == null || resource.getFluidID() <= 0) {
+                return 0;
+            }
 
-			if(dynamicTank.structure.fluidStored == null || dynamicTank.structure.fluidStored.getFluidID() <= 0)
-			{
-				if(resource.amount <= getCapacity())
-				{
-					if(doFill)
-					{
-						dynamicTank.structure.fluidStored = resource.copy();
-						
-						if(resource.amount > 0)
-						{
-							MekanismUtils.saveChunk(dynamicTank);
-							updateValveData();
-						}
-					}
+            if (dynamicTank.structure.fluidStored != null
+                && !dynamicTank.structure.fluidStored.isFluidEqual(resource)) {
+                return 0;
+            }
 
-					return resource.amount;
-				}
-				else {
-					if(doFill)
-					{
-						dynamicTank.structure.fluidStored = resource.copy();
-						dynamicTank.structure.fluidStored.amount = getCapacity();
-						
-						if(getCapacity() > 0)
-						{
-							MekanismUtils.saveChunk(dynamicTank);
-							updateValveData();
-						}
-					}
+            if (dynamicTank.structure.fluidStored == null
+                || dynamicTank.structure.fluidStored.getFluidID() <= 0) {
+                if (resource.amount <= getCapacity()) {
+                    if (doFill) {
+                        dynamicTank.structure.fluidStored = resource.copy();
 
-					return getCapacity();
-				}
-			}
-			else if(resource.amount <= getNeeded())
-			{
-				if(doFill)
-				{
-					dynamicTank.structure.fluidStored.amount += resource.amount;
-					
-					if(resource.amount > 0)
-					{
-						MekanismUtils.saveChunk(dynamicTank);
-						updateValveData();
-					}
-				}
+                        if (resource.amount > 0) {
+                            MekanismUtils.saveChunk(dynamicTank);
+                            updateValveData();
+                        }
+                    }
 
-				return resource.amount;
-			}
-			else {
-				int prevNeeded = getNeeded();
-				
-				if(doFill)
-				{
-					dynamicTank.structure.fluidStored.amount = getCapacity();
-					
-					if(prevNeeded > 0)
-					{
-						MekanismUtils.saveChunk(dynamicTank);
-						updateValveData();
-					}
-				}
+                    return resource.amount;
+                } else {
+                    if (doFill) {
+                        dynamicTank.structure.fluidStored = resource.copy();
+                        dynamicTank.structure.fluidStored.amount = getCapacity();
 
-				return prevNeeded;
-			}
-		}
+                        if (getCapacity() > 0) {
+                            MekanismUtils.saveChunk(dynamicTank);
+                            updateValveData();
+                        }
+                    }
 
-		return 0;
-	}
+                    return getCapacity();
+                }
+            } else if (resource.amount <= getNeeded()) {
+                if (doFill) {
+                    dynamicTank.structure.fluidStored.amount += resource.amount;
 
-	public void updateValveData()
-	{
-		if(dynamicTank.structure != null)
-		{
-			for(ValveData data : dynamicTank.structure.valves)
-			{
-				if(data.location.equals(Coord4D.get(dynamicTank)))
-				{
-					data.onTransfer();
-				}
-			}
-		}
-	}
+                    if (resource.amount > 0) {
+                        MekanismUtils.saveChunk(dynamicTank);
+                        updateValveData();
+                    }
+                }
 
-	@Override
-	public FluidStack drain(int maxDrain, boolean doDrain)
-	{
-		if(dynamicTank.structure != null && !dynamicTank.getWorldObj().isRemote)
-		{
-			if(dynamicTank.structure.fluidStored == null || dynamicTank.structure.fluidStored.getFluidID() <= 0)
-			{
-				return null;
-			}
+                return resource.amount;
+            } else {
+                int prevNeeded = getNeeded();
 
-			if(dynamicTank.structure.fluidStored.amount <= 0)
-			{
-				return null;
-			}
+                if (doFill) {
+                    dynamicTank.structure.fluidStored.amount = getCapacity();
 
-			int used = maxDrain;
+                    if (prevNeeded > 0) {
+                        MekanismUtils.saveChunk(dynamicTank);
+                        updateValveData();
+                    }
+                }
 
-			if(dynamicTank.structure.fluidStored.amount < used)
-			{
-				used = dynamicTank.structure.fluidStored.amount;
-			}
+                return prevNeeded;
+            }
+        }
 
-			if(doDrain)
-			{
-				dynamicTank.structure.fluidStored.amount -= used;
-			}
+        return 0;
+    }
 
-			FluidStack drained = new FluidStack(dynamicTank.structure.fluidStored.getFluid(), used);
+    public void updateValveData() {
+        if (dynamicTank.structure != null) {
+            for (ValveData data : dynamicTank.structure.valves) {
+                if (data.location.equals(Coord4D.get(dynamicTank))) {
+                    data.onTransfer();
+                }
+            }
+        }
+    }
 
-			if(dynamicTank.structure.fluidStored.amount <= 0)
-			{
-				dynamicTank.structure.fluidStored = null;
-			}
+    @Override
+    public FluidStack drain(int maxDrain, boolean doDrain) {
+        if (dynamicTank.structure != null && !dynamicTank.getWorldObj().isRemote) {
+            if (dynamicTank.structure.fluidStored == null
+                || dynamicTank.structure.fluidStored.getFluidID() <= 0) {
+                return null;
+            }
 
-			if(drained.amount > 0 && doDrain)
-			{
-				MekanismUtils.saveChunk(dynamicTank);
-				dynamicTank.sendPacketToRenderer();
-			}
+            if (dynamicTank.structure.fluidStored.amount <= 0) {
+                return null;
+            }
 
-			return drained;
-		}
+            int used = maxDrain;
 
-		return null;
-	}
-	
-	public int getNeeded()
-	{
-		return getCapacity()-getFluidAmount();
-	}
+            if (dynamicTank.structure.fluidStored.amount < used) {
+                used = dynamicTank.structure.fluidStored.amount;
+            }
 
-	@Override
-	public int getFluidAmount()
-	{
-		if(dynamicTank.structure != null)
-		{
-			return dynamicTank.structure.fluidStored.amount;
-		}
+            if (doDrain) {
+                dynamicTank.structure.fluidStored.amount -= used;
+            }
 
-		return 0;
-	}
+            FluidStack drained
+                = new FluidStack(dynamicTank.structure.fluidStored.getFluid(), used);
 
-	@Override
-	public FluidTankInfo getInfo()
-	{
-		return new FluidTankInfo(this);
-	}
+            if (dynamicTank.structure.fluidStored.amount <= 0) {
+                dynamicTank.structure.fluidStored = null;
+            }
+
+            if (drained.amount > 0 && doDrain) {
+                MekanismUtils.saveChunk(dynamicTank);
+                dynamicTank.sendPacketToRenderer();
+            }
+
+            return drained;
+        }
+
+        return null;
+    }
+
+    public int getNeeded() {
+        return getCapacity() - getFluidAmount();
+    }
+
+    @Override
+    public int getFluidAmount() {
+        if (dynamicTank.structure != null) {
+            return dynamicTank.structure.fluidStored.amount;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public FluidTankInfo getInfo() {
+        return new FluidTankInfo(this);
+    }
 }

@@ -15,21 +15,22 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 
 /**
  * This is not the class you are looking for.
- * 
+ *
  * @author jadar
  */
 public class RenderEventHandler {
-
     @SubscribeEvent
     public void renderPlayer(RenderPlayerEvent.Specials.Pre event) {
         AbstractClientPlayer player = (AbstractClientPlayer) event.entityPlayer;
 
         UserManager manager = UserManager.getInstance();
         User user = manager.getUser(player.getUniqueID().toString());
-        if (user == null) return;
+        if (user == null)
+            return;
 
         ICape cape = user.capes.get(0);
-        if (cape == null) return;
+        if (cape == null)
+            return;
 
         boolean flag = cape.isTextureLoaded(player);
         if (!flag) {

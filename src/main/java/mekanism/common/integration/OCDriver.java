@@ -17,62 +17,58 @@ import net.minecraft.world.World;
 /**
  * Created by aidancbrady on 7/20/15.
  */
-public class OCDriver extends DriverTileEntity
-{
+public class OCDriver extends DriverTileEntity {
     @Override
-    public Class<?> getTileEntityClass()
-    {
+    public Class<?> getTileEntityClass() {
         return IComputerIntegration.class;
     }
 
     @Override
-    public ManagedEnvironment createEnvironment(World world, int x, int y, int z)
-    {
+    public ManagedEnvironment createEnvironment(World world, int x, int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
 
-        if(tile instanceof IComputerIntegration)
-        {
-            return new OCManagedEnvironment((IComputerIntegration)tile);
+        if (tile instanceof IComputerIntegration) {
+            return new OCManagedEnvironment((IComputerIntegration) tile);
         }
 
         return null;
     }
 
-    public class OCManagedEnvironment extends ManagedEnvironment implements NamedBlock, ManagedPeripheral
-    {
+    public class OCManagedEnvironment
+        extends ManagedEnvironment implements NamedBlock, ManagedPeripheral {
         public IComputerIntegration computerTile;
 
         public String name;
 
-        public OCManagedEnvironment(IComputerIntegration tile)
-        {
+        public OCManagedEnvironment(IComputerIntegration tile) {
             computerTile = tile;
             name = tile.getInventoryName().toLowerCase(Locale.ENGLISH).replace(" ", "_");
 
-            setNode(Network.newNode(this, Visibility.Network).withComponent(name, Visibility.Network).create());
+            setNode(Network.newNode(this, Visibility.Network)
+                        .withComponent(name, Visibility.Network)
+                        .create());
         }
 
         @Override
-        public String[] methods()
-        {
+        public String[] methods() {
             return computerTile.getMethods();
         }
 
         @Override
-        public Object[] invoke(String method, Context context, Arguments args) throws Exception
-        {
-            return computerTile.invoke(Arrays.asList(methods()).indexOf(method), args.toArray());
+        public Object[] invoke(String method, Context context, Arguments args)
+            throws Exception {
+            return computerTile.invoke(
+                Arrays.asList(methods()).indexOf(method), args.toArray()
+            );
         }
 
         @Override
-        public int priority()
-        {
+        public int priority() {
             return 4;
         }
 
         @Override
-        public String preferredName()
-        {
+        public String preferredName() {
             return name;
         }
     }

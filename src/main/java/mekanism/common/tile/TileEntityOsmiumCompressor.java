@@ -12,46 +12,46 @@ import mekanism.common.recipe.machines.OsmiumCompressorRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class TileEntityOsmiumCompressor extends TileEntityAdvancedElectricMachine<OsmiumCompressorRecipe>
-{
-	public TileEntityOsmiumCompressor()
-	{
-		super("compressor", "OsmiumCompressor", usage.osmiumCompressorUsage, 1, 200, MachineType.OSMIUM_COMPRESSOR.baseEnergy, 200);
-	}
+public class TileEntityOsmiumCompressor
+    extends TileEntityAdvancedElectricMachine<OsmiumCompressorRecipe> {
+    public TileEntityOsmiumCompressor() {
+        super(
+            "compressor",
+            "OsmiumCompressor",
+            usage.osmiumCompressorUsage,
+            1,
+            200,
+            MachineType.OSMIUM_COMPRESSOR.baseEnergy,
+            200
+        );
+    }
 
-	@Override
-	public Map getRecipes()
-	{
-		return Recipe.OSMIUM_COMPRESSOR.get();
-	}
+    @Override
+    public Map getRecipes() {
+        return Recipe.OSMIUM_COMPRESSOR.get();
+    }
 
-	@Override
-	public GasStack getItemGas(ItemStack itemstack)
-	{
-		int amount = 0;
+    @Override
+    public GasStack getItemGas(ItemStack itemstack) {
+        int amount = 0;
 
-		for(ItemStack ore : OreDictionary.getOres("ingotOsmium"))
-		{
-			if(ore.isItemEqual(itemstack))
-			{
-				return new GasStack(GasRegistry.getGas("liquidOsmium"), 200);
-			}
-		}
+        for (ItemStack ore : OreDictionary.getOres("ingotOsmium")) {
+            if (ore.isItemEqual(itemstack)) {
+                return new GasStack(GasRegistry.getGas("liquidOsmium"), 200);
+            }
+        }
 
-		for(ItemStack ore : OreDictionary.getOres("blockOsmium"))
-		{
-			if(ore.isItemEqual(itemstack))
-			{
-				return new GasStack(GasRegistry.getGas("liquidOsmium"), 1800);
-			}
-		}
+        for (ItemStack ore : OreDictionary.getOres("blockOsmium")) {
+            if (ore.isItemEqual(itemstack)) {
+                return new GasStack(GasRegistry.getGas("liquidOsmium"), 1800);
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public boolean isValidGas(Gas gas)
-	{
-		return false;
-	}
+    @Override
+    public boolean isValidGas(Gas gas) {
+        return false;
+    }
 }

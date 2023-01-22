@@ -1,10 +1,14 @@
 package mekanism.common.multipart;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.vec.Vector3;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.EnumColor;
 import mekanism.api.MekanismConfig.client;
@@ -38,452 +42,443 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.Vector3;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartLogisticalTransporter extends PartTransmitter<IInventory, InventoryNetwork> implements ITransporterTile
-{
-	public Tier.TransporterTier tier = Tier.TransporterTier.BASIC;
+public class PartLogisticalTransporter
+    extends PartTransmitter<IInventory, InventoryNetwork> implements ITransporterTile {
+    public Tier.TransporterTier tier = Tier.TransporterTier.BASIC;
 
-	public static TransmitterIcons transporterIcons = new TransmitterIcons(8, 16);
+    public static TransmitterIcons transporterIcons = new TransmitterIcons(8, 16);
 
-	public int pullDelay = 0;
+    public int pullDelay = 0;
 
-	public PartLogisticalTransporter(TransporterTier transporterTier)
-	{
-		this();
-		tier = transporterTier;
-	}
+    public PartLogisticalTransporter(TransporterTier transporterTier) {
+        this();
+        tier = transporterTier;
+    }
 
-	public PartLogisticalTransporter()
-	{
-		transmitterDelegate = new MultipartTransporter(this);
-	}
+    public PartLogisticalTransporter() {
+        transmitterDelegate = new MultipartTransporter(this);
+    }
 
-	@Override
-	public String getType()
-	{
-		return "mekanism:logistical_transporter_" + tier.name().toLowerCase();
-	}
+    @Override
+    public String getType() {
+        return "mekanism:logistical_transporter_" + tier.name().toLowerCase();
+    }
 
-	@Override
-	public TransmitterType getTransmitterType()
-	{
-		return tier.type;
-	}
+    @Override
+    public TransmitterType getTransmitterType() {
+        return tier.type;
+    }
 
-	@Override
-	public TransmissionType getTransmissionType()
-	{
-		return TransmissionType.ITEM;
-	}
+    @Override
+    public TransmissionType getTransmissionType() {
+        return TransmissionType.ITEM;
+    }
 
-	public static void registerIcons(IIconRegister register)
-	{
-		transporterIcons.registerCenterIcons(register, new String[] {"LogisticalTransporterBasic", "LogisticalTransporterAdvanced", "LogisticalTransporterElite", "LogisticalTransporterUltimate", "RestrictiveTransporter", 
-				"DiversionTransporter", "LogisticalTransporterGlass", "LogisticalTransporterGlassColored"});
-		transporterIcons.registerSideIcons(register, new String[] {"LogisticalTransporterVerticalBasic", "LogisticalTransporterVerticalAdvanced", "LogisticalTransporterVerticalElite", "LogisticalTransporterVerticalUltimate", 
-				"LogisticalTransporterHorizontalBasic", "LogisticalTransporterHorizontalAdvanced", "LogisticalTransporterHorizontalElite", "LogisticalTransporterHorizontalUltimate", "RestrictiveTransporterVertical", 
-				"RestrictiveTransporterHorizontal", "LogisticalTransporterVerticalGlass", "LogisticalTransporterVerticalGlassColored", "LogisticalTransporterHorizontalGlass", "LogisticalTransporterHorizontalGlassColored",
-				"DiversionTransporterVertical", "DiversionTransporterHorizontal"});
-	}
+    public static void registerIcons(IIconRegister register) {
+        transporterIcons.registerCenterIcons(
+            register,
+            new String[] { "LogisticalTransporterBasic",
+                           "LogisticalTransporterAdvanced",
+                           "LogisticalTransporterElite",
+                           "LogisticalTransporterUltimate",
+                           "RestrictiveTransporter",
+                           "DiversionTransporter",
+                           "LogisticalTransporterGlass",
+                           "LogisticalTransporterGlassColored" }
+        );
+        transporterIcons.registerSideIcons(
+            register,
+            new String[] { "LogisticalTransporterVerticalBasic",
+                           "LogisticalTransporterVerticalAdvanced",
+                           "LogisticalTransporterVerticalElite",
+                           "LogisticalTransporterVerticalUltimate",
+                           "LogisticalTransporterHorizontalBasic",
+                           "LogisticalTransporterHorizontalAdvanced",
+                           "LogisticalTransporterHorizontalElite",
+                           "LogisticalTransporterHorizontalUltimate",
+                           "RestrictiveTransporterVertical",
+                           "RestrictiveTransporterHorizontal",
+                           "LogisticalTransporterVerticalGlass",
+                           "LogisticalTransporterVerticalGlassColored",
+                           "LogisticalTransporterHorizontalGlass",
+                           "LogisticalTransporterHorizontalGlassColored",
+                           "DiversionTransporterVertical",
+                           "DiversionTransporterHorizontal" }
+        );
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderDynamic(Vector3 pos, float f, int pass)
-	{
-		if(pass == 0 && !client.opaqueTransmitters)
-		{
-			RenderPartTransmitter.getInstance().renderContents(this, f, pos);
-		}
-	}
-	
-	@Override
-	public void onWorldSeparate()
-	{
-		super.onWorldSeparate();
-		
-		if(!world().isRemote)
-		{
-			PathfinderCache.onChanged(Coord4D.get(tile()));
-		}
-	}
-	
-	@Override
-	protected boolean isValidTransmitter(TileEntity tileEntity)
-	{
-		ILogisticalTransporter transporter = ((ITransporterTile)tileEntity).getTransmitter();
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void renderDynamic(Vector3 pos, float f, int pass) {
+        if (pass == 0 && !client.opaqueTransmitters) {
+            RenderPartTransmitter.getInstance().renderContents(this, f, pos);
+        }
+    }
 
-		if(getTransmitter().getColor() == null || transporter.getColor() == null || getTransmitter().getColor() == transporter.getColor())
-		{
-			return super.isValidTransmitter(tileEntity);
-		}
-		
-		return false;
-	}
+    @Override
+    public void onWorldSeparate() {
+        super.onWorldSeparate();
 
-	@Override
-	public IIcon getCenterIcon(boolean opaque)
-	{
-		return transporterIcons.getCenterIcon(opaque ? tier.ordinal() : (getTransmitter().color != null ? 7 : 6));
-	}
+        if (!world().isRemote) {
+            PathfinderCache.onChanged(Coord4D.get(tile()));
+        }
+    }
 
-	@Override
-	public IIcon getSideIcon(boolean opaque)
-	{
-		return transporterIcons.getSideIcon(opaque ? tier.ordinal() : (getTransmitter().color != null ? 11 : 10));
-	}
+    @Override
+    protected boolean isValidTransmitter(TileEntity tileEntity) {
+        ILogisticalTransporter transporter
+            = ((ITransporterTile) tileEntity).getTransmitter();
 
-	@Override
-	public IIcon getSideIconRotated(boolean opaque)
-	{
-		return transporterIcons.getSideIcon(opaque ? 4+tier.ordinal() : (getTransmitter().color != null ? 13 : 12));
-	}
+        if (getTransmitter().getColor() == null || transporter.getColor() == null
+            || getTransmitter().getColor() == transporter.getColor()) {
+            return super.isValidTransmitter(tileEntity);
+        }
 
-	@Override
-	public boolean isValidAcceptor(TileEntity tile, ForgeDirection side)
-	{
-		return TransporterUtils.isValidAcceptorOnSide(tile, side);
-	}
-	
-	@Override
-	public boolean handlesRedstone()
-	{
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public void update()
-	{
-		super.update();
+    @Override
+    public IIcon getCenterIcon(boolean opaque) {
+        return transporterIcons.getCenterIcon(
+            opaque ? tier.ordinal() : (getTransmitter().color != null ? 7 : 6)
+        );
+    }
 
-		getTransmitter().update();
-	}
+    @Override
+    public IIcon getSideIcon(boolean opaque) {
+        return transporterIcons.getSideIcon(
+            opaque ? tier.ordinal() : (getTransmitter().color != null ? 11 : 10)
+        );
+    }
 
-	protected void pullItems()
-	{
-		if(pullDelay == 0)
-		{
-			boolean did = false;
+    @Override
+    public IIcon getSideIconRotated(boolean opaque) {
+        return transporterIcons.getSideIcon(
+            opaque ? 4 + tier.ordinal() : (getTransmitter().color != null ? 13 : 12)
+        );
+    }
 
-			for(ForgeDirection side : getConnections(ConnectionType.PULL))
-			{
-				TileEntity tile = Coord4D.get(tile()).getFromSide(side).getTileEntity(world());
+    @Override
+    public boolean isValidAcceptor(TileEntity tile, ForgeDirection side) {
+        return TransporterUtils.isValidAcceptorOnSide(tile, side);
+    }
 
-				if(tile instanceof IInventory)
-				{
-					IInventory inv = (IInventory)tile;
-					InvStack stack = InventoryUtils.takeTopItem(inv, side.ordinal(), tier.pullAmount);
+    @Override
+    public boolean handlesRedstone() {
+        return false;
+    }
 
-					if(stack != null && stack.getStack() != null)
-					{
-						ItemStack rejects = TransporterUtils.insert(tile, getTransmitter(), stack.getStack(), getTransmitter().getColor(), true, 0);
+    @Override
+    public void update() {
+        super.update();
 
-						if(TransporterManager.didEmit(stack.getStack(), rejects))
-						{
-							did = true;
-							stack.use(TransporterManager.getToUse(stack.getStack(), rejects).stackSize);
-						}
-					}
-				}
-			}
+        getTransmitter().update();
+    }
 
-			if(did)
-			{
-				pullDelay = 10;
-			}
-		}
-		else {
-			pullDelay--;
-		}
-	}
+    protected void pullItems() {
+        if (pullDelay == 0) {
+            boolean did = false;
 
-	@Override
-	public void onWorldJoin()
-	{
-		super.onWorldJoin();
+            for (ForgeDirection side : getConnections(ConnectionType.PULL)) {
+                TileEntity tile
+                    = Coord4D.get(tile()).getFromSide(side).getTileEntity(world());
 
-		if(world().isRemote)
-		{
-			Mekanism.packetHandler.sendToServer(new DataRequestMessage(Coord4D.get(tile())));
-		}
-		else {
-			PathfinderCache.onChanged(Coord4D.get(tile()));
-		}
-	}
+                if (tile instanceof IInventory) {
+                    IInventory inv = (IInventory) tile;
+                    InvStack stack = InventoryUtils.takeTopItem(
+                        inv, side.ordinal(), tier.pullAmount
+                    );
 
-	@Override
-	public InventoryNetwork createNewNetwork()
-	{
-		return new InventoryNetwork();
-	}
+                    if (stack != null && stack.getStack() != null) {
+                        ItemStack rejects = TransporterUtils.insert(
+                            tile,
+                            getTransmitter(),
+                            stack.getStack(),
+                            getTransmitter().getColor(),
+                            true,
+                            0
+                        );
 
-	@Override
-	public InventoryNetwork createNetworkByMerging(Collection<InventoryNetwork> networks)
-	{
-		return new InventoryNetwork(networks);
-	}
+                        if (TransporterManager.didEmit(stack.getStack(), rejects)) {
+                            did = true;
+                            stack.use(TransporterManager
+                                          .getToUse(stack.getStack(), rejects)
+                                          .stackSize);
+                        }
+                    }
+                }
+            }
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream) throws Exception
-	{
-		super.handlePacketData(dataStream);
-		
-		if(world().isRemote)
-		{
-			int type = dataStream.readInt();
-	
-			if(type == 0)
-			{
-				int c = dataStream.readInt();
-	
-				EnumColor prev = getTransmitter().getColor();
-	
-				if(c != -1)
-				{
-					getTransmitter().setColor(TransporterUtils.colors.get(c));
-				}
-				else {
-					getTransmitter().setColor(null);
-				}
-	
-				if(prev != getTransmitter().getColor())
-				{
-					tile().markRender();
-				}
-	
-				getTransmitter().transit.clear();
-	
-				int amount = dataStream.readInt();
-	
-				for(int i = 0; i < amount; i++)
-				{
-					getTransmitter().transit.add(TransporterStack.readFromPacket(dataStream));
-				}
-			}
-			else if(type == 1)
-			{
-				boolean kill = dataStream.readBoolean();
-				int index = dataStream.readInt();
-	
-				if(kill)
-				{
-					getTransmitter().transit.remove(index);
-				}
-				else {
-					TransporterStack stack = TransporterStack.readFromPacket(dataStream);
-	
-					if(stack.progress == 0)
-					{
-						stack.progress = 5;
-					}
-	
-					getTransmitter().transit.replace(index, stack);
-				}
-			}
-		}
-	}
+            if (did) {
+                pullDelay = 10;
+            }
+        } else {
+            pullDelay--;
+        }
+    }
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
-		
-		data.add(0);
+    @Override
+    public void onWorldJoin() {
+        super.onWorldJoin();
 
-		if(getTransmitter().getColor() != null)
-		{
-			data.add(TransporterUtils.colors.indexOf(getTransmitter().getColor()));
-		}
-		else {
-			data.add(-1);
-		}
+        if (world().isRemote) {
+            Mekanism.packetHandler.sendToServer(new DataRequestMessage(Coord4D.get(tile())
+            ));
+        } else {
+            PathfinderCache.onChanged(Coord4D.get(tile()));
+        }
+    }
 
-		data.add(getTransmitter().transit.size());
+    @Override
+    public InventoryNetwork createNewNetwork() {
+        return new InventoryNetwork();
+    }
 
-		for(TransporterStack stack : getTransmitter().transit)
-		{
-			stack.write(getTransmitter(), data);
-		}
+    @Override
+    public InventoryNetwork createNetworkByMerging(Collection<InventoryNetwork> networks
+    ) {
+        return new InventoryNetwork(networks);
+    }
 
-		return data;
-	}
+    @Override
+    public void handlePacketData(ByteBuf dataStream) throws Exception {
+        super.handlePacketData(dataStream);
 
-	public ArrayList getSyncPacket(TransporterStack stack, boolean kill)
-	{
-		ArrayList data = new ArrayList();
+        if (world().isRemote) {
+            int type = dataStream.readInt();
 
-		data.add(1);
-		data.add(kill);
-		data.add(getTransmitter().transit.indexOf(stack));
+            if (type == 0) {
+                int c = dataStream.readInt();
 
-		if(!kill)
-		{
-			stack.write(getTransmitter(), data);
-		}
+                EnumColor prev = getTransmitter().getColor();
 
-		return data;
-	}
+                if (c != -1) {
+                    getTransmitter().setColor(TransporterUtils.colors.get(c));
+                } else {
+                    getTransmitter().setColor(null);
+                }
 
-	@Override
-	public void load(NBTTagCompound nbtTags)
-	{
-		super.load(nbtTags);
-		
-		tier = TransporterTier.values()[nbtTags.getInteger("tier")];
+                if (prev != getTransmitter().getColor()) {
+                    tile().markRender();
+                }
 
-		if(nbtTags.hasKey("color"))
-		{
-			getTransmitter().setColor(TransporterUtils.colors.get(nbtTags.getInteger("color")));
-		}
+                getTransmitter().transit.clear();
 
-		if(nbtTags.hasKey("stacks"))
-		{
-			NBTTagList tagList = nbtTags.getTagList("stacks", NBT.TAG_COMPOUND);
+                int amount = dataStream.readInt();
 
-			for(int i = 0; i < tagList.tagCount(); i++)
-			{
-				TransporterStack stack = TransporterStack.readFromNBT(tagList.getCompoundTagAt(i));
+                for (int i = 0; i < amount; i++) {
+                    getTransmitter().transit.add(
+                        TransporterStack.readFromPacket(dataStream)
+                    );
+                }
+            } else if (type == 1) {
+                boolean kill = dataStream.readBoolean();
+                int index = dataStream.readInt();
 
-				getTransmitter().transit.add(stack);
-			}
-		}
-	}
+                if (kill) {
+                    getTransmitter().transit.remove(index);
+                } else {
+                    TransporterStack stack = TransporterStack.readFromPacket(dataStream);
 
-	@Override
-	public void save(NBTTagCompound nbtTags)
-	{
-		super.save(nbtTags);
-		
-		nbtTags.setInteger("tier", tier.ordinal());
+                    if (stack.progress == 0) {
+                        stack.progress = 5;
+                    }
 
-		if(getTransmitter().getColor() != null)
-		{
-			nbtTags.setInteger("color", TransporterUtils.colors.indexOf(getTransmitter().getColor()));
-		}
+                    getTransmitter().transit.replace(index, stack);
+                }
+            }
+        }
+    }
 
-		NBTTagList stacks = new NBTTagList();
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
 
-		for(TransporterStack stack : getTransmitter().transit)
-		{
-			NBTTagCompound tagCompound = new NBTTagCompound();
-			stack.write(tagCompound);
-			stacks.appendTag(tagCompound);
-		}
+        data.add(0);
 
-		if(stacks.tagCount() != 0)
-		{
-			nbtTags.setTag("stacks", stacks);
-		}
-	}
+        if (getTransmitter().getColor() != null) {
+            data.add(TransporterUtils.colors.indexOf(getTransmitter().getColor()));
+        } else {
+            data.add(-1);
+        }
 
-	@Override
-	protected boolean onConfigure(EntityPlayer player, int part, int side)
-	{
-		TransporterUtils.incrementColor(getTransmitter());
-		onPartChanged(this);
-		PathfinderCache.onChanged(Coord4D.get(tile()));
-		Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(tile()), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(tile())));
-		player.addChatMessage(new ChatComponentText(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " " + LangUtils.localize("tooltip.configurator.toggleColor") + ": " + (getTransmitter().getColor() != null ? getTransmitter().getColor().getName() : EnumColor.BLACK + LangUtils.localize("gui.none"))));
+        data.add(getTransmitter().transit.size());
 
-		return true;
-	}
+        for (TransporterStack stack : getTransmitter().transit) {
+            stack.write(getTransmitter(), data);
+        }
 
-	@Override
-	public boolean onRightClick(EntityPlayer player, int side)
-	{
-		super.onRightClick(player, side);
-		player.addChatMessage(new ChatComponentText(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " " + LangUtils.localize("tooltip.configurator.viewColor") + ": " + (getTransmitter().getColor() != null ? getTransmitter().getColor().getName() : "None")));
-		return true;
-	}
+        return data;
+    }
 
-	@Override
-	public EnumColor getRenderColor(boolean post)
-	{
-		return post ? null : getTransmitter().getColor();
-	}
+    public ArrayList getSyncPacket(TransporterStack stack, boolean kill) {
+        ArrayList data = new ArrayList();
 
-	@Override
-	public boolean transparencyRender()
-	{
-		return true;
-	}
+        data.add(1);
+        data.add(kill);
+        data.add(getTransmitter().transit.indexOf(stack));
 
-	@Override
-	public void onRemoved()
-	{
-		super.onRemoved();
+        if (!kill) {
+            stack.write(getTransmitter(), data);
+        }
 
-		if(!world().isRemote)
-		{
-			for(TransporterStack stack : getTransmitter().transit)
-			{
-				TransporterUtils.drop(getTransmitter(), stack);
-			}
-		}
-	}
+        return data;
+    }
 
-	@Override
-	public int getCapacity()
-	{
-		return 0;
-	}
+    @Override
+    public void load(NBTTagCompound nbtTags) {
+        super.load(nbtTags);
 
-	@Override
-	public Object getBuffer()
-	{
-		return null;
-	}
+        tier = TransporterTier.values()[nbtTags.getInteger("tier")];
 
-	@Override
-	public void takeShare() {}
+        if (nbtTags.hasKey("color")) {
+            getTransmitter().setColor(
+                TransporterUtils.colors.get(nbtTags.getInteger("color"))
+            );
+        }
+
+        if (nbtTags.hasKey("stacks")) {
+            NBTTagList tagList = nbtTags.getTagList("stacks", NBT.TAG_COMPOUND);
+
+            for (int i = 0; i < tagList.tagCount(); i++) {
+                TransporterStack stack
+                    = TransporterStack.readFromNBT(tagList.getCompoundTagAt(i));
+
+                getTransmitter().transit.add(stack);
+            }
+        }
+    }
+
+    @Override
+    public void save(NBTTagCompound nbtTags) {
+        super.save(nbtTags);
+
+        nbtTags.setInteger("tier", tier.ordinal());
+
+        if (getTransmitter().getColor() != null) {
+            nbtTags.setInteger(
+                "color", TransporterUtils.colors.indexOf(getTransmitter().getColor())
+            );
+        }
+
+        NBTTagList stacks = new NBTTagList();
+
+        for (TransporterStack stack : getTransmitter().transit) {
+            NBTTagCompound tagCompound = new NBTTagCompound();
+            stack.write(tagCompound);
+            stacks.appendTag(tagCompound);
+        }
+
+        if (stacks.tagCount() != 0) {
+            nbtTags.setTag("stacks", stacks);
+        }
+    }
+
+    @Override
+    protected boolean onConfigure(EntityPlayer player, int part, int side) {
+        TransporterUtils.incrementColor(getTransmitter());
+        onPartChanged(this);
+        PathfinderCache.onChanged(Coord4D.get(tile()));
+        Mekanism.packetHandler.sendToReceivers(
+            new TileEntityMessage(Coord4D.get(tile()), getNetworkedData(new ArrayList())),
+            new Range4D(Coord4D.get(tile()))
+        );
+        player.addChatMessage(new ChatComponentText(
+            EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " "
+            + LangUtils.localize("tooltip.configurator.toggleColor") + ": "
+            + (getTransmitter().getColor() != null
+                   ? getTransmitter().getColor().getName()
+                   : EnumColor.BLACK + LangUtils.localize("gui.none"))
+        ));
+
+        return true;
+    }
+
+    @Override
+    public boolean onRightClick(EntityPlayer player, int side) {
+        super.onRightClick(player, side);
+        player.addChatMessage(new ChatComponentText(
+            EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " "
+            + LangUtils.localize("tooltip.configurator.viewColor") + ": "
+            + (getTransmitter().getColor() != null ? getTransmitter().getColor().getName()
+                                                   : "None")
+        ));
+        return true;
+    }
+
+    @Override
+    public EnumColor getRenderColor(boolean post) {
+        return post ? null : getTransmitter().getColor();
+    }
+
+    @Override
+    public boolean transparencyRender() {
+        return true;
+    }
+
+    @Override
+    public void onRemoved() {
+        super.onRemoved();
+
+        if (!world().isRemote) {
+            for (TransporterStack stack : getTransmitter().transit) {
+                TransporterUtils.drop(getTransmitter(), stack);
+            }
+        }
+    }
+
+    @Override
+    public int getCapacity() {
+        return 0;
+    }
+
+    @Override
+    public Object getBuffer() {
+        return null;
+    }
+
+    @Override
+    public void takeShare() {}
 
     @Override
     public void updateShare() {}
 
-	@Override
-	public MultipartTransporter getTransmitter()
-	{
-		return (MultipartTransporter)transmitterDelegate;
-	}
+    @Override
+    public MultipartTransporter getTransmitter() {
+        return (MultipartTransporter) transmitterDelegate;
+    }
 
-	public double getCost()
-	{
-		return (double)TransporterTier.ULTIMATE.speed / (double)tier.speed;
-	}
-	
-	@Override
-	public boolean upgrade(int tierOrdinal)
-	{
-		if(tier.ordinal() < BaseTier.ULTIMATE.ordinal() && tierOrdinal == tier.ordinal()+1)
-		{
-			tier = TransporterTier.values()[tier.ordinal()+1];
-			
-			markDirtyTransmitters();
-			sendDesc = true;
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	@Override
-	public void readDesc(MCDataInput packet)
-	{
-		tier = TransporterTier.values()[packet.readInt()];
-		
-		super.readDesc(packet);
-	}
+    public double getCost() {
+        return (double) TransporterTier.ULTIMATE.speed / (double) tier.speed;
+    }
 
-	@Override
-	public void writeDesc(MCDataOutput packet)
-	{
-		packet.writeInt(tier.ordinal());
-		
-		super.writeDesc(packet);
-	}
+    @Override
+    public boolean upgrade(int tierOrdinal) {
+        if (tier.ordinal() < BaseTier.ULTIMATE.ordinal()
+            && tierOrdinal == tier.ordinal() + 1) {
+            tier = TransporterTier.values()[tier.ordinal() + 1];
+
+            markDirtyTransmitters();
+            sendDesc = true;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void readDesc(MCDataInput packet) {
+        tier = TransporterTier.values()[packet.readInt()];
+
+        super.readDesc(packet);
+    }
+
+    @Override
+    public void writeDesc(MCDataOutput packet) {
+        packet.writeInt(tier.ordinal());
+
+        super.writeDesc(packet);
+    }
 }

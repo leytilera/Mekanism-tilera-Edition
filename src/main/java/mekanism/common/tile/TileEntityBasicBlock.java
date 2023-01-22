@@ -1,12 +1,13 @@
 package mekanism.common.tile;
 
-import ic2.api.tile.IWrenchable;
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.Method;
+import ic2.api.tile.IWrenchable;
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.Range4D;
@@ -28,284 +29,264 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.Method;
 
 @Interface(iface = "ic2.api.tile.IWrenchable", modid = "IC2")
-public abstract class TileEntityBasicBlock extends TileEntity implements IWrenchable, ITileNetwork, IChunkLoadHandler, IFrequencyHandler
-{
-	/** The direction this block is facing. */
-	public int facing;
+public abstract class TileEntityBasicBlock extends TileEntity
+    implements IWrenchable, ITileNetwork, IChunkLoadHandler, IFrequencyHandler {
+    /** The direction this block is facing. */
+    public int facing;
 
-	public int clientFacing;
+    public int clientFacing;
 
-	/** The players currently using this block. */
-	public HashSet<EntityPlayer> playersUsing = new HashSet<EntityPlayer>();
+    /** The players currently using this block. */
+    public HashSet<EntityPlayer> playersUsing = new HashSet<EntityPlayer>();
 
-	/** A timer used to send packets to clients. */
-	public int ticker;
+    /** A timer used to send packets to clients. */
+    public int ticker;
 
-	public boolean redstone = false;
-	public boolean redstoneLastTick = false;
+    public boolean redstone = false;
+    public boolean redstoneLastTick = false;
 
-	public boolean doAutoSync = true;
+    public boolean doAutoSync = true;
 
-	public List<ITileComponent> components = new ArrayList<ITileComponent>();
+    public List<ITileComponent> components = new ArrayList<ITileComponent>();
 
-	@Override
-	public void updateEntity()
-	{
-		if(!worldObj.isRemote && general.destroyDisabledBlocks)
-		{
-			MachineType type = MachineType.get(getBlockType(), getBlockMetadata());
-			
-			if(type != null && !type.isEnabled())
-			{
-				Mekanism.logger.info("[Mekanism] Destroying machine of type '" + type.name + "' at coords " + Coord4D.get(this) + " as according to config.");
-				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
-				return;
-			}
-		}
-		
-		for(ITileComponent component : components)
-		{
-			component.tick();
-		}
+    @Override
+    public void updateEntity() {
+        if (!worldObj.isRemote && general.destroyDisabledBlocks) {
+            MachineType type = MachineType.get(getBlockType(), getBlockMetadata());
 
-		onUpdate();
+            if (type != null && !type.isEnabled()) {
+                Mekanism.logger.info(
+                    "[Mekanism] Destroying machine of type '" + type.name + "' at coords "
+                    + Coord4D.get(this) + " as according to config."
+                );
+                worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+                return;
+            }
+        }
 
-		if(!worldObj.isRemote)
-		{
-			if(doAutoSync && playersUsing.size() > 0)
-			{
-				for(EntityPlayer player : playersUsing)
-				{
-					Mekanism.packetHandler.sendTo(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), (EntityPlayerMP)player);
-				}
-			}
-		}
+        for (ITileComponent component : components) {
+            component.tick();
+        }
 
-		ticker++;
-		redstoneLastTick = redstone;
-	}
-	
-	@Override
-	public void onChunkLoad()
-	{
-		markDirty();
-	}
+        onUpdate();
 
-	public void open(EntityPlayer player)
-	{
-		playersUsing.add(player);
-	}
+        if (!worldObj.isRemote) {
+            if (doAutoSync && playersUsing.size() > 0) {
+                for (EntityPlayer player : playersUsing) {
+                    Mekanism.packetHandler.sendTo(
+                        new TileEntityMessage(
+                            Coord4D.get(this), getNetworkedData(new ArrayList())
+                        ),
+                        (EntityPlayerMP) player
+                    );
+                }
+            }
+        }
 
-	public void close(EntityPlayer player)
-	{
-		playersUsing.remove(player);
-	}
+        ticker++;
+        redstoneLastTick = redstone;
+    }
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		if(worldObj.isRemote)
-		{
-			facing = dataStream.readInt();
-			redstone = dataStream.readBoolean();
-	
-			if(clientFacing != facing)
-			{
-				MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-				worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
-				clientFacing = facing;
-			}
-	
-			for(ITileComponent component : components)
-			{
-				component.read(dataStream);
-			}
-		}
-	}
+    @Override
+    public void onChunkLoad() {
+        markDirty();
+    }
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		data.add(facing);
-		data.add(redstone);
+    public void open(EntityPlayer player) {
+        playersUsing.add(player);
+    }
 
-		for(ITileComponent component : components)
-		{
-			component.write(data);
-		}
+    public void close(EntityPlayer player) {
+        playersUsing.remove(player);
+    }
 
-		return data;
-	}
-	
-	@Override
-	public void invalidate()
-	{
-		super.invalidate();
-		
-		for(ITileComponent component : components)
-		{
-			component.invalidate();
-		}
-	}
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        if (worldObj.isRemote) {
+            facing = dataStream.readInt();
+            redstone = dataStream.readBoolean();
 
-	@Override
-	public void validate()
-	{
-		super.validate();
+            if (clientFacing != facing) {
+                MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+                worldObj.notifyBlocksOfNeighborChange(
+                    xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord)
+                );
+                clientFacing = facing;
+            }
 
-		if(worldObj.isRemote)
-		{
-			Mekanism.packetHandler.sendToServer(new DataRequestMessage(Coord4D.get(this)));
-		}
-	}
+            for (ITileComponent component : components) {
+                component.read(dataStream);
+            }
+        }
+    }
 
-	/**
-	 * Update call for machines. Use instead of updateEntity -- it's called every tick.
-	 */
-	public abstract void onUpdate();
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        data.add(facing);
+        data.add(redstone);
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+        for (ITileComponent component : components) {
+            component.write(data);
+        }
 
-		facing = nbtTags.getInteger("facing");
-		redstone = nbtTags.getBoolean("redstone");
+        return data;
+    }
 
-		for(ITileComponent component : components)
-		{
-			component.read(nbtTags);
-		}
-	}
+    @Override
+    public void invalidate() {
+        super.invalidate();
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+        for (ITileComponent component : components) {
+            component.invalidate();
+        }
+    }
 
-		nbtTags.setInteger("facing", facing);
-		nbtTags.setBoolean("redstone", redstone);
+    @Override
+    public void validate() {
+        super.validate();
 
-		for(ITileComponent component : components)
-		{
-			component.write(nbtTags);
-		}
-	}
+        if (worldObj.isRemote) {
+            Mekanism.packetHandler.sendToServer(new DataRequestMessage(Coord4D.get(this))
+            );
+        }
+    }
 
-	@Override
-	@Method(modid = "IC2")
-	public boolean wrenchCanSetFacing(EntityPlayer entityPlayer, int side)
-	{
-		return true;
-	}
+    /**
+     * Update call for machines. Use instead of updateEntity -- it's called every tick.
+     */
+    public abstract void onUpdate();
 
-	@Override
-	@Method(modid = "IC2")
-	public short getFacing()
-	{
-		return (short)facing;
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
 
-	@Override
-	public void setFacing(short direction)
-	{
-		if(canSetFacing(direction))
-		{
-			facing = direction;
-		}
+        facing = nbtTags.getInteger("facing");
+        redstone = nbtTags.getBoolean("redstone");
 
-		if(!(facing == clientFacing || worldObj.isRemote))
-		{
-			Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-			markDirty();
-			clientFacing = facing;
-		}
-	}
+        for (ITileComponent component : components) {
+            component.read(nbtTags);
+        }
+    }
 
-	/**
-	 * Whether or not this block's orientation can be changed to a specific direction. True by default.
-	 * @param facing - facing to check
-	 * @return if the block's orientation can be changed
-	 */
-	public boolean canSetFacing(int facing)
-	{
-		return true;
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
 
-	@Override
-	@Method(modid = "IC2")
-	public boolean wrenchCanRemove(EntityPlayer entityPlayer)
-	{
-		return true;
-	}
+        nbtTags.setInteger("facing", facing);
+        nbtTags.setBoolean("redstone", redstone);
 
-	@Override
-	@Method(modid = "IC2")
-	public float getWrenchDropRate()
-	{
-		return 1.0F;
-	}
+        for (ITileComponent component : components) {
+            component.write(nbtTags);
+        }
+    }
 
-	@Override
-	@Method(modid = "IC2")
-	public ItemStack getWrenchDrop(EntityPlayer entityPlayer)
-	{
-		return getBlockType().getPickBlock(null, worldObj, xCoord, yCoord, zCoord, entityPlayer);
-	}
+    @Override
+    @Method(modid = "IC2")
+    public boolean wrenchCanSetFacing(EntityPlayer entityPlayer, int side) {
+        return true;
+    }
 
-	public boolean isPowered()
-	{
-		return redstone;
-	}
+    @Override
+    @Method(modid = "IC2")
+    public short getFacing() {
+        return (short) facing;
+    }
 
-	public boolean wasPowered()
-	{
-		return redstoneLastTick;
-	}
-	
-	public void onPowerChange() {}
+    @Override
+    public void setFacing(short direction) {
+        if (canSetFacing(direction)) {
+            facing = direction;
+        }
 
-	public void onNeighborChange(Block block)
-	{
-		if(!worldObj.isRemote)
-		{
-			updatePower();
-		}
-	}
-	
-	private void updatePower()
-	{
-		boolean power = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+        if (!(facing == clientFacing || worldObj.isRemote)) {
+            Mekanism.packetHandler.sendToReceivers(
+                new TileEntityMessage(
+                    Coord4D.get(this), getNetworkedData(new ArrayList())
+                ),
+                new Range4D(Coord4D.get(this))
+            );
+            markDirty();
+            clientFacing = facing;
+        }
+    }
 
-		if(redstone != power)
-		{
-			redstone = power;
-			Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-		
-			onPowerChange();
-		}
-	}
-	
-	/**
-	 * Called when block is placed in world
-	 */
-	public void onAdded() 
-	{
-		updatePower();
-	}
-	
-	@Override
-	public Frequency getFrequency(FrequencyManager manager)
-	{
-		if(manager == Mekanism.securityFrequencies && this instanceof ISecurityTile)
-		{
-			return ((ISecurityTile)this).getSecurity().getFrequency();
-		}
-		
-		return null;
-	}
+    /**
+     * Whether or not this block's orientation can be changed to a specific direction.
+     * True by default.
+     * @param facing - facing to check
+     * @return if the block's orientation can be changed
+     */
+    public boolean canSetFacing(int facing) {
+        return true;
+    }
+
+    @Override
+    @Method(modid = "IC2")
+    public boolean wrenchCanRemove(EntityPlayer entityPlayer) {
+        return true;
+    }
+
+    @Override
+    @Method(modid = "IC2")
+    public float getWrenchDropRate() {
+        return 1.0F;
+    }
+
+    @Override
+    @Method(modid = "IC2")
+    public ItemStack getWrenchDrop(EntityPlayer entityPlayer) {
+        return getBlockType().getPickBlock(
+            null, worldObj, xCoord, yCoord, zCoord, entityPlayer
+        );
+    }
+
+    public boolean isPowered() {
+        return redstone;
+    }
+
+    public boolean wasPowered() {
+        return redstoneLastTick;
+    }
+
+    public void onPowerChange() {}
+
+    public void onNeighborChange(Block block) {
+        if (!worldObj.isRemote) {
+            updatePower();
+        }
+    }
+
+    private void updatePower() {
+        boolean power = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+
+        if (redstone != power) {
+            redstone = power;
+            Mekanism.packetHandler.sendToReceivers(
+                new TileEntityMessage(
+                    Coord4D.get(this), getNetworkedData(new ArrayList())
+                ),
+                new Range4D(Coord4D.get(this))
+            );
+
+            onPowerChange();
+        }
+    }
+
+    /**
+     * Called when block is placed in world
+     */
+    public void onAdded() {
+        updatePower();
+    }
+
+    @Override
+    public Frequency getFrequency(FrequencyManager manager) {
+        if (manager == Mekanism.securityFrequencies && this instanceof ISecurityTile) {
+            return ((ISecurityTile) this).getSecurity().getFrequency();
+        }
+
+        return null;
+    }
 }

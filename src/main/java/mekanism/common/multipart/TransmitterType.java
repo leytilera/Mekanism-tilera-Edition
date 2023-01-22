@@ -4,107 +4,308 @@ import mekanism.api.transmitters.TransmissionType;
 import mekanism.common.Tier.BaseTier;
 import net.minecraft.util.IIcon;
 
-public enum TransmitterType
-{
-	UNIVERSAL_CABLE_BASIC("BasicUniversalCable", BaseTier.BASIC, Size.SMALL, TransmissionType.ENERGY, PartUniversalCable.cableIcons, false, 0, 0),
-	UNIVERSAL_CABLE_ADVANCED("AdvancedUniversalCable", BaseTier.ADVANCED, Size.SMALL, TransmissionType.ENERGY, PartUniversalCable.cableIcons, false, 1, 1),
-	UNIVERSAL_CABLE_ELITE("EliteUniversalCable", BaseTier.ELITE, Size.SMALL, TransmissionType.ENERGY, PartUniversalCable.cableIcons, false, 2, 2),
-	UNIVERSAL_CABLE_ULTIMATE("UltimateUniversalCable", BaseTier.ULTIMATE, Size.SMALL, TransmissionType.ENERGY, PartUniversalCable.cableIcons, false, 3, 3),
-	MECHANICAL_PIPE_BASIC("BasicMechanicalPipe", BaseTier.BASIC, Size.LARGE, TransmissionType.FLUID, PartMechanicalPipe.pipeIcons, false, 0, 0),
-	MECHANICAL_PIPE_ADVANCED("AdvancedMechanicalPipe", BaseTier.ADVANCED, Size.LARGE, TransmissionType.FLUID, PartMechanicalPipe.pipeIcons, false, 1, 1),
-	MECHANICAL_PIPE_ELITE("EliteMechanicalPipe", BaseTier.ELITE, Size.LARGE, TransmissionType.FLUID, PartMechanicalPipe.pipeIcons, false, 2, 2),
-	MECHANICAL_PIPE_ULTIMATE("UltimateMechanicalPipe", BaseTier.ULTIMATE, Size.LARGE, TransmissionType.FLUID, PartMechanicalPipe.pipeIcons, false, 3, 3),
-	PRESSURIZED_TUBE_BASIC("BasicPressurizedTube", BaseTier.BASIC, Size.SMALL, TransmissionType.GAS, PartPressurizedTube.tubeIcons, false, 0, 0),
-	PRESSURIZED_TUBE_ADVANCED("AdvancedPressurizedTube", BaseTier.ADVANCED, Size.SMALL, TransmissionType.GAS, PartPressurizedTube.tubeIcons, false, 1, 1),
-	PRESSURIZED_TUBE_ELITE("ElitePressurizedTube", BaseTier.ELITE, Size.SMALL, TransmissionType.GAS, PartPressurizedTube.tubeIcons, false, 2, 2),
-	PRESSURIZED_TUBE_ULTIMATE("UltimatePressurizedTube", BaseTier.ULTIMATE, Size.SMALL, TransmissionType.GAS, PartPressurizedTube.tubeIcons, false, 3, 3),
-	LOGISTICAL_TRANSPORTER_BASIC("BasicLogisticalTransporter", BaseTier.BASIC, Size.LARGE, TransmissionType.ITEM, PartLogisticalTransporter.transporterIcons, true, 0, 0, 6, 10),
-	LOGISTICAL_TRANSPORTER_ADVANCED("AdvancedLogisticalTransporter", BaseTier.ADVANCED, Size.LARGE, TransmissionType.ITEM, PartLogisticalTransporter.transporterIcons, true, 1, 1, 6, 10),
-	LOGISTICAL_TRANSPORTER_ELITE("EliteLogisticalTransporter", BaseTier.ELITE, Size.LARGE, TransmissionType.ITEM, PartLogisticalTransporter.transporterIcons, true, 2, 2, 6, 10),
-	LOGISTICAL_TRANSPORTER_ULTIMATE("UltimateLogisticalTransporter", BaseTier.ULTIMATE, Size.LARGE, TransmissionType.ITEM, PartLogisticalTransporter.transporterIcons, true, 3, 3, 6, 10),
-	RESTRICTIVE_TRANSPORTER("RestrictiveTransporter", BaseTier.BASIC, Size.LARGE, TransmissionType.ITEM, PartLogisticalTransporter.transporterIcons, false, 4, 8),
-	DIVERSION_TRANSPORTER("DiversionTransporter", BaseTier.BASIC, Size.LARGE, TransmissionType.ITEM, PartLogisticalTransporter.transporterIcons, true, 5, 14, 6, 10),
-	THERMODYNAMIC_CONDUCTOR_BASIC("BasicThermodynamicConductor", BaseTier.BASIC, Size.SMALL, TransmissionType.HEAT, PartThermodynamicConductor.conductorIcons, false, 0, 0),
-	THERMODYNAMIC_CONDUCTOR_ADVANCED("AdvancedThermodynamicConductor", BaseTier.ADVANCED, Size.SMALL, TransmissionType.HEAT, PartThermodynamicConductor.conductorIcons, false, 1, 1),
-	THERMODYNAMIC_CONDUCTOR_ELITE("EliteThermodynamicConductor", BaseTier.ELITE, Size.SMALL, TransmissionType.HEAT, PartThermodynamicConductor.conductorIcons, false, 2, 2),
-	THERMODYNAMIC_CONDUCTOR_ULTIMATE("UltimateThermodynamicConductor", BaseTier.ULTIMATE, Size.SMALL, TransmissionType.HEAT, PartThermodynamicConductor.conductorIcons, false, 3, 3);
+public enum TransmitterType {
+    UNIVERSAL_CABLE_BASIC(
+        "BasicUniversalCable",
+        BaseTier.BASIC,
+        Size.SMALL,
+        TransmissionType.ENERGY,
+        PartUniversalCable.cableIcons,
+        false,
+        0,
+        0
+    ),
+    UNIVERSAL_CABLE_ADVANCED(
+        "AdvancedUniversalCable",
+        BaseTier.ADVANCED,
+        Size.SMALL,
+        TransmissionType.ENERGY,
+        PartUniversalCable.cableIcons,
+        false,
+        1,
+        1
+    ),
+    UNIVERSAL_CABLE_ELITE(
+        "EliteUniversalCable",
+        BaseTier.ELITE,
+        Size.SMALL,
+        TransmissionType.ENERGY,
+        PartUniversalCable.cableIcons,
+        false,
+        2,
+        2
+    ),
+    UNIVERSAL_CABLE_ULTIMATE(
+        "UltimateUniversalCable",
+        BaseTier.ULTIMATE,
+        Size.SMALL,
+        TransmissionType.ENERGY,
+        PartUniversalCable.cableIcons,
+        false,
+        3,
+        3
+    ),
+    MECHANICAL_PIPE_BASIC(
+        "BasicMechanicalPipe",
+        BaseTier.BASIC,
+        Size.LARGE,
+        TransmissionType.FLUID,
+        PartMechanicalPipe.pipeIcons,
+        false,
+        0,
+        0
+    ),
+    MECHANICAL_PIPE_ADVANCED(
+        "AdvancedMechanicalPipe",
+        BaseTier.ADVANCED,
+        Size.LARGE,
+        TransmissionType.FLUID,
+        PartMechanicalPipe.pipeIcons,
+        false,
+        1,
+        1
+    ),
+    MECHANICAL_PIPE_ELITE(
+        "EliteMechanicalPipe",
+        BaseTier.ELITE,
+        Size.LARGE,
+        TransmissionType.FLUID,
+        PartMechanicalPipe.pipeIcons,
+        false,
+        2,
+        2
+    ),
+    MECHANICAL_PIPE_ULTIMATE(
+        "UltimateMechanicalPipe",
+        BaseTier.ULTIMATE,
+        Size.LARGE,
+        TransmissionType.FLUID,
+        PartMechanicalPipe.pipeIcons,
+        false,
+        3,
+        3
+    ),
+    PRESSURIZED_TUBE_BASIC(
+        "BasicPressurizedTube",
+        BaseTier.BASIC,
+        Size.SMALL,
+        TransmissionType.GAS,
+        PartPressurizedTube.tubeIcons,
+        false,
+        0,
+        0
+    ),
+    PRESSURIZED_TUBE_ADVANCED(
+        "AdvancedPressurizedTube",
+        BaseTier.ADVANCED,
+        Size.SMALL,
+        TransmissionType.GAS,
+        PartPressurizedTube.tubeIcons,
+        false,
+        1,
+        1
+    ),
+    PRESSURIZED_TUBE_ELITE(
+        "ElitePressurizedTube",
+        BaseTier.ELITE,
+        Size.SMALL,
+        TransmissionType.GAS,
+        PartPressurizedTube.tubeIcons,
+        false,
+        2,
+        2
+    ),
+    PRESSURIZED_TUBE_ULTIMATE(
+        "UltimatePressurizedTube",
+        BaseTier.ULTIMATE,
+        Size.SMALL,
+        TransmissionType.GAS,
+        PartPressurizedTube.tubeIcons,
+        false,
+        3,
+        3
+    ),
+    LOGISTICAL_TRANSPORTER_BASIC(
+        "BasicLogisticalTransporter",
+        BaseTier.BASIC,
+        Size.LARGE,
+        TransmissionType.ITEM,
+        PartLogisticalTransporter.transporterIcons,
+        true,
+        0,
+        0,
+        6,
+        10
+    ),
+    LOGISTICAL_TRANSPORTER_ADVANCED(
+        "AdvancedLogisticalTransporter",
+        BaseTier.ADVANCED,
+        Size.LARGE,
+        TransmissionType.ITEM,
+        PartLogisticalTransporter.transporterIcons,
+        true,
+        1,
+        1,
+        6,
+        10
+    ),
+    LOGISTICAL_TRANSPORTER_ELITE(
+        "EliteLogisticalTransporter",
+        BaseTier.ELITE,
+        Size.LARGE,
+        TransmissionType.ITEM,
+        PartLogisticalTransporter.transporterIcons,
+        true,
+        2,
+        2,
+        6,
+        10
+    ),
+    LOGISTICAL_TRANSPORTER_ULTIMATE(
+        "UltimateLogisticalTransporter",
+        BaseTier.ULTIMATE,
+        Size.LARGE,
+        TransmissionType.ITEM,
+        PartLogisticalTransporter.transporterIcons,
+        true,
+        3,
+        3,
+        6,
+        10
+    ),
+    RESTRICTIVE_TRANSPORTER(
+        "RestrictiveTransporter",
+        BaseTier.BASIC,
+        Size.LARGE,
+        TransmissionType.ITEM,
+        PartLogisticalTransporter.transporterIcons,
+        false,
+        4,
+        8
+    ),
+    DIVERSION_TRANSPORTER(
+        "DiversionTransporter",
+        BaseTier.BASIC,
+        Size.LARGE,
+        TransmissionType.ITEM,
+        PartLogisticalTransporter.transporterIcons,
+        true,
+        5,
+        14,
+        6,
+        10
+    ),
+    THERMODYNAMIC_CONDUCTOR_BASIC(
+        "BasicThermodynamicConductor",
+        BaseTier.BASIC,
+        Size.SMALL,
+        TransmissionType.HEAT,
+        PartThermodynamicConductor.conductorIcons,
+        false,
+        0,
+        0
+    ),
+    THERMODYNAMIC_CONDUCTOR_ADVANCED(
+        "AdvancedThermodynamicConductor",
+        BaseTier.ADVANCED,
+        Size.SMALL,
+        TransmissionType.HEAT,
+        PartThermodynamicConductor.conductorIcons,
+        false,
+        1,
+        1
+    ),
+    THERMODYNAMIC_CONDUCTOR_ELITE(
+        "EliteThermodynamicConductor",
+        BaseTier.ELITE,
+        Size.SMALL,
+        TransmissionType.HEAT,
+        PartThermodynamicConductor.conductorIcons,
+        false,
+        2,
+        2
+    ),
+    THERMODYNAMIC_CONDUCTOR_ULTIMATE(
+        "UltimateThermodynamicConductor",
+        BaseTier.ULTIMATE,
+        Size.SMALL,
+        TransmissionType.HEAT,
+        PartThermodynamicConductor.conductorIcons,
+        false,
+        3,
+        3
+    );
 
-	private String unlocalizedName;
-	private Size size;
-	private TransmissionType transmissionType;
-	private TransmitterIcons transmitterIcons;
-	private boolean transparencyRender;
-	private int[] indexes;
-	private BaseTier tier;
+    private String unlocalizedName;
+    private Size size;
+    private TransmissionType transmissionType;
+    private TransmitterIcons transmitterIcons;
+    private boolean transparencyRender;
+    private int[] indexes;
+    private BaseTier tier;
 
-	private TransmitterType(String name, BaseTier t, Size s, TransmissionType type, TransmitterIcons icons, boolean transparency, int... is)
-	{
-		unlocalizedName = name;
-		tier = t;
-		size = s;
-		transmissionType = type;
-		transmitterIcons = icons;
-		transparencyRender = transparency;
-		indexes = is;
-	}
-	
-	public BaseTier getTier()
-	{
-		return tier;
-	}
+    private TransmitterType(
+        String name,
+        BaseTier t,
+        Size s,
+        TransmissionType type,
+        TransmitterIcons icons,
+        boolean transparency,
+        int... is
+    ) {
+        unlocalizedName = name;
+        tier = t;
+        size = s;
+        transmissionType = type;
+        transmitterIcons = icons;
+        transparencyRender = transparency;
+        indexes = is;
+    }
 
-	public String getName()
-	{
-		return unlocalizedName;
-	}
+    public BaseTier getTier() {
+        return tier;
+    }
 
-	public Size getSize()
-	{
-		return size;
-	}
-	
-	public boolean hasTransparency()
-	{
-		return transparencyRender;
-	}
+    public String getName() {
+        return unlocalizedName;
+    }
 
-	public TransmissionType getTransmission()
-	{
-		return transmissionType;
-	}
+    public Size getSize() {
+        return size;
+    }
 
-	public IIcon getCenterIcon(boolean opaque)
-	{
-		if(!transparencyRender)
-		{
-			return transmitterIcons.getCenterIcon(indexes[0]);
-		}
-		else {
-			return transmitterIcons.getCenterIcon(opaque ? indexes[0] : indexes[2]);
-		}
-	}
+    public boolean hasTransparency() {
+        return transparencyRender;
+    }
 
-	public IIcon getSideIcon(boolean opaque)
-	{
-		if(!transparencyRender)
-		{
-			return transmitterIcons.getSideIcon(indexes[1]);
-		}
-		else {
-			return transmitterIcons.getSideIcon(opaque ? indexes[1] : indexes[3]);
-		}
-	}
+    public TransmissionType getTransmission() {
+        return transmissionType;
+    }
 
-	public static enum Size
-	{
-		SMALL(6),
-		LARGE(8);
+    public IIcon getCenterIcon(boolean opaque) {
+        if (!transparencyRender) {
+            return transmitterIcons.getCenterIcon(indexes[0]);
+        } else {
+            return transmitterIcons.getCenterIcon(opaque ? indexes[0] : indexes[2]);
+        }
+    }
 
-		public int centerSize;
+    public IIcon getSideIcon(boolean opaque) {
+        if (!transparencyRender) {
+            return transmitterIcons.getSideIcon(indexes[1]);
+        } else {
+            return transmitterIcons.getSideIcon(opaque ? indexes[1] : indexes[3]);
+        }
+    }
 
-		private Size(int size)
-		{
-			centerSize = size;
-		}
-	}
+    public static enum Size {
+        SMALL(6),
+        LARGE(8);
+
+        public int centerSize;
+
+        private Size(int size) {
+            centerSize = size;
+        }
+    }
 }

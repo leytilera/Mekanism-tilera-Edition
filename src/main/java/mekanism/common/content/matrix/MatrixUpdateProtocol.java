@@ -15,82 +15,78 @@ import mekanism.common.tile.TileEntityInductionProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class MatrixUpdateProtocol extends UpdateProtocol<SynchronizedMatrixData>
-{
-	public MatrixUpdateProtocol(TileEntityInductionCasing tileEntity) 
-	{
-		super(tileEntity);
-	}
+public class MatrixUpdateProtocol extends UpdateProtocol<SynchronizedMatrixData> {
+    public MatrixUpdateProtocol(TileEntityInductionCasing tileEntity) {
+        super(tileEntity);
+    }
 
-	@Override
-	protected boolean isValidFrame(int x, int y, int z) 
-	{
-		return pointer.getWorldObj().getBlock(x, y, z) == MekanismBlocks.BasicBlock2 && pointer.getWorldObj().getBlockMetadata(x, y, z) == 1;
-	}
-	
-	@Override
-	public boolean isValidInnerNode(int x, int y, int z)
-	{
-		TileEntity tile = pointer.getWorldObj().getTileEntity(x, y, z);
-		
-		if(tile != null && (tile instanceof TileEntityInductionCell || tile instanceof TileEntityInductionProvider))
-		{
-			return true;
-		}
-		
-		return isAir(x, y, z);
-	}
+    @Override
+    protected boolean isValidFrame(int x, int y, int z) {
+        return pointer.getWorldObj().getBlock(x, y, z) == MekanismBlocks.BasicBlock2
+            && pointer.getWorldObj().getBlockMetadata(x, y, z) == 1;
+    }
 
-	@Override
-	protected MatrixCache getNewCache() 
-	{
-		return new MatrixCache();
-	}
+    @Override
+    public boolean isValidInnerNode(int x, int y, int z) {
+        TileEntity tile = pointer.getWorldObj().getTileEntity(x, y, z);
 
-	@Override
-	protected SynchronizedMatrixData getNewStructure() 
-	{
-		return new SynchronizedMatrixData();
-	}
+        if (tile != null
+            && (tile instanceof TileEntityInductionCell
+                || tile instanceof TileEntityInductionProvider)) {
+            return true;
+        }
 
-	@Override
-	protected MultiblockManager<SynchronizedMatrixData> getManager() 
-	{
-		return Mekanism.matrixManager;
-	}
+        return isAir(x, y, z);
+    }
 
-	@Override
-	protected void mergeCaches(List<ItemStack> rejectedItems, MultiblockCache<SynchronizedMatrixData> cache, MultiblockCache<SynchronizedMatrixData> merge) 
-	{
-		List<ItemStack> rejects = StackUtils.getMergeRejects(((MatrixCache)cache).inventory, ((MatrixCache)merge).inventory);
-		
-		if(!rejects.isEmpty())
-		{
-			rejectedItems.addAll(rejects);
-		}
-		
-		StackUtils.merge(((MatrixCache)cache).inventory, ((MatrixCache)merge).inventory);
-	}
-	
-	@Override
-	protected boolean canForm(SynchronizedMatrixData structure)
-	{
-		for(Coord4D coord : innerNodes)
-		{
-			TileEntity tile = coord.getTileEntity(pointer.getWorldObj());
-			
-			if(tile instanceof TileEntityInductionCell)
-			{
-				structure.cells.add(coord);
-				structure.storageCap += ((TileEntityInductionCell)tile).tier.maxEnergy;
-			}
-			else if(tile instanceof TileEntityInductionProvider)
-			{
-				structure.providers.add(coord);
-				structure.transferCap += ((TileEntityInductionProvider)tile).tier.output;
-			}
-		}
-		
-		return true;
-	}
+    @Override
+    protected MatrixCache getNewCache() {
+        return new MatrixCache();
+    }
+
+    @Override
+    protected SynchronizedMatrixData getNewStructure() {
+        return new SynchronizedMatrixData();
+    }
+
+    @Override
+    protected MultiblockManager<SynchronizedMatrixData> getManager() {
+        return Mekanism.matrixManager;
+    }
+
+    @Override
+    protected void mergeCaches(
+        List<ItemStack> rejectedItems,
+        MultiblockCache<SynchronizedMatrixData> cache,
+        MultiblockCache<SynchronizedMatrixData> merge
+    ) {
+        List<ItemStack> rejects = StackUtils.getMergeRejects(
+            ((MatrixCache) cache).inventory, ((MatrixCache) merge).inventory
+        );
+
+        if (!rejects.isEmpty()) {
+            rejectedItems.addAll(rejects);
+        }
+
+        StackUtils.merge(
+            ((MatrixCache) cache).inventory, ((MatrixCache) merge).inventory
+        );
+    }
+
+    @Override
+    protected boolean canForm(SynchronizedMatrixData structure) {
+        for (Coord4D coord : innerNodes) {
+            TileEntity tile = coord.getTileEntity(pointer.getWorldObj());
+
+            if (tile instanceof TileEntityInductionCell) {
+                structure.cells.add(coord);
+                structure.storageCap += ((TileEntityInductionCell) tile).tier.maxEnergy;
+            } else if (tile instanceof TileEntityInductionProvider) {
+                structure.providers.add(coord);
+                structure.transferCap += ((TileEntityInductionProvider) tile).tier.output;
+            }
+        }
+
+        return true;
+    }
 }

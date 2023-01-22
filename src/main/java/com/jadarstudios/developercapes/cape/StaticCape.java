@@ -6,6 +6,8 @@
  */
 package com.jadarstudios.developercapes.cape;
 
+import java.net.URL;
+
 import com.jadarstudios.developercapes.HDImageBuffer;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
@@ -13,15 +15,12 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.util.ResourceLocation;
 
-import java.net.URL;
-
 /**
  * Default Cape implementation
- * 
+ *
  * @author jadar
  */
 public class StaticCape extends AbstractCape {
-
     public StaticCape(String name, URL url) {
         this.setName(name);
         this.setURL(url);
@@ -50,7 +49,9 @@ public class StaticCape extends AbstractCape {
             this.texture = null;
             return;
         }
-        this.texture = new ThreadDownloadImageData(null, url.toString(), null, new HDImageBuffer());
+        this.texture = new ThreadDownloadImageData(
+            null, url.toString(), null, new HDImageBuffer()
+        );
     }
 
     public void setName(String name) {

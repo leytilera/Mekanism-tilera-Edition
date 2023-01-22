@@ -1,11 +1,10 @@
 package mekanism.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.IHeatTransfer;
 import mekanism.api.gas.Gas;
@@ -42,695 +41,669 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-public class TileEntityQuantumEntangloporter extends TileEntityElectricBlock implements ISideConfiguration, ITankManager, IFluidHandler, IFrequencyHandler, IGasHandler, IHeatTransfer, ITubeConnection, IComputerIntegration, ISecurityTile
-{
-	public InventoryFrequency frequency;
-	
-	public double heatToAbsorb = 0;
-	
-	public double lastTransferLoss;
-	public double lastEnvironmentLoss;
-	
-	public List<Frequency> publicCache = new ArrayList<Frequency>();
-	public List<Frequency> protectedCache = new ArrayList<Frequency>();
-	public List<Frequency> privateCache = new ArrayList<Frequency>();
+public class TileEntityQuantumEntangloporter extends TileEntityElectricBlock
+    implements ISideConfiguration, ITankManager, IFluidHandler, IFrequencyHandler,
+               IGasHandler, IHeatTransfer, ITubeConnection, IComputerIntegration,
+               ISecurityTile {
+    public InventoryFrequency frequency;
 
-	public static final EnumSet<ForgeDirection> nothing = EnumSet.noneOf(ForgeDirection.class);
-	
-	public TileComponentEjector ejectorComponent;
-	public TileComponentConfig configComponent;
-	public TileComponentSecurity securityComponent;
+    public double heatToAbsorb = 0;
 
-	public TileEntityQuantumEntangloporter()
-	{
-		super("QuantumEntangloporter", 0);
-		
-		configComponent = new TileComponentConfig(this, TransmissionType.ITEM, TransmissionType.FLUID, TransmissionType.GAS, TransmissionType.ENERGY, TransmissionType.HEAT);
-		
-		for(TransmissionType type : TransmissionType.values())
-		{
-			if(type != TransmissionType.HEAT)
-			{
-				configComponent.setIOConfig(type);
-			}
-			else {
-				configComponent.setInputConfig(type);
-			}
-		}
+    public double lastTransferLoss;
+    public double lastEnvironmentLoss;
 
-		inventory = new ItemStack[0];
-		
-		configComponent.getOutputs(TransmissionType.ITEM).get(2).availableSlots = new int[] {0};
-		configComponent.getOutputs(TransmissionType.FLUID).get(2).availableSlots = new int[] {0};
-		configComponent.getOutputs(TransmissionType.GAS).get(2).availableSlots = new int[] {1};
-		
-		ejectorComponent = new TileComponentEjector(this);
-		ejectorComponent.setOutputData(TransmissionType.ITEM, configComponent.getOutputs(TransmissionType.ITEM).get(2));
-		ejectorComponent.setOutputData(TransmissionType.FLUID, configComponent.getOutputs(TransmissionType.FLUID).get(2));
-		ejectorComponent.setOutputData(TransmissionType.GAS, configComponent.getOutputs(TransmissionType.GAS).get(2));
-		
-		securityComponent = new TileComponentSecurity(this);
-	}
+    public List<Frequency> publicCache = new ArrayList<Frequency>();
+    public List<Frequency> protectedCache = new ArrayList<Frequency>();
+    public List<Frequency> privateCache = new ArrayList<Frequency>();
 
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
+    public static final EnumSet<ForgeDirection> nothing
+        = EnumSet.noneOf(ForgeDirection.class);
 
-		if(!worldObj.isRemote)
-		{
-			if(configComponent.isEjecting(TransmissionType.ENERGY))
-			{
-				CableUtils.emit(this);
-			}
-			
-			double[] loss = simulateHeat();
-			applyTemperatureChange();
-			
-			lastTransferLoss = loss[0];
-			lastEnvironmentLoss = loss[1];
-			
-			FrequencyManager manager = getManager(frequency);
-			Frequency lastFreq = frequency;
-			
-			if(manager != null)
-			{
-				if(frequency != null && !frequency.valid)
-				{
-					frequency = (InventoryFrequency)manager.validateFrequency(getSecurity().getOwner(), Coord4D.get(this), frequency);
-					markDirty();
-				}
-				
-				if(frequency != null)
-				{
-					frequency = (InventoryFrequency)manager.update(getSecurity().getOwner(), Coord4D.get(this), frequency);
-					
-					if(frequency == null)
-					{
-						markDirty();
-					}
-				}
-			}
-			else {
-				frequency = null;
-				
-				if(lastFreq != null)
-				{
-					markDirty();
-				}
-			}
-		}
-	}
-	
-	private boolean hasFrequency()
-	{
-		return frequency != null && frequency.valid;
-	}
-	
-	@Override
-	public void invalidate()
-	{
-		super.invalidate();
-		
-		if(!worldObj.isRemote)
-		{
-			if(frequency != null)
-			{
-				FrequencyManager manager = getManager(frequency);
-				
-				if(manager != null)
-				{
-					manager.deactivate(Coord4D.get(this));
-				}
-			}
-		}
-	}
-	
-	@Override
-	public Frequency getFrequency(FrequencyManager manager)
-	{
-		if(manager == Mekanism.securityFrequencies)
-		{
-			return getSecurity().getFrequency();
-		}
-		
-		return frequency;
-	}
-	
-	public FrequencyManager getManager(Frequency freq)
-	{
-		if(getSecurity().getOwner() == null || freq == null)
-		{
-			return null;
-		}
-		
-		if(freq.isPublic())
-		{
-			return Mekanism.publicEntangloporters;
-		}
-		else if(freq.isPrivate()) {
-			if(!Mekanism.privateEntangloporters.containsKey(getSecurity().getOwner()))
-			{
-				FrequencyManager manager = new FrequencyManager(InventoryFrequency.class, InventoryFrequency.ENTANGLOPORTER, getSecurity().getOwner());
-				Mekanism.privateEntangloporters.put(getSecurity().getOwner(), manager);
-				manager.createOrLoad(worldObj);
-			}
-			
-			return Mekanism.privateEntangloporters.get(getSecurity().getOwner());
-		} else {
-			if(!Mekanism.protectedEntangloporters.containsKey(getSecurity().getOwner()))
-			{
-				FrequencyManager manager = new FrequencyManager(InventoryFrequency.class, InventoryFrequency.ENTANGLOPORTER + "#protected", getSecurity().getOwner());
-				Mekanism.protectedEntangloporters.put(getSecurity().getOwner(), manager);
-				manager.createOrLoad(worldObj);
-			}
+    public TileComponentEjector ejectorComponent;
+    public TileComponentConfig configComponent;
+    public TileComponentSecurity securityComponent;
 
-			return Mekanism.protectedEntangloporters.get(getSecurity().getOwner());
-		}
-	}
-	
-	public void setFrequency(String name, ISecurityTile.SecurityMode access)
-	{
-		FrequencyManager manager = getManager(new InventoryFrequency(name, null).setAccess(access));
-		manager.deactivate(Coord4D.get(this));
-		
-		for(Frequency freq : manager.getFrequencies())
-		{
-			if(freq.name.equals(name))
-			{
-				frequency = (InventoryFrequency)freq;
-				frequency.activeCoords.add(Coord4D.get(this));
-				
-				markDirty();
-				
-				return;
-			}
-		}
-		
-		Frequency freq = new InventoryFrequency(name, getSecurity().getOwner()).setAccess(access);
-		freq.activeCoords.add(Coord4D.get(this));
-		manager.addFrequency(freq);
-		frequency = (InventoryFrequency)freq;
-		
-		MekanismUtils.saveChunk(this);
-		markDirty();
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
-		
-		if(nbtTags.hasKey("frequency"))
-		{
-			frequency = new InventoryFrequency(nbtTags.getCompoundTag("frequency"));
-			frequency.valid = false;
-		}
-	}
+    public TileEntityQuantumEntangloporter() {
+        super("QuantumEntangloporter", 0);
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
-		
-		if(frequency != null)
-		{
-			NBTTagCompound frequencyTag = new NBTTagCompound();
-			frequency.write(frequencyTag);
-			nbtTags.setTag("frequency", frequencyTag);
-		}
-	}
+        configComponent = new TileComponentConfig(
+            this,
+            TransmissionType.ITEM,
+            TransmissionType.FLUID,
+            TransmissionType.GAS,
+            TransmissionType.ENERGY,
+            TransmissionType.HEAT
+        );
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		if(!worldObj.isRemote)
-		{
-			int type = dataStream.readInt();
-			
-			if(type == 0)
-			{
-				String name = PacketHandler.readString(dataStream);
+        for (TransmissionType type : TransmissionType.values()) {
+            if (type != TransmissionType.HEAT) {
+                configComponent.setIOConfig(type);
+            } else {
+                configComponent.setInputConfig(type);
+            }
+        }
 
-				setFrequency(name, ISecurityTile.SecurityMode.values()[dataStream.readInt()]);
-			}
-			else if(type == 1)
-			{
-				String freq = PacketHandler.readString(dataStream);
+        inventory = new ItemStack[0];
 
-				FrequencyManager manager = getManager(new InventoryFrequency(freq, null).setAccess(ISecurityTile.SecurityMode.values()[dataStream.readInt()]));
-				
-				if(manager != null)
-				{
-					manager.remove(freq, getSecurity().getOwner());
-				}
-			}
-			
-			return;
-		}
+        configComponent.getOutputs(TransmissionType.ITEM).get(2).availableSlots
+            = new int[] { 0 };
+        configComponent.getOutputs(TransmissionType.FLUID).get(2).availableSlots
+            = new int[] { 0 };
+        configComponent.getOutputs(TransmissionType.GAS).get(2).availableSlots
+            = new int[] { 1 };
 
-		super.handlePacketData(dataStream);
-		
-		if(worldObj.isRemote)
-		{
-			lastTransferLoss = dataStream.readDouble();
-			lastEnvironmentLoss = dataStream.readDouble();
-			
-			if(dataStream.readBoolean())
-			{
-				frequency = new InventoryFrequency(dataStream);
-			}
-			else {
-				frequency = null;
-			}
-			
-			publicCache.clear();
-			privateCache.clear();
-			protectedCache.clear();
+        ejectorComponent = new TileComponentEjector(this);
+        ejectorComponent.setOutputData(
+            TransmissionType.ITEM,
+            configComponent.getOutputs(TransmissionType.ITEM).get(2)
+        );
+        ejectorComponent.setOutputData(
+            TransmissionType.FLUID,
+            configComponent.getOutputs(TransmissionType.FLUID).get(2)
+        );
+        ejectorComponent.setOutputData(
+            TransmissionType.GAS, configComponent.getOutputs(TransmissionType.GAS).get(2)
+        );
 
-			int amount = dataStream.readInt();
-			
-			for(int i = 0; i < amount; i++)
-			{
-				publicCache.add(new InventoryFrequency(dataStream));
-			}
-			
-			amount = dataStream.readInt();
-			
-			for(int i = 0; i < amount; i++)
-			{
-				privateCache.add(new InventoryFrequency(dataStream));
-			}
+        securityComponent = new TileComponentSecurity(this);
+    }
 
-			amount = dataStream.readInt();
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-			for(int i = 0; i < amount; i++)
-			{
-				protectedCache.add(new InventoryFrequency(dataStream));
-			}
-		}
-	}
+        if (!worldObj.isRemote) {
+            if (configComponent.isEjecting(TransmissionType.ENERGY)) {
+                CableUtils.emit(this);
+            }
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
-		
-		data.add(lastTransferLoss);
-		data.add(lastEnvironmentLoss);
-		
-		if(frequency != null)
-		{
-			data.add(true);
-			frequency.write(data);
-		}
-		else {
-			data.add(false);
-		}
-		
-		data.add(Mekanism.publicEntangloporters.getFrequencies().size());
-		
-		for(Frequency freq : Mekanism.publicEntangloporters.getFrequencies())
-		{
-			freq.write(data);
-		}
-		
-		FrequencyManager manager = getManager(new InventoryFrequency(null, null).setAccess(SecurityMode.PRIVATE));
-		
-		if(manager != null)
-		{
-			data.add(manager.getFrequencies().size());
-			
-			for(Frequency freq : manager.getFrequencies())
-			{
-				freq.write(data);
-			}
-		}
-		else {
-			data.add(0);
-		}
+            double[] loss = simulateHeat();
+            applyTemperatureChange();
 
-		List<Frequency> protectedFrqs = new ArrayList<Frequency>();
+            lastTransferLoss = loss[0];
+            lastEnvironmentLoss = loss[1];
 
-		for (Frequency frequency : Mekanism.securityFrequencies.getFrequencies()) {
-			SecurityFrequency secure = (SecurityFrequency) frequency;
-			if(secure.trusted.contains(getSecurity().getOwner())) {
-				FrequencyManager protected_ = Mekanism.protectedEntangloporters.get(secure.owner);
-				if(protected_ != null) {
-					protectedFrqs.addAll(protected_.getFrequencies());
-				}
-			}
-		}
+            FrequencyManager manager = getManager(frequency);
+            Frequency lastFreq = frequency;
 
-		if(getSecurity().getOwner() != null)
-			protectedFrqs.addAll(getManager(new Frequency(null, null).setAccess(SecurityMode.TRUSTED)).getFrequencies());
+            if (manager != null) {
+                if (frequency != null && !frequency.valid) {
+                    frequency = (InventoryFrequency) manager.validateFrequency(
+                        getSecurity().getOwner(), Coord4D.get(this), frequency
+                    );
+                    markDirty();
+                }
 
-		data.add(protectedFrqs.size());
+                if (frequency != null) {
+                    frequency = (InventoryFrequency) manager.update(
+                        getSecurity().getOwner(), Coord4D.get(this), frequency
+                    );
 
-		for (Frequency freq : protectedFrqs) {
-			freq.write(data);
-		}
-		
-		return data;
-	}
+                    if (frequency == null) {
+                        markDirty();
+                    }
+                }
+            } else {
+                frequency = null;
 
-	@Override
-	public EnumSet<ForgeDirection> getOutputtingSides()
-	{
-		return !hasFrequency() ? nothing : configComponent.getSidesForData(TransmissionType.ENERGY, facing, 2);
-	}
+                if (lastFreq != null) {
+                    markDirty();
+                }
+            }
+        }
+    }
 
-	@Override
-	public EnumSet<ForgeDirection> getConsumingSides()
-	{
-		return !hasFrequency() ? nothing : configComponent.getSidesForData(TransmissionType.ENERGY, facing, 1);
-	}
+    private boolean hasFrequency() {
+        return frequency != null && frequency.valid;
+    }
 
-	@Override
-	public double getMaxOutput()
-	{
-		return !hasFrequency() ? 0 : InventoryFrequency.MAX_ENERGY;
-	}
+    @Override
+    public void invalidate() {
+        super.invalidate();
 
-	@Override
-	public double getEnergy()
-	{
-		return !hasFrequency() ? 0 : frequency.storedEnergy;
-	}
+        if (!worldObj.isRemote) {
+            if (frequency != null) {
+                FrequencyManager manager = getManager(frequency);
 
-	@Override
-	public void setEnergy(double energy)
-	{
-		if(hasFrequency())
-		{
-			frequency.storedEnergy = Math.min(InventoryFrequency.MAX_ENERGY, energy);
-		}
-	}
+                if (manager != null) {
+                    manager.deactivate(Coord4D.get(this));
+                }
+            }
+        }
+    }
 
-	@Override
-	public double getMaxEnergy()
-	{
-		return !hasFrequency() ? 0 : frequency.MAX_ENERGY;
-	}
+    @Override
+    public Frequency getFrequency(FrequencyManager manager) {
+        if (manager == Mekanism.securityFrequencies) {
+            return getSecurity().getFrequency();
+        }
 
-	@Override
-	public int fill(ForgeDirection from, FluidStack resource, boolean doFill)
-	{
-		return !hasFrequency() ? 0 : frequency.storedFluid.fill(resource, doFill);
-	}
+        return frequency;
+    }
 
-	@Override
-	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain)
-	{
-		if(hasFrequency() && resource.isFluidEqual(frequency.storedFluid.getFluid()))
-		{
-			return frequency.storedFluid.drain(resource.amount, doDrain);
-		}
-		
-		return null;
-	}
+    public FrequencyManager getManager(Frequency freq) {
+        if (getSecurity().getOwner() == null || freq == null) {
+            return null;
+        }
 
-	@Override
-	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain)
-	{
-		if(hasFrequency())
-		{
-			return frequency.storedFluid.drain(maxDrain, doDrain);
-		}
-		
-		return null;
-	}
+        if (freq.isPublic()) {
+            return Mekanism.publicEntangloporters;
+        } else if (freq.isPrivate()) {
+            if (!Mekanism.privateEntangloporters.containsKey(getSecurity().getOwner())) {
+                FrequencyManager manager = new FrequencyManager(
+                    InventoryFrequency.class,
+                    InventoryFrequency.ENTANGLOPORTER,
+                    getSecurity().getOwner()
+                );
+                Mekanism.privateEntangloporters.put(getSecurity().getOwner(), manager);
+                manager.createOrLoad(worldObj);
+            }
 
-	@Override
-	public boolean canFill(ForgeDirection from, Fluid fluid)
-	{
-		if(hasFrequency() && configComponent.getOutput(TransmissionType.FLUID, from.ordinal(), facing).ioState == IOState.INPUT)
-		{
-			return frequency.storedFluid.getFluid() == null || fluid == frequency.storedFluid.getFluid().getFluid();
-		}
-		
-		return false;
-	}
+            return Mekanism.privateEntangloporters.get(getSecurity().getOwner());
+        } else {
+            if (!Mekanism.protectedEntangloporters.containsKey(getSecurity().getOwner()
+                )) {
+                FrequencyManager manager = new FrequencyManager(
+                    InventoryFrequency.class,
+                    InventoryFrequency.ENTANGLOPORTER + "#protected",
+                    getSecurity().getOwner()
+                );
+                Mekanism.protectedEntangloporters.put(getSecurity().getOwner(), manager);
+                manager.createOrLoad(worldObj);
+            }
 
-	@Override
-	public boolean canDrain(ForgeDirection from, Fluid fluid)
-	{
-		if(hasFrequency() && configComponent.getOutput(TransmissionType.FLUID, from.ordinal(), facing).ioState == IOState.OUTPUT)
-		{
-			return frequency.storedFluid.getFluid() == null || fluid == frequency.storedFluid.getFluid().getFluid();
-		}
-		
-		return false;
-	}
+            return Mekanism.protectedEntangloporters.get(getSecurity().getOwner());
+        }
+    }
 
-	@Override
-	public FluidTankInfo[] getTankInfo(ForgeDirection from)
-	{
-		if(hasFrequency())
-		{
-			if(configComponent.getOutput(TransmissionType.FLUID, from.ordinal(), facing).ioState != IOState.OFF)
-			{
-				return new FluidTankInfo[] {frequency.storedFluid.getInfo()};
-			}
-		}
-		
-		return PipeUtils.EMPTY;
-	}
+    public void setFrequency(String name, ISecurityTile.SecurityMode access) {
+        FrequencyManager manager
+            = getManager(new InventoryFrequency(name, null).setAccess(access));
+        manager.deactivate(Coord4D.get(this));
 
-	@Override
-	public int receiveGas(ForgeDirection side, GasStack stack, boolean doTransfer)
-	{
-		return !hasFrequency() ? 0 : frequency.storedGas.receive(stack, doTransfer);
-	}
+        for (Frequency freq : manager.getFrequencies()) {
+            if (freq.name.equals(name)) {
+                frequency = (InventoryFrequency) freq;
+                frequency.activeCoords.add(Coord4D.get(this));
 
-	@Override
-	public int receiveGas(ForgeDirection side, GasStack stack)
-	{
-		return receiveGas(side, stack, true);
-	}
+                markDirty();
 
-	@Override
-	public GasStack drawGas(ForgeDirection side, int amount, boolean doTransfer)
-	{
-		return !hasFrequency() ? null : frequency.storedGas.draw(amount, doTransfer);
-	}
+                return;
+            }
+        }
 
-	@Override
-	public GasStack drawGas(ForgeDirection side, int amount)
-	{
-		return drawGas(side, amount, true);
-	}
+        Frequency freq
+            = new InventoryFrequency(name, getSecurity().getOwner()).setAccess(access);
+        freq.activeCoords.add(Coord4D.get(this));
+        manager.addFrequency(freq);
+        frequency = (InventoryFrequency) freq;
 
-	@Override
-	public boolean canReceiveGas(ForgeDirection side, Gas type)
-	{
-		if(hasFrequency() && configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing).ioState == IOState.INPUT)
-		{
-			return frequency.storedGas.getGasType() == null || type == frequency.storedGas.getGasType();
-		}
-		
-		return false;
-	}
+        MekanismUtils.saveChunk(this);
+        markDirty();
+    }
 
-	@Override
-	public boolean canDrawGas(ForgeDirection side, Gas type)
-	{
-		if(hasFrequency() && configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing).ioState == IOState.OUTPUT)
-		{
-			return frequency.storedGas.getGasType() == null || type == frequency.storedGas.getGasType();
-		}
-		
-		return false;
-	}
-	
-	@Override
-	public boolean handleInventory()
-	{
-		return false;
-	}
-	
-	@Override
-	public int getSizeInventory()
-	{
-		return 1;
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
 
-	@Override
-	public ItemStack getStackInSlot(int slotID)
-	{
-		return hasFrequency() && slotID == 0 ? frequency.storedItem : null;
-	}
-	
-	@Override
-	public void setInventorySlotContents(int slotID, ItemStack itemstack)
-	{
-		if(hasFrequency() && slotID == 0)
-		{
-			frequency.storedItem = itemstack;
-	
-			if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
-			{
-				itemstack.stackSize = getInventoryStackLimit();
-			}
-		}
-	}
+        if (nbtTags.hasKey("frequency")) {
+            frequency = new InventoryFrequency(nbtTags.getCompoundTag("frequency"));
+            frequency.valid = false;
+        }
+    }
 
-	@Override
-	public double getTemp() 
-	{
-		return hasFrequency() ? frequency.temperature : 0;
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
 
-	@Override
-	public double getInverseConductionCoefficient() 
-	{
-		return 1;
-	}
+        if (frequency != null) {
+            NBTTagCompound frequencyTag = new NBTTagCompound();
+            frequency.write(frequencyTag);
+            nbtTags.setTag("frequency", frequencyTag);
+        }
+    }
 
-	@Override
-	public double getInsulationCoefficient(ForgeDirection side) 
-	{
-		return 1000;
-	}
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        if (!worldObj.isRemote) {
+            int type = dataStream.readInt();
 
-	@Override
-	public void transferHeatTo(double heat) 
-	{
-		heatToAbsorb += heat;
-	}
+            if (type == 0) {
+                String name = PacketHandler.readString(dataStream);
 
-	@Override
-	public double[] simulateHeat()
-	{
-		return HeatUtils.simulate(this);
-	}
+                setFrequency(
+                    name, ISecurityTile.SecurityMode.values()[dataStream.readInt()]
+                );
+            } else if (type == 1) {
+                String freq = PacketHandler.readString(dataStream);
 
-	@Override
-	public double applyTemperatureChange() 
-	{
-		if(hasFrequency())
-		{
-			frequency.temperature += heatToAbsorb;
-		}
-		
-		heatToAbsorb = 0;
-		
-		return hasFrequency() ? frequency.temperature : 0;
-	}
+                FrequencyManager manager
+                    = getManager(new InventoryFrequency(freq, null)
+                                     .setAccess(ISecurityTile.SecurityMode.values(
+                                     )[dataStream.readInt()]));
 
-	@Override
-	public boolean canConnectHeat(ForgeDirection side) 
-	{
-		return hasFrequency() && configComponent.getOutput(TransmissionType.HEAT, side.ordinal(), facing).ioState != IOState.OFF;
-	}
+                if (manager != null) {
+                    manager.remove(freq, getSecurity().getOwner());
+                }
+            }
 
-	@Override
-	public IHeatTransfer getAdjacent(ForgeDirection side) 
-	{
-		TileEntity adj = Coord4D.get(this).getFromSide(side).getTileEntity(worldObj);
-		
-		if(hasFrequency() && configComponent.getOutput(TransmissionType.HEAT, side.ordinal(), facing).ioState == IOState.INPUT)
-		{
-			if(adj instanceof IHeatTransfer)
-			{
-				return (IHeatTransfer)adj;
-			}
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public boolean canInsertItem(int slotID, ItemStack itemstack, int side)
-	{
-		return hasFrequency() && configComponent.getOutput(TransmissionType.ITEM, side, facing).ioState == IOState.INPUT;
-	}
+            return;
+        }
 
-	@Override
-	public int[] getAccessibleSlotsFromSide(int side)
-	{
-		if(hasFrequency() && configComponent.getOutput(TransmissionType.ITEM, side, facing).ioState != IOState.OFF)
-		{
-			return new int[] {0};
-		}
-		
-		return InventoryUtils.EMPTY;
-	}
+        super.handlePacketData(dataStream);
 
-	@Override
-	public boolean canExtractItem(int slotID, ItemStack itemstack, int side)
-	{
-		return hasFrequency() && configComponent.getOutput(TransmissionType.ITEM, side, facing).ioState == IOState.OUTPUT;
-	}
+        if (worldObj.isRemote) {
+            lastTransferLoss = dataStream.readDouble();
+            lastEnvironmentLoss = dataStream.readDouble();
 
-	@Override
-	public Object[] getTanks() 
-	{
-		if(!hasFrequency())
-		{
-			return null;
-		}
-		
-		return new Object[] {frequency.storedFluid, frequency.storedGas};
-	}
+            if (dataStream.readBoolean()) {
+                frequency = new InventoryFrequency(dataStream);
+            } else {
+                frequency = null;
+            }
 
-	@Override
-	public TileComponentConfig getConfig() 
-	{
-		return configComponent;
-	}
+            publicCache.clear();
+            privateCache.clear();
+            protectedCache.clear();
 
-	@Override
-	public int getOrientation() 
-	{
-		return facing;
-	}
+            int amount = dataStream.readInt();
 
-	@Override
-	public TileComponentEjector getEjector() 
-	{
-		return ejectorComponent;
-	}
-	
-	@Override
-	public TileComponentSecurity getSecurity()
-	{
-		return securityComponent;
-	}
+            for (int i = 0; i < amount; i++) {
+                publicCache.add(new InventoryFrequency(dataStream));
+            }
 
-	@Override
-	public boolean canTubeConnect(ForgeDirection side) 
-	{
-		return hasFrequency() && configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing).ioState != IOState.OFF;
-	}
-	
-	private static final String[] methods = new String[] {"setFrequency"};
+            amount = dataStream.readInt();
 
-	@Override
-	public String[] getMethods()
-	{
-		return methods;
-	}
+            for (int i = 0; i < amount; i++) {
+                privateCache.add(new InventoryFrequency(dataStream));
+            }
 
-	@Override
-	public Object[] invoke(int method, Object[] arguments) throws Exception
-	{
-		switch(method)
-		{
-			case 0:
-				if(!(arguments[0] instanceof String) || !(arguments[1] instanceof Integer))
-				{
-					return new Object[] {"Invalid parameters."};
-				}
-				
-				String freq = ((String)arguments[0]).trim();
-				int access = (int)arguments[1];
-				
-				setFrequency(freq, ISecurityTile.SecurityMode.values()[access]);
-				
-				return new Object[] {"Frequency set."};
-			default:
-				throw new NoSuchMethodException();
-		}
-	}
+            amount = dataStream.readInt();
+
+            for (int i = 0; i < amount; i++) {
+                protectedCache.add(new InventoryFrequency(dataStream));
+            }
+        }
+    }
+
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
+
+        data.add(lastTransferLoss);
+        data.add(lastEnvironmentLoss);
+
+        if (frequency != null) {
+            data.add(true);
+            frequency.write(data);
+        } else {
+            data.add(false);
+        }
+
+        data.add(Mekanism.publicEntangloporters.getFrequencies().size());
+
+        for (Frequency freq : Mekanism.publicEntangloporters.getFrequencies()) {
+            freq.write(data);
+        }
+
+        FrequencyManager manager = getManager(
+            new InventoryFrequency(null, null).setAccess(SecurityMode.PRIVATE)
+        );
+
+        if (manager != null) {
+            data.add(manager.getFrequencies().size());
+
+            for (Frequency freq : manager.getFrequencies()) {
+                freq.write(data);
+            }
+        } else {
+            data.add(0);
+        }
+
+        List<Frequency> protectedFrqs = new ArrayList<Frequency>();
+
+        for (Frequency frequency : Mekanism.securityFrequencies.getFrequencies()) {
+            SecurityFrequency secure = (SecurityFrequency) frequency;
+            if (secure.trusted.contains(getSecurity().getOwner())) {
+                FrequencyManager protected_
+                    = Mekanism.protectedEntangloporters.get(secure.owner);
+                if (protected_ != null) {
+                    protectedFrqs.addAll(protected_.getFrequencies());
+                }
+            }
+        }
+
+        if (getSecurity().getOwner() != null)
+            protectedFrqs.addAll(
+                getManager(new Frequency(null, null).setAccess(SecurityMode.TRUSTED))
+                    .getFrequencies()
+            );
+
+        data.add(protectedFrqs.size());
+
+        for (Frequency freq : protectedFrqs) {
+            freq.write(data);
+        }
+
+        return data;
+    }
+
+    @Override
+    public EnumSet<ForgeDirection> getOutputtingSides() {
+        return !hasFrequency()
+            ? nothing
+            : configComponent.getSidesForData(TransmissionType.ENERGY, facing, 2);
+    }
+
+    @Override
+    public EnumSet<ForgeDirection> getConsumingSides() {
+        return !hasFrequency()
+            ? nothing
+            : configComponent.getSidesForData(TransmissionType.ENERGY, facing, 1);
+    }
+
+    @Override
+    public double getMaxOutput() {
+        return !hasFrequency() ? 0 : InventoryFrequency.MAX_ENERGY;
+    }
+
+    @Override
+    public double getEnergy() {
+        return !hasFrequency() ? 0 : frequency.storedEnergy;
+    }
+
+    @Override
+    public void setEnergy(double energy) {
+        if (hasFrequency()) {
+            frequency.storedEnergy = Math.min(InventoryFrequency.MAX_ENERGY, energy);
+        }
+    }
+
+    @Override
+    public double getMaxEnergy() {
+        return !hasFrequency() ? 0 : frequency.MAX_ENERGY;
+    }
+
+    @Override
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+        return !hasFrequency() ? 0 : frequency.storedFluid.fill(resource, doFill);
+    }
+
+    @Override
+    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+        if (hasFrequency() && resource.isFluidEqual(frequency.storedFluid.getFluid())) {
+            return frequency.storedFluid.drain(resource.amount, doDrain);
+        }
+
+        return null;
+    }
+
+    @Override
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+        if (hasFrequency()) {
+            return frequency.storedFluid.drain(maxDrain, doDrain);
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean canFill(ForgeDirection from, Fluid fluid) {
+        if (hasFrequency()
+            && configComponent.getOutput(TransmissionType.FLUID, from.ordinal(), facing)
+                    .ioState
+                == IOState.INPUT) {
+            return frequency.storedFluid.getFluid() == null
+                || fluid == frequency.storedFluid.getFluid().getFluid();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+        if (hasFrequency()
+            && configComponent.getOutput(TransmissionType.FLUID, from.ordinal(), facing)
+                    .ioState
+                == IOState.OUTPUT) {
+            return frequency.storedFluid.getFluid() == null
+                || fluid == frequency.storedFluid.getFluid().getFluid();
+        }
+
+        return false;
+    }
+
+    @Override
+    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+        if (hasFrequency()) {
+            if (configComponent.getOutput(TransmissionType.FLUID, from.ordinal(), facing)
+                    .ioState
+                != IOState.OFF) {
+                return new FluidTankInfo[] { frequency.storedFluid.getInfo() };
+            }
+        }
+
+        return PipeUtils.EMPTY;
+    }
+
+    @Override
+    public int receiveGas(ForgeDirection side, GasStack stack, boolean doTransfer) {
+        return !hasFrequency() ? 0 : frequency.storedGas.receive(stack, doTransfer);
+    }
+
+    @Override
+    public int receiveGas(ForgeDirection side, GasStack stack) {
+        return receiveGas(side, stack, true);
+    }
+
+    @Override
+    public GasStack drawGas(ForgeDirection side, int amount, boolean doTransfer) {
+        return !hasFrequency() ? null : frequency.storedGas.draw(amount, doTransfer);
+    }
+
+    @Override
+    public GasStack drawGas(ForgeDirection side, int amount) {
+        return drawGas(side, amount, true);
+    }
+
+    @Override
+    public boolean canReceiveGas(ForgeDirection side, Gas type) {
+        if (hasFrequency()
+            && configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing)
+                    .ioState
+                == IOState.INPUT) {
+            return frequency.storedGas.getGasType() == null
+                || type == frequency.storedGas.getGasType();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean canDrawGas(ForgeDirection side, Gas type) {
+        if (hasFrequency()
+            && configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing)
+                    .ioState
+                == IOState.OUTPUT) {
+            return frequency.storedGas.getGasType() == null
+                || type == frequency.storedGas.getGasType();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean handleInventory() {
+        return false;
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return 1;
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slotID) {
+        return hasFrequency() && slotID == 0 ? frequency.storedItem : null;
+    }
+
+    @Override
+    public void setInventorySlotContents(int slotID, ItemStack itemstack) {
+        if (hasFrequency() && slotID == 0) {
+            frequency.storedItem = itemstack;
+
+            if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
+                itemstack.stackSize = getInventoryStackLimit();
+            }
+        }
+    }
+
+    @Override
+    public double getTemp() {
+        return hasFrequency() ? frequency.temperature : 0;
+    }
+
+    @Override
+    public double getInverseConductionCoefficient() {
+        return 1;
+    }
+
+    @Override
+    public double getInsulationCoefficient(ForgeDirection side) {
+        return 1000;
+    }
+
+    @Override
+    public void transferHeatTo(double heat) {
+        heatToAbsorb += heat;
+    }
+
+    @Override
+    public double[] simulateHeat() {
+        return HeatUtils.simulate(this);
+    }
+
+    @Override
+    public double applyTemperatureChange() {
+        if (hasFrequency()) {
+            frequency.temperature += heatToAbsorb;
+        }
+
+        heatToAbsorb = 0;
+
+        return hasFrequency() ? frequency.temperature : 0;
+    }
+
+    @Override
+    public boolean canConnectHeat(ForgeDirection side) {
+        return hasFrequency()
+            && configComponent.getOutput(TransmissionType.HEAT, side.ordinal(), facing)
+                   .ioState
+            != IOState.OFF;
+    }
+
+    @Override
+    public IHeatTransfer getAdjacent(ForgeDirection side) {
+        TileEntity adj = Coord4D.get(this).getFromSide(side).getTileEntity(worldObj);
+
+        if (hasFrequency()
+            && configComponent.getOutput(TransmissionType.HEAT, side.ordinal(), facing)
+                    .ioState
+                == IOState.INPUT) {
+            if (adj instanceof IHeatTransfer) {
+                return (IHeatTransfer) adj;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean canInsertItem(int slotID, ItemStack itemstack, int side) {
+        return hasFrequency()
+            && configComponent.getOutput(TransmissionType.ITEM, side, facing).ioState
+            == IOState.INPUT;
+    }
+
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side) {
+        if (hasFrequency()
+            && configComponent.getOutput(TransmissionType.ITEM, side, facing).ioState
+                != IOState.OFF) {
+            return new int[] { 0 };
+        }
+
+        return InventoryUtils.EMPTY;
+    }
+
+    @Override
+    public boolean canExtractItem(int slotID, ItemStack itemstack, int side) {
+        return hasFrequency()
+            && configComponent.getOutput(TransmissionType.ITEM, side, facing).ioState
+            == IOState.OUTPUT;
+    }
+
+    @Override
+    public Object[] getTanks() {
+        if (!hasFrequency()) {
+            return null;
+        }
+
+        return new Object[] { frequency.storedFluid, frequency.storedGas };
+    }
+
+    @Override
+    public TileComponentConfig getConfig() {
+        return configComponent;
+    }
+
+    @Override
+    public int getOrientation() {
+        return facing;
+    }
+
+    @Override
+    public TileComponentEjector getEjector() {
+        return ejectorComponent;
+    }
+
+    @Override
+    public TileComponentSecurity getSecurity() {
+        return securityComponent;
+    }
+
+    @Override
+    public boolean canTubeConnect(ForgeDirection side) {
+        return hasFrequency()
+            && configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing)
+                   .ioState
+            != IOState.OFF;
+    }
+
+    private static final String[] methods = new String[] { "setFrequency" };
+
+    @Override
+    public String[] getMethods() {
+        return methods;
+    }
+
+    @Override
+    public Object[] invoke(int method, Object[] arguments) throws Exception {
+        switch (method) {
+            case 0:
+                if (!(arguments[0] instanceof String)
+                    || !(arguments[1] instanceof Integer)) {
+                    return new Object[] { "Invalid parameters." };
+                }
+
+                String freq = ((String) arguments[0]).trim();
+                int access = (int) arguments[1];
+
+                setFrequency(freq, ISecurityTile.SecurityMode.values()[access]);
+
+                return new Object[] { "Frequency set." };
+            default:
+                throw new NoSuchMethodException();
+        }
+    }
 }

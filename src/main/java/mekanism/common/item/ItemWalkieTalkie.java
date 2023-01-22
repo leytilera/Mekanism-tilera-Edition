@@ -11,102 +11,93 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-public class ItemWalkieTalkie extends ItemMekanism
-{
-	public IIcon[] icons = new IIcon[256];
+public class ItemWalkieTalkie extends ItemMekanism {
+    public IIcon[] icons = new IIcon[256];
 
-	public ItemWalkieTalkie()
-	{
-		super();
-		setMaxStackSize(1);
-	}
+    public ItemWalkieTalkie() {
+        super();
+        setMaxStackSize(1);
+    }
 
-	@Override
-	public void addInformation(ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag)
-	{
-		super.addInformation(itemstack, entityplayer, list, flag);
+    @Override
+    public void addInformation(
+        ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag
+    ) {
+        super.addInformation(itemstack, entityplayer, list, flag);
 
-		list.add((getOn(itemstack) ? EnumColor.DARK_GREEN : EnumColor.DARK_RED) + LangUtils.localize("gui." + (getOn(itemstack) ? "on" : "off")));
-		list.add(EnumColor.DARK_AQUA + LangUtils.localize("tooltip.channel") + ": " + EnumColor.GREY + getChannel(itemstack));
-	}
+        list.add(
+            (getOn(itemstack) ? EnumColor.DARK_GREEN : EnumColor.DARK_RED)
+            + LangUtils.localize("gui." + (getOn(itemstack) ? "on" : "off"))
+        );
+        list.add(
+            EnumColor.DARK_AQUA + LangUtils.localize("tooltip.channel") + ": "
+            + EnumColor.GREY + getChannel(itemstack)
+        );
+    }
 
-	@Override
-	public IIcon getIconIndex(ItemStack itemStack)
-	{
-		if(!getOn(itemStack))
-		{
-			return icons[0];
-		}
+    @Override
+    public IIcon getIconIndex(ItemStack itemStack) {
+        if (!getOn(itemStack)) {
+            return icons[0];
+        }
 
-		return icons[getChannel(itemStack)];
-	}
+        return icons[getChannel(itemStack)];
+    }
 
-	@Override
-	public void registerIcons(IIconRegister register)
-	{
-		icons[0] = register.registerIcon("mekanism:WalkieTalkieOff");
+    @Override
+    public void registerIcons(IIconRegister register) {
+        icons[0] = register.registerIcon("mekanism:WalkieTalkieOff");
 
-		for(int i = 1; i <= 9; i++)
-		{
-			icons[i] = register.registerIcon("mekanism:WalkieTalkie_ch" + i);
-		}
-	}
+        for (int i = 1; i <= 9; i++) {
+            icons[i] = register.registerIcon("mekanism:WalkieTalkie_ch" + i);
+        }
+    }
 
-	@Override
-	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player)
-	{
-		if(player.isSneaking())
-		{
-			setOn(itemStack, !getOn(itemStack));
-		}
+    @Override
+    public ItemStack
+    onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
+        if (player.isSneaking()) {
+            setOn(itemStack, !getOn(itemStack));
+        }
 
-		return itemStack;
-	}
+        return itemStack;
+    }
 
-	public void setOn(ItemStack itemStack, boolean on)
-	{
-		if(itemStack.stackTagCompound == null)
-		{
-			itemStack.setTagCompound(new NBTTagCompound());
-		}
+    public void setOn(ItemStack itemStack, boolean on) {
+        if (itemStack.stackTagCompound == null) {
+            itemStack.setTagCompound(new NBTTagCompound());
+        }
 
-		itemStack.stackTagCompound.setBoolean("on", on);
-	}
+        itemStack.stackTagCompound.setBoolean("on", on);
+    }
 
-	public boolean getOn(ItemStack itemStack)
-	{
-		if(itemStack.stackTagCompound == null)
-		{
-			return false;
-		}
+    public boolean getOn(ItemStack itemStack) {
+        if (itemStack.stackTagCompound == null) {
+            return false;
+        }
 
-		return itemStack.stackTagCompound.getBoolean("on");
-	}
+        return itemStack.stackTagCompound.getBoolean("on");
+    }
 
-	public void setChannel(ItemStack itemStack, int channel)
-	{
-		if(itemStack.stackTagCompound == null)
-		{
-			itemStack.setTagCompound(new NBTTagCompound());
-		}
+    public void setChannel(ItemStack itemStack, int channel) {
+        if (itemStack.stackTagCompound == null) {
+            itemStack.setTagCompound(new NBTTagCompound());
+        }
 
-		itemStack.stackTagCompound.setInteger("channel", channel);
-	}
+        itemStack.stackTagCompound.setInteger("channel", channel);
+    }
 
-	public int getChannel(ItemStack itemStack)
-	{
-		if(itemStack.stackTagCompound == null)
-		{
-			return 1;
-		}
+    public int getChannel(ItemStack itemStack) {
+        if (itemStack.stackTagCompound == null) {
+            return 1;
+        }
 
-		int channel = itemStack.stackTagCompound.getInteger("channel");
+        int channel = itemStack.stackTagCompound.getInteger("channel");
 
-		if(channel == 0)
-		{
-			setChannel(itemStack, 1);
-		}
+        if (channel == 0) {
+            setChannel(itemStack, 1);
+        }
 
-		return itemStack.stackTagCompound.getInteger("channel");
-	}
+        return itemStack.stackTagCompound.getInteger("channel");
+    }
 }

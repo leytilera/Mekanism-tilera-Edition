@@ -1,10 +1,11 @@
 package mekanism.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.MekanismConfig.usage;
@@ -23,227 +24,204 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntitySeismicVibrator extends TileEntityElectricBlock implements IActiveState, IRedstoneControl, ISecurityTile, IBoundingBlock
-{
-	public boolean isActive;
+public class TileEntitySeismicVibrator extends TileEntityElectricBlock
+    implements IActiveState, IRedstoneControl, ISecurityTile, IBoundingBlock {
+    public boolean isActive;
 
-	public boolean clientActive;
-	
-	public int updateDelay;
-	
-	public int clientPiston;
-	
-	public RedstoneControl controlType = RedstoneControl.DISABLED;
-	
-	public TileComponentSecurity securityComponent = new TileComponentSecurity(this);
-	
-	public TileEntitySeismicVibrator()
-	{
-		super("SeismicVibrator", MachineType.SEISMIC_VIBRATOR.baseEnergy);
-		
-		inventory = new ItemStack[1];
-	}
-	
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
-		
-		if(worldObj.isRemote)
-		{
-			if(isActive)
-			{
-				clientPiston++;
-			}
-			
-			if(updateDelay > 0)
-			{
-				updateDelay--;
+    public boolean clientActive;
 
-				if(updateDelay == 0 && clientActive != isActive)
-				{
-					isActive = clientActive;
-					MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-				}
-			}
-		}
-		else {
-			if(updateDelay > 0)
-			{
-				updateDelay--;
+    public int updateDelay;
 
-				if(updateDelay == 0 && clientActive != isActive)
-				{
-					Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-				}
-			}
-			
-			ChargeUtils.discharge(0, this);
-			
-			if(MekanismUtils.canFunction(this) && getEnergy() >= usage.seismicVibratorUsage)
-			{
-				setActive(true);
-				setEnergy(getEnergy()- usage.seismicVibratorUsage);
-			}
-			else {
-				setActive(false);
-			}
-		}
-		
-		if(getActive())
-		{
-			Mekanism.activeVibrators.add(Coord4D.get(this));
-		}
-		else {
-			Mekanism.activeVibrators.remove(Coord4D.get(this));
-		}
-	}
-	
-	@Override
-	public void invalidate()
-	{
-		super.invalidate();
-		
-		Mekanism.activeVibrators.remove(Coord4D.get(this));
-	}
-	
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+    public int clientPiston;
 
-		nbtTags.setBoolean("isActive", isActive);
-		nbtTags.setInteger("controlType", controlType.ordinal());
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+    public RedstoneControl controlType = RedstoneControl.DISABLED;
 
-		clientActive = isActive = nbtTags.getBoolean("isActive");
-		controlType = RedstoneControl.values()[nbtTags.getInteger("controlType")];
-	}
-	
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		super.handlePacketData(dataStream);
+    public TileComponentSecurity securityComponent = new TileComponentSecurity(this);
 
-		if(worldObj.isRemote)
-		{
-			clientActive = dataStream.readBoolean();
-			controlType = RedstoneControl.values()[dataStream.readInt()];
-			
-			if(updateDelay == 0 && clientActive != isActive)
-			{
-				updateDelay = general.UPDATE_DELAY;
-				isActive = clientActive;
-				MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-			}
-		}
-	}
-	
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
+    public TileEntitySeismicVibrator() {
+        super("SeismicVibrator", MachineType.SEISMIC_VIBRATOR.baseEnergy);
 
-		data.add(isActive);
-		data.add(controlType.ordinal());
-		
-		return data;
-	}
-	
-	@Override
-	public void setActive(boolean active)
-	{
-		isActive = active;
+        inventory = new ItemStack[1];
+    }
 
-		if(clientActive != active && updateDelay == 0)
-		{
-			Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-			updateDelay = 10;
-			clientActive = active;
-		}
-	}
+        if (worldObj.isRemote) {
+            if (isActive) {
+                clientPiston++;
+            }
 
-	@Override
-	public boolean getActive()
-	{
-		return isActive;
-	}
-	
-	@Override
-	public boolean renderUpdate()
-	{
-		return false;
-	}
+            if (updateDelay > 0) {
+                updateDelay--;
 
-	@Override
-	public boolean lightUpdate()
-	{
-		return true;
-	}
-	
-	@Override
-	public boolean canSetFacing(int facing)
-	{
-		return facing != 0 && facing != 1;
-	}
-	
-	@Override
-	public RedstoneControl getControlType()
-	{
-		return controlType;
-	}
-	
-	@Override
-	public EnumSet<ForgeDirection> getConsumingSides()
-	{
-		return EnumSet.of(ForgeDirection.getOrientation(facing).getOpposite());
-	}
+                if (updateDelay == 0 && clientActive != isActive) {
+                    isActive = clientActive;
+                    MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+                }
+            }
+        } else {
+            if (updateDelay > 0) {
+                updateDelay--;
 
-	@Override
-	public void setControlType(RedstoneControl type)
-	{
-		controlType = type;
-		MekanismUtils.saveChunk(this);
-	}
+                if (updateDelay == 0 && clientActive != isActive) {
+                    Mekanism.packetHandler.sendToReceivers(
+                        new TileEntityMessage(
+                            Coord4D.get(this), getNetworkedData(new ArrayList())
+                        ),
+                        new Range4D(Coord4D.get(this))
+                    );
+                }
+            }
 
-	@Override
-	public boolean canPulse()
-	{
-		return false;
-	}
-	
-	@Override
-	public TileComponentSecurity getSecurity()
-	{
-		return securityComponent;
-	}
-	
-	@Override
-	public void onPlace() 
-	{
-		MekanismUtils.makeBoundingBlock(worldObj, Coord4D.get(this).getFromSide(ForgeDirection.UP), Coord4D.get(this));
-	}
+            ChargeUtils.discharge(0, this);
 
-	@Override
-	public void onBreak() 
-	{
-		worldObj.setBlockToAir(xCoord, yCoord+1, zCoord);
-		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public AxisAlignedBB getRenderBoundingBox()
-	{
-		return INFINITE_EXTENT_AABB;
-	}
+            if (MekanismUtils.canFunction(this)
+                && getEnergy() >= usage.seismicVibratorUsage) {
+                setActive(true);
+                setEnergy(getEnergy() - usage.seismicVibratorUsage);
+            } else {
+                setActive(false);
+            }
+        }
+
+        if (getActive()) {
+            Mekanism.activeVibrators.add(Coord4D.get(this));
+        } else {
+            Mekanism.activeVibrators.remove(Coord4D.get(this));
+        }
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        Mekanism.activeVibrators.remove(Coord4D.get(this));
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
+
+        nbtTags.setBoolean("isActive", isActive);
+        nbtTags.setInteger("controlType", controlType.ordinal());
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
+
+        clientActive = isActive = nbtTags.getBoolean("isActive");
+        controlType = RedstoneControl.values()[nbtTags.getInteger("controlType")];
+    }
+
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        super.handlePacketData(dataStream);
+
+        if (worldObj.isRemote) {
+            clientActive = dataStream.readBoolean();
+            controlType = RedstoneControl.values()[dataStream.readInt()];
+
+            if (updateDelay == 0 && clientActive != isActive) {
+                updateDelay = general.UPDATE_DELAY;
+                isActive = clientActive;
+                MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+            }
+        }
+    }
+
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
+
+        data.add(isActive);
+        data.add(controlType.ordinal());
+
+        return data;
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        isActive = active;
+
+        if (clientActive != active && updateDelay == 0) {
+            Mekanism.packetHandler.sendToReceivers(
+                new TileEntityMessage(
+                    Coord4D.get(this), getNetworkedData(new ArrayList())
+                ),
+                new Range4D(Coord4D.get(this))
+            );
+
+            updateDelay = 10;
+            clientActive = active;
+        }
+    }
+
+    @Override
+    public boolean getActive() {
+        return isActive;
+    }
+
+    @Override
+    public boolean renderUpdate() {
+        return false;
+    }
+
+    @Override
+    public boolean lightUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean canSetFacing(int facing) {
+        return facing != 0 && facing != 1;
+    }
+
+    @Override
+    public RedstoneControl getControlType() {
+        return controlType;
+    }
+
+    @Override
+    public EnumSet<ForgeDirection> getConsumingSides() {
+        return EnumSet.of(ForgeDirection.getOrientation(facing).getOpposite());
+    }
+
+    @Override
+    public void setControlType(RedstoneControl type) {
+        controlType = type;
+        MekanismUtils.saveChunk(this);
+    }
+
+    @Override
+    public boolean canPulse() {
+        return false;
+    }
+
+    @Override
+    public TileComponentSecurity getSecurity() {
+        return securityComponent;
+    }
+
+    @Override
+    public void onPlace() {
+        MekanismUtils.makeBoundingBlock(
+            worldObj, Coord4D.get(this).getFromSide(ForgeDirection.UP), Coord4D.get(this)
+        );
+    }
+
+    @Override
+    public void onBreak() {
+        worldObj.setBlockToAir(xCoord, yCoord + 1, zCoord);
+        worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
 }

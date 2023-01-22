@@ -8,16 +8,20 @@ import mekanism.common.recipe.RecipeHandler.Recipe;
 import mekanism.common.recipe.inputs.ItemStackInput;
 import mekanism.common.recipe.machines.SmeltingRecipe;
 
-public class TileEntityEnergizedSmelter extends TileEntityElectricMachine<SmeltingRecipe>
-{
-	public TileEntityEnergizedSmelter()
-	{
-		super("smelter", "EnergizedSmelter", usage.energizedSmelterUsage, 200, MachineType.ENERGIZED_SMELTER.baseEnergy);
-	}
+public class TileEntityEnergizedSmelter
+    extends TileEntityElectricMachine<SmeltingRecipe> {
+    public TileEntityEnergizedSmelter() {
+        super(
+            "smelter",
+            "EnergizedSmelter",
+            usage.energizedSmelterUsage,
+            200,
+            MachineType.ENERGIZED_SMELTER.baseEnergy
+        );
+    }
 
-	@Override
-	public Map<ItemStackInput, SmeltingRecipe> getRecipes()
-	{
-		return Recipe.ENERGIZED_SMELTER.get();
-	}
+    @Override
+    public Map<ItemStackInput, SmeltingRecipe> getRecipes() {
+        return Recipe.ENERGIZED_SMELTER.get();
+    }
 }

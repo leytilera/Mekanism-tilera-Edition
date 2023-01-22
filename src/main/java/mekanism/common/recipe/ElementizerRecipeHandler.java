@@ -11,12 +11,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 public class ElementizerRecipeHandler {
- 
     public static List<ItemStack> outputItems = new ArrayList<>();
     public static List<ItemStack> fuelItems = new ArrayList<>();
 
     public static ItemStack getRandomMagicItem() {
-        int range = outputItems.size() + MekanismConfig.general.elementizerFailChanceMultiplier;
+        int range
+            = outputItems.size() + MekanismConfig.general.elementizerFailChanceMultiplier;
         int index = 0;
         if (range > 0) {
             final Random rand = new Random();
@@ -54,5 +54,4 @@ public class ElementizerRecipeHandler {
         outputItems.add(new ItemStack(MekanismItems.Stopwatch));
         outputItems.add(new ItemStack(MekanismItems.WeatherOrb));
     }
-
 }

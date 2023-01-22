@@ -7,148 +7,127 @@ import mekanism.common.block.BlockBasic.BasicType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class InventoryBin
-{
-	public ItemStack bin;
+public class InventoryBin {
+    public ItemStack bin;
 
-	public InventoryBin(ItemStack stack)
-	{
-		bin = stack;
-	}
+    public InventoryBin(ItemStack stack) {
+        bin = stack;
+    }
 
-	public ItemStack getStack()
-	{
-		if(getItemCount() > 0 && getItemType() != null)
-		{
-			ItemStack ret = getItemType().copy();
-			ret.stackSize = Math.min(getItemType().getMaxStackSize(), getItemCount());
+    public ItemStack getStack() {
+        if (getItemCount() > 0 && getItemType() != null) {
+            ItemStack ret = getItemType().copy();
+            ret.stackSize = Math.min(getItemType().getMaxStackSize(), getItemCount());
 
-			return ret;
-		}
+            return ret;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public ItemStack removeStack()
-	{
-		ItemStack stack = getStack();
+    public ItemStack removeStack() {
+        ItemStack stack = getStack();
 
-		if(stack == null)
-		{
-			return null;
-		}
+        if (stack == null) {
+            return null;
+        }
 
-		setItemCount(getItemCount() - stack.stackSize);
-		return stack.copy();
-	}
+        setItemCount(getItemCount() - stack.stackSize);
+        return stack.copy();
+    }
 
-	public ItemStack add(ItemStack stack)
-	{
-		if(isValid(stack) && getItemCount() != getMaxStorage())
-		{
-			if(getItemType() == null)
-			{
-				setItemType(stack);
-			}
+    public ItemStack add(ItemStack stack) {
+        if (isValid(stack) && getItemCount() != getMaxStorage()) {
+            if (getItemType() == null) {
+                setItemType(stack);
+            }
 
-			if(getItemCount() + stack.stackSize <= getMaxStorage())
-			{
-				setItemCount(getItemCount() + stack.stackSize);
-				return null;
-			}
-			else {
-				ItemStack rejects = getItemType().copy();
-				rejects.stackSize = (getItemCount()+stack.stackSize) - getMaxStorage();
+            if (getItemCount() + stack.stackSize <= getMaxStorage()) {
+                setItemCount(getItemCount() + stack.stackSize);
+                return null;
+            } else {
+                ItemStack rejects = getItemType().copy();
+                rejects.stackSize = (getItemCount() + stack.stackSize) - getMaxStorage();
 
-				setItemCount(getMaxStorage());
+                setItemCount(getMaxStorage());
 
-				return rejects;
-			}
-		}
+                return rejects;
+            }
+        }
 
-		return stack;
-	}
+        return stack;
+    }
 
-	public boolean isValid(ItemStack stack)
-	{
-		if(stack == null || stack.stackSize <= 0)
-		{
-			return false;
-		}
+    public boolean isValid(ItemStack stack) {
+        if (stack == null || stack.stackSize <= 0) {
+            return false;
+        }
 
-		if(BasicType.get(stack) == BasicType.BIN)
-		{
-			return false;
-		}
+        if (BasicType.get(stack) == BasicType.BIN) {
+            return false;
+        }
 
-		if(getItemType() == null)
-		{
-			return true;
-		}
+        if (getItemType() == null) {
+            return true;
+        }
 
-		if(!stack.isItemEqual(getItemType()) || !ItemStack.areItemStackTagsEqual(stack, getItemType()))
-		{
-			return false;
-		}
+        if (!stack.isItemEqual(getItemType())
+            || !ItemStack.areItemStackTagsEqual(stack, getItemType())) {
+            return false;
+        }
 
-		return true;
-	}
-	
-	public int getMaxStorage()
-	{
-		return BinTier.values()[((ITierItem)bin.getItem()).getBaseTier(bin).ordinal()].storage;
-	}
+        return true;
+    }
 
-	public int getItemCount()
-	{
-		if(bin.stackTagCompound == null)
-		{
-			return 0;
-		}
+    public int getMaxStorage() {
+        return BinTier.values()[((ITierItem) bin.getItem()).getBaseTier(bin).ordinal()]
+            .storage;
+    }
 
-		return bin.stackTagCompound.getInteger("itemCount");
-	}
+    public int getItemCount() {
+        if (bin.stackTagCompound == null) {
+            return 0;
+        }
 
-	public void setItemCount(int count)
-	{
-		if(bin.stackTagCompound == null)
-		{
-			bin.setTagCompound(new NBTTagCompound());
-		}
+        return bin.stackTagCompound.getInteger("itemCount");
+    }
 
-		bin.stackTagCompound.setInteger("itemCount", Math.max(0, count));
+    public void setItemCount(int count) {
+        if (bin.stackTagCompound == null) {
+            bin.setTagCompound(new NBTTagCompound());
+        }
 
-		if(getItemCount() == 0)
-		{
-			setItemType(null);
-		}
-	}
+        bin.stackTagCompound.setInteger("itemCount", Math.max(0, count));
 
-	public ItemStack getItemType()
-	{
-		if(bin.stackTagCompound == null || getItemCount() == 0)
-		{
-			return null;
-		}
+        if (getItemCount() == 0) {
+            setItemType(null);
+        }
+    }
 
-		return ItemStack.loadItemStackFromNBT(bin.stackTagCompound.getCompoundTag("storedItem"));
-	}
+    public ItemStack getItemType() {
+        if (bin.stackTagCompound == null || getItemCount() == 0) {
+            return null;
+        }
 
-	public void setItemType(ItemStack stack)
-	{
-		if(bin.stackTagCompound == null)
-		{
-			bin.setTagCompound(new NBTTagCompound());
-		}
+        return ItemStack.loadItemStackFromNBT(
+            bin.stackTagCompound.getCompoundTag("storedItem")
+        );
+    }
 
-		if(stack == null)
-		{
-			bin.stackTagCompound.removeTag("storedItem");
-			return;
-		}
+    public void setItemType(ItemStack stack) {
+        if (bin.stackTagCompound == null) {
+            bin.setTagCompound(new NBTTagCompound());
+        }
 
-		ItemStack ret = StackUtils.size(stack, 1);
+        if (stack == null) {
+            bin.stackTagCompound.removeTag("storedItem");
+            return;
+        }
 
-		bin.stackTagCompound.setTag("storedItem", StackUtils.size(stack, 1).writeToNBT(new NBTTagCompound()));
-	}
+        ItemStack ret = StackUtils.size(stack, 1);
+
+        bin.stackTagCompound.setTag(
+            "storedItem", StackUtils.size(stack, 1).writeToNBT(new NBTTagCompound())
+        );
+    }
 }

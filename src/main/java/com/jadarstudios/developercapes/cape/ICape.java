@@ -12,11 +12,10 @@ import net.minecraft.util.ResourceLocation;
 
 /**
  * Any class implementing this will be requested to act as a cape.
- * 
+ *
  * @author jadar
  */
 public interface ICape {
-
     public String getName();
 
     public ITextureObject getTexture();

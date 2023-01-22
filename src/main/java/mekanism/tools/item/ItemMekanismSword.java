@@ -9,23 +9,26 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
-public class ItemMekanismSword extends ItemSword
-{
-	public ItemMekanismSword(ToolMaterial enumtoolmaterial)
-	{
-		super(enumtoolmaterial);
-		setCreativeTab(Mekanism.tabMekanism);
-	}
+public class ItemMekanismSword extends ItemSword {
+    public ItemMekanismSword(ToolMaterial enumtoolmaterial) {
+        super(enumtoolmaterial);
+        setCreativeTab(Mekanism.tabMekanism);
+    }
 
-	@Override
-	public void addInformation(ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag)
-	{
-		list.add(LangUtils.localize("tooltip.hp") + ": " + (itemstack.getMaxDamage() - itemstack.getItemDamage()));
-	}
+    @Override
+    public void addInformation(
+        ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag
+    ) {
+        list.add(
+            LangUtils.localize("tooltip.hp") + ": "
+            + (itemstack.getMaxDamage() - itemstack.getItemDamage())
+        );
+    }
 
-	@Override
-	public void registerIcons(IIconRegister register)
-	{
-		itemIcon = register.registerIcon("mekanism:" + getUnlocalizedName().replace("item.", ""));
-	}
+    @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon(
+            "mekanism:" + getUnlocalizedName().replace("item.", "")
+        );
+    }
 }

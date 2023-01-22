@@ -1,95 +1,87 @@
 package mekanism.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.api.energy.IStrictEnergyStorage;
 import mekanism.common.Tier.InductionCellTier;
 import mekanism.common.util.LangUtils;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityInductionCell extends TileEntityBasicBlock implements IStrictEnergyStorage
-{
-	public InductionCellTier tier = InductionCellTier.BASIC;
-	
-	public double electricityStored;
-	
-	@Override
-	public void onUpdate() {}
-	
-	@Override
-	public boolean canUpdate()
-	{
-		return false;
-	}
-	
-	public String getInventoryName()
-	{
-		return LangUtils.localize(getBlockType().getUnlocalizedName() + ".InductionCell" + tier.getBaseTier().getName() + ".name");
-	}
-	
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		if(worldObj.isRemote)
-		{
-			tier = InductionCellTier.values()[dataStream.readInt()];
-	
-			super.handlePacketData(dataStream);
-			
-			electricityStored = dataStream.readDouble();
-	
-			MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-		}
-	}
+public class TileEntityInductionCell
+    extends TileEntityBasicBlock implements IStrictEnergyStorage {
+    public InductionCellTier tier = InductionCellTier.BASIC;
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		data.add(tier.ordinal());
+    public double electricityStored;
 
-		super.getNetworkedData(data);
-		
-		data.add(electricityStored);
+    @Override
+    public void onUpdate() {}
 
-		return data;
-	}
+    @Override
+    public boolean canUpdate() {
+        return false;
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+    public String getInventoryName() {
+        return LangUtils.localize(
+            getBlockType().getUnlocalizedName() + ".InductionCell"
+            + tier.getBaseTier().getName() + ".name"
+        );
+    }
 
-		tier = InductionCellTier.values()[nbtTags.getInteger("tier")];
-		electricityStored = nbtTags.getDouble("electricityStored");
-	}
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        if (worldObj.isRemote) {
+            tier = InductionCellTier.values()[dataStream.readInt()];
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+            super.handlePacketData(dataStream);
 
-		nbtTags.setInteger("tier", tier.ordinal());
-		nbtTags.setDouble("electricityStored", electricityStored);
-	}
+            electricityStored = dataStream.readDouble();
 
-	@Override
-	public double getEnergy() 
-	{
-		return electricityStored;
-	}
+            MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+        }
+    }
 
-	@Override
-	public void setEnergy(double energy) 
-	{
-		electricityStored = Math.min(energy, getMaxEnergy());
-	}
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        data.add(tier.ordinal());
 
-	@Override
-	public double getMaxEnergy() 
-	{
-		return tier.maxEnergy;
-	}
+        super.getNetworkedData(data);
+
+        data.add(electricityStored);
+
+        return data;
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
+
+        tier = InductionCellTier.values()[nbtTags.getInteger("tier")];
+        electricityStored = nbtTags.getDouble("electricityStored");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
+
+        nbtTags.setInteger("tier", tier.ordinal());
+        nbtTags.setDouble("electricityStored", electricityStored);
+    }
+
+    @Override
+    public double getEnergy() {
+        return electricityStored;
+    }
+
+    @Override
+    public void setEnergy(double energy) {
+        electricityStored = Math.min(energy, getMaxEnergy());
+    }
+
+    @Override
+    public double getMaxEnergy() {
+        return tier.maxEnergy;
+    }
 }

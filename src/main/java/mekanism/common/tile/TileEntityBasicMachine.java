@@ -1,10 +1,9 @@
 package mekanism.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.IConfigCardAccess;
 import mekanism.api.MekanismConfig.general;
@@ -31,280 +30,275 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public abstract class TileEntityBasicMachine<INPUT extends MachineInput<INPUT>, OUTPUT extends MachineOutput<OUTPUT>, RECIPE extends MachineRecipe<INPUT, OUTPUT, RECIPE>> extends TileEntityNoisyElectricBlock implements IElectricMachine<INPUT, OUTPUT, RECIPE>, IComputerIntegration, ISideConfiguration, IUpgradeTile, IRedstoneControl, IConfigCardAccess, ISecurityTile
-{
-	/** How much energy this machine uses per tick, un-upgraded. */
-	public double BASE_ENERGY_PER_TICK;
+public abstract class TileEntityBasicMachine<
+    INPUT extends MachineInput<INPUT>, OUTPUT extends MachineOutput<OUTPUT>, RECIPE
+        extends MachineRecipe<INPUT, OUTPUT, RECIPE>> extends TileEntityNoisyElectricBlock
+    implements IElectricMachine<INPUT, OUTPUT, RECIPE>, IComputerIntegration,
+               ISideConfiguration, IUpgradeTile, IRedstoneControl, IConfigCardAccess,
+               ISecurityTile {
+    /** How much energy this machine uses per tick, un-upgraded. */
+    public double BASE_ENERGY_PER_TICK;
 
-	/**	How much energy this machine uses per tick including upgrades */
-	public double energyPerTick;
+    /**	How much energy this machine uses per tick including upgrades */
+    public double energyPerTick;
 
-	/** How many ticks this machine has operated for. */
-	public int operatingTicks = 0;
+    /** How many ticks this machine has operated for. */
+    public int operatingTicks = 0;
 
-	/** Un-upgraded ticks required to operate -- or smelt an item. */
-	public int BASE_TICKS_REQUIRED;
+    /** Un-upgraded ticks required to operate -- or smelt an item. */
+    public int BASE_TICKS_REQUIRED;
 
-	/** Ticks required including upgrades */
-	public int ticksRequired;
+    /** Ticks required including upgrades */
+    public int ticksRequired;
 
-	/** How many ticks must pass until this block's active state can sync with the client. */
-	public int updateDelay;
+    /**
+     * How many ticks must pass until this block's active state can sync with the client.
+     */
+    public int updateDelay;
 
-	/** Whether or not this block is in it's active state. */
-	public boolean isActive;
+    /** Whether or not this block is in it's active state. */
+    public boolean isActive;
 
-	/** The client's current active state. */
-	public boolean clientActive;
+    /** The client's current active state. */
+    public boolean clientActive;
 
-	/** The GUI texture path for this machine. */
-	public ResourceLocation guiLocation;
+    /** The GUI texture path for this machine. */
+    public ResourceLocation guiLocation;
 
-	/** This machine's current RedstoneControl type. */
-	public RedstoneControl controlType = RedstoneControl.DISABLED;
+    /** This machine's current RedstoneControl type. */
+    public RedstoneControl controlType = RedstoneControl.DISABLED;
 
-	/** This machine's previous amount of energy. */
-	public double prevEnergy;
+    /** This machine's previous amount of energy. */
+    public double prevEnergy;
 
-	public RECIPE cachedRecipe = null;
+    public RECIPE cachedRecipe = null;
 
-	public TileComponentUpgrade upgradeComponent;
-	public TileComponentEjector ejectorComponent;
-	public TileComponentConfig configComponent;
-	public TileComponentSecurity securityComponent;
+    public TileComponentUpgrade upgradeComponent;
+    public TileComponentEjector ejectorComponent;
+    public TileComponentConfig configComponent;
+    public TileComponentSecurity securityComponent;
 
-	/**
-	 * The foundation of all machines - a simple tile entity with a facing, active state, initialized state, sound effect, and animated texture.
-	 * @param soundPath - location of the sound effect
-	 * @param name - full name of this machine
-	 * @param location - GUI texture path of this machine
-	 * @param perTick - the energy this machine consumes every tick in it's active state
-	 * @param baseTicksRequired - how many ticks it takes to run a cycle
-	 * @param maxEnergy - how much energy this machine can store
-	 */
-	public TileEntityBasicMachine(String soundPath, String name, ResourceLocation location, double perTick, int baseTicksRequired, double maxEnergy)
-	{
-		super("machine." + soundPath, name, maxEnergy);
-		
-		BASE_ENERGY_PER_TICK = perTick;
-		energyPerTick = perTick;
-		BASE_TICKS_REQUIRED = baseTicksRequired;
-		ticksRequired = baseTicksRequired;
-		guiLocation = location;
-		isActive = false;
-		
-		securityComponent = new TileComponentSecurity(this);
-	}
+    /**
+     * The foundation of all machines - a simple tile entity with a facing, active state,
+     * initialized state, sound effect, and animated texture.
+     * @param soundPath - location of the sound effect
+     * @param name - full name of this machine
+     * @param location - GUI texture path of this machine
+     * @param perTick - the energy this machine consumes every tick in it's active state
+     * @param baseTicksRequired - how many ticks it takes to run a cycle
+     * @param maxEnergy - how much energy this machine can store
+     */
+    public TileEntityBasicMachine(
+        String soundPath,
+        String name,
+        ResourceLocation location,
+        double perTick,
+        int baseTicksRequired,
+        double maxEnergy
+    ) {
+        super("machine." + soundPath, name, maxEnergy);
 
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
+        BASE_ENERGY_PER_TICK = perTick;
+        energyPerTick = perTick;
+        BASE_TICKS_REQUIRED = baseTicksRequired;
+        ticksRequired = baseTicksRequired;
+        guiLocation = location;
+        isActive = false;
 
-		if(worldObj.isRemote && updateDelay > 0)
-		{
-			updateDelay--;
+        securityComponent = new TileComponentSecurity(this);
+    }
 
-			if(updateDelay == 0 && clientActive != isActive)
-			{
-				isActive = clientActive;
-				MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-			}
-		}
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-		if(!worldObj.isRemote)
-		{
-			if(updateDelay > 0)
-			{
-				updateDelay--;
+        if (worldObj.isRemote && updateDelay > 0) {
+            updateDelay--;
 
-				if(updateDelay == 0 && clientActive != isActive)
-				{
-					Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-				}
-			}
-		}
-	}
-	
-	@Override
-	public EnumSet<ForgeDirection> getConsumingSides()
-	{
-		return configComponent.getSidesForData(TransmissionType.ENERGY, facing, 1);
-	}
+            if (updateDelay == 0 && clientActive != isActive) {
+                isActive = clientActive;
+                MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+            }
+        }
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+        if (!worldObj.isRemote) {
+            if (updateDelay > 0) {
+                updateDelay--;
 
-		operatingTicks = nbtTags.getInteger("operatingTicks");
-		clientActive = isActive = nbtTags.getBoolean("isActive");
-		controlType = RedstoneControl.values()[nbtTags.getInteger("controlType")];
-	}
+                if (updateDelay == 0 && clientActive != isActive) {
+                    Mekanism.packetHandler.sendToReceivers(
+                        new TileEntityMessage(
+                            Coord4D.get(this), getNetworkedData(new ArrayList())
+                        ),
+                        new Range4D(Coord4D.get(this))
+                    );
+                }
+            }
+        }
+    }
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+    @Override
+    public EnumSet<ForgeDirection> getConsumingSides() {
+        return configComponent.getSidesForData(TransmissionType.ENERGY, facing, 1);
+    }
 
-		nbtTags.setInteger("operatingTicks", operatingTicks);
-		nbtTags.setBoolean("isActive", isActive);
-		nbtTags.setInteger("controlType", controlType.ordinal());
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		super.handlePacketData(dataStream);
+        operatingTicks = nbtTags.getInteger("operatingTicks");
+        clientActive = isActive = nbtTags.getBoolean("isActive");
+        controlType = RedstoneControl.values()[nbtTags.getInteger("controlType")];
+    }
 
-		if(worldObj.isRemote)
-		{
-			operatingTicks = dataStream.readInt();
-			clientActive = dataStream.readBoolean();
-			ticksRequired = dataStream.readInt();
-			controlType = RedstoneControl.values()[dataStream.readInt()];
-	
-			if(updateDelay == 0 && clientActive != isActive)
-			{
-				updateDelay = general.UPDATE_DELAY;
-				isActive = clientActive;
-				MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-			}
-		}
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
+        nbtTags.setInteger("operatingTicks", operatingTicks);
+        nbtTags.setBoolean("isActive", isActive);
+        nbtTags.setInteger("controlType", controlType.ordinal());
+    }
 
-		data.add(operatingTicks);
-		data.add(isActive);
-		data.add(ticksRequired);
-		data.add(controlType.ordinal());
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        super.handlePacketData(dataStream);
 
-		return data;
-	}
+        if (worldObj.isRemote) {
+            operatingTicks = dataStream.readInt();
+            clientActive = dataStream.readBoolean();
+            ticksRequired = dataStream.readInt();
+            controlType = RedstoneControl.values()[dataStream.readInt()];
 
-	/**
-	 * Gets the scaled progress level for the GUI.
-	 * @return
-	 */
-	public double getScaledProgress()
-	{
-		return ((double)operatingTicks) / ((double)ticksRequired);
-	}
+            if (updateDelay == 0 && clientActive != isActive) {
+                updateDelay = general.UPDATE_DELAY;
+                isActive = clientActive;
+                MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+            }
+        }
+    }
 
-	@Override
-	public boolean getActive()
-	{
-		return isActive;
-	}
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
 
-	@Override
-	public void setActive(boolean active)
-	{
-		isActive = active;
+        data.add(operatingTicks);
+        data.add(isActive);
+        data.add(ticksRequired);
+        data.add(controlType.ordinal());
 
-		if(clientActive != active && updateDelay == 0)
-		{
-			Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
+        return data;
+    }
 
-			updateDelay = 10;
-			clientActive = active;
-		}
-	}
+    /**
+     * Gets the scaled progress level for the GUI.
+     * @return
+     */
+    public double getScaledProgress() {
+        return ((double) operatingTicks) / ((double) ticksRequired);
+    }
 
-	@Override
-	public void recalculateUpgradables(Upgrade upgrade)
-	{
-		super.recalculateUpgradables(upgrade);
+    @Override
+    public boolean getActive() {
+        return isActive;
+    }
 
-		switch(upgrade)
-		{
-			case SPEED:
-				ticksRequired = MekanismUtils.getTicks(this, BASE_TICKS_REQUIRED);
-				energyPerTick = MekanismUtils.getEnergyPerTick(this, BASE_ENERGY_PER_TICK);
-				break;
-			case ENERGY:
-				energyPerTick = MekanismUtils.getEnergyPerTick(this, BASE_ENERGY_PER_TICK);
-				maxEnergy = MekanismUtils.getMaxEnergy(this, BASE_MAX_ENERGY);
-				break;
-			default:
-				break;
-		}
-	}
+    @Override
+    public void setActive(boolean active) {
+        isActive = active;
 
-	@Override
-	public boolean canSetFacing(int facing)
-	{
-		return facing != 0 && facing != 1;
-	}
+        if (clientActive != active && updateDelay == 0) {
+            Mekanism.packetHandler.sendToReceivers(
+                new TileEntityMessage(
+                    Coord4D.get(this), getNetworkedData(new ArrayList())
+                ),
+                new Range4D(Coord4D.get(this))
+            );
 
-	@Override
-	public int[] getAccessibleSlotsFromSide(int side)
-	{
-		return configComponent.getOutput(TransmissionType.ITEM, side, facing).availableSlots;
-	}
+            updateDelay = 10;
+            clientActive = active;
+        }
+    }
 
-	@Override
-	public TileComponentConfig getConfig()
-	{
-		return configComponent;
-	}
+    @Override
+    public void recalculateUpgradables(Upgrade upgrade) {
+        super.recalculateUpgradables(upgrade);
 
-	@Override
-	public int getOrientation()
-	{
-		return facing;
-	}
+        switch (upgrade) {
+            case SPEED:
+                ticksRequired = MekanismUtils.getTicks(this, BASE_TICKS_REQUIRED);
+                energyPerTick
+                    = MekanismUtils.getEnergyPerTick(this, BASE_ENERGY_PER_TICK);
+                break;
+            case ENERGY:
+                energyPerTick
+                    = MekanismUtils.getEnergyPerTick(this, BASE_ENERGY_PER_TICK);
+                maxEnergy = MekanismUtils.getMaxEnergy(this, BASE_MAX_ENERGY);
+                break;
+            default:
+                break;
+        }
+    }
 
-	@Override
-	public boolean renderUpdate()
-	{
-		return true;
-	}
+    @Override
+    public boolean canSetFacing(int facing) {
+        return facing != 0 && facing != 1;
+    }
 
-	@Override
-	public boolean lightUpdate()
-	{
-		return true;
-	}
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side) {
+        return configComponent.getOutput(TransmissionType.ITEM, side, facing)
+            .availableSlots;
+    }
 
-	@Override
-	public RedstoneControl getControlType()
-	{
-		return controlType;
-	}
+    @Override
+    public TileComponentConfig getConfig() {
+        return configComponent;
+    }
 
-	@Override
-	public void setControlType(RedstoneControl type)
-	{
-		controlType = type;
-		MekanismUtils.saveChunk(this);
-	}
+    @Override
+    public int getOrientation() {
+        return facing;
+    }
 
-	@Override
-	public boolean canPulse()
-	{
-		return false;
-	}
+    @Override
+    public boolean renderUpdate() {
+        return true;
+    }
 
-	@Override
-	public TileComponentUpgrade getComponent()
-	{
-		return upgradeComponent;
-	}
+    @Override
+    public boolean lightUpdate() {
+        return true;
+    }
 
-	@Override
-	public TileComponentEjector getEjector()
-	{
-		return ejectorComponent;
-	}
-	
-	@Override
-	public TileComponentSecurity getSecurity()
-	{
-		return securityComponent;
-	}
+    @Override
+    public RedstoneControl getControlType() {
+        return controlType;
+    }
+
+    @Override
+    public void setControlType(RedstoneControl type) {
+        controlType = type;
+        MekanismUtils.saveChunk(this);
+    }
+
+    @Override
+    public boolean canPulse() {
+        return false;
+    }
+
+    @Override
+    public TileComponentUpgrade getComponent() {
+        return upgradeComponent;
+    }
+
+    @Override
+    public TileComponentEjector getEjector() {
+        return ejectorComponent;
+    }
+
+    @Override
+    public TileComponentSecurity getSecurity() {
+        return securityComponent;
+    }
 }

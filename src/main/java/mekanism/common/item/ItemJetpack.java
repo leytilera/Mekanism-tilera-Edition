@@ -2,6 +2,8 @@ package mekanism.common.item;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.EnumColor;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.gas.Gas;
@@ -26,272 +28,261 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.util.EnumHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemJetpack extends ItemArmor implements IGasItem, ISpecialArmor
-{
-	public int TRANSFER_RATE = 16;
+public class ItemJetpack extends ItemArmor implements IGasItem, ISpecialArmor {
+    public int TRANSFER_RATE = 16;
 
-	public ItemJetpack()
-	{
-		super(EnumHelper.addArmorMaterial("JETPACK", 0, new int[] {0, 0, 0, 0}, 0), 0, 1);
-		setCreativeTab(Mekanism.tabMekanism);
-	}
+    public ItemJetpack() {
+        super(
+            EnumHelper.addArmorMaterial("JETPACK", 0, new int[] { 0, 0, 0, 0 }, 0), 0, 1
+        );
+        setCreativeTab(Mekanism.tabMekanism);
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister register) {}
-	
-	@Override
-	public boolean showDurabilityBar(ItemStack stack)
-	{
-		return true;
-	}
-	
-	@Override
-	public double getDurabilityForDisplay(ItemStack stack)
-	{
-		return 1D-((getGas(stack) != null ? (double)getGas(stack).amount : 0D)/(double)getMaxGas(stack));
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister register) {}
 
-	@Override
-	public void addInformation(ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag)
-	{
-		GasStack gasStack = getGas(itemstack);
+    @Override
+    public boolean showDurabilityBar(ItemStack stack) {
+        return true;
+    }
 
-		if(gasStack == null)
-		{
-			list.add(LangUtils.localize("tooltip.noGas") + ".");
-		}
-		else {
-			list.add(LangUtils.localize("tooltip.stored") + " " + gasStack.getGas().getLocalizedName() + ": " + gasStack.amount);
-		}
+    @Override
+    public double getDurabilityForDisplay(ItemStack stack) {
+        return 1D
+            - ((getGas(stack) != null ? (double) getGas(stack).amount : 0D)
+               / (double) getMaxGas(stack));
+    }
 
-		list.add(EnumColor.GREY + LangUtils.localize("tooltip.mode") + ": " + EnumColor.GREY + getMode(itemstack).getName());
-	}
+    @Override
+    public void addInformation(
+        ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag
+    ) {
+        GasStack gasStack = getGas(itemstack);
 
-	@Override
-	public boolean isValidArmor(ItemStack stack, int armorType, Entity entity)
-	{
-		return armorType == 1;
-	}
+        if (gasStack == null) {
+            list.add(LangUtils.localize("tooltip.noGas") + ".");
+        } else {
+            list.add(
+                LangUtils.localize("tooltip.stored") + " "
+                + gasStack.getGas().getLocalizedName() + ": " + gasStack.amount
+            );
+        }
 
-	@Override
-	public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type)
-	{
-		return "mekanism:render/NullArmor.png";
-	}
+        list.add(
+            EnumColor.GREY + LangUtils.localize("tooltip.mode") + ": " + EnumColor.GREY
+            + getMode(itemstack).getName()
+        );
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, int armorSlot)
-	{
-		ModelCustomArmor model = ModelCustomArmor.INSTANCE;
+    @Override
+    public boolean isValidArmor(ItemStack stack, int armorType, Entity entity) {
+        return armorType == 1;
+    }
 
-		if(this == MekanismItems.Jetpack)
-		{
-			model.modelType = ArmorModel.JETPACK;
-		}
-		else if(this == MekanismItems.ArmoredJetpack)
-		{
-			model.modelType = ArmorModel.ARMOREDJETPACK;
-		}
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type) {
+        return "mekanism:render/NullArmor.png";
+    }
 
-		return model;
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModelBiped
+    getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, int armorSlot) {
+        ModelCustomArmor model = ModelCustomArmor.INSTANCE;
 
-	public void incrementMode(ItemStack stack)
-	{
-		setMode(stack, getMode(stack).increment());
-	}
+        if (this == MekanismItems.Jetpack) {
+            model.modelType = ArmorModel.JETPACK;
+        } else if (this == MekanismItems.ArmoredJetpack) {
+            model.modelType = ArmorModel.ARMOREDJETPACK;
+        }
 
-	public void useGas(ItemStack stack)
-	{
-		setGas(stack, new GasStack(getGas(stack).getGas(), getGas(stack).amount-1));
-	}
+        return model;
+    }
 
-	@Override
-	public int getMaxGas(ItemStack itemstack)
-	{
-		return general.maxJetpackGas;
-	}
+    public void incrementMode(ItemStack stack) {
+        setMode(stack, getMode(stack).increment());
+    }
 
-	@Override
-	public int getRate(ItemStack itemstack)
-	{
-		return TRANSFER_RATE;
-	}
+    public void useGas(ItemStack stack) {
+        setGas(stack, new GasStack(getGas(stack).getGas(), getGas(stack).amount - 1));
+    }
 
-	@Override
-	public int addGas(ItemStack itemstack, GasStack stack)
-	{
-		if(getGas(itemstack) != null && getGas(itemstack).getGas() != stack.getGas())
-		{
-			return 0;
-		}
+    @Override
+    public int getMaxGas(ItemStack itemstack) {
+        return general.maxJetpackGas;
+    }
 
-		if(stack.getGas() != GasRegistry.getGas("hydrogen"))
-		{
-			return 0;
-		}
+    @Override
+    public int getRate(ItemStack itemstack) {
+        return TRANSFER_RATE;
+    }
 
-		int toUse = Math.min(getMaxGas(itemstack)-getStored(itemstack), Math.min(getRate(itemstack), stack.amount));
-		setGas(itemstack, new GasStack(stack.getGas(), getStored(itemstack)+toUse));
+    @Override
+    public int addGas(ItemStack itemstack, GasStack stack) {
+        if (getGas(itemstack) != null && getGas(itemstack).getGas() != stack.getGas()) {
+            return 0;
+        }
 
-		return toUse;
-	}
+        if (stack.getGas() != GasRegistry.getGas("hydrogen")) {
+            return 0;
+        }
 
-	@Override
-	public GasStack removeGas(ItemStack itemstack, int amount)
-	{
-		return null;
-	}
+        int toUse = Math.min(
+            getMaxGas(itemstack) - getStored(itemstack),
+            Math.min(getRate(itemstack), stack.amount)
+        );
+        setGas(itemstack, new GasStack(stack.getGas(), getStored(itemstack) + toUse));
 
-	public int getStored(ItemStack itemstack)
-	{
-		return getGas(itemstack) != null ? getGas(itemstack).amount : 0;
-	}
+        return toUse;
+    }
 
-	@Override
-	public boolean canReceiveGas(ItemStack itemstack, Gas type)
-	{
-		return type == GasRegistry.getGas("hydrogen");
-	}
+    @Override
+    public GasStack removeGas(ItemStack itemstack, int amount) {
+        return null;
+    }
 
-	@Override
-	public boolean canProvideGas(ItemStack itemstack, Gas type)
-	{
-		return false;
-	}
+    public int getStored(ItemStack itemstack) {
+        return getGas(itemstack) != null ? getGas(itemstack).amount : 0;
+    }
 
-	@Override
-	public GasStack getGas(ItemStack itemstack)
-	{
-		if(itemstack.stackTagCompound == null)
-		{
-			return null;
-		}
+    @Override
+    public boolean canReceiveGas(ItemStack itemstack, Gas type) {
+        return type == GasRegistry.getGas("hydrogen");
+    }
 
-		return GasStack.readFromNBT(itemstack.stackTagCompound.getCompoundTag("stored"));
-	}
+    @Override
+    public boolean canProvideGas(ItemStack itemstack, Gas type) {
+        return false;
+    }
 
-	public JetpackMode getMode(ItemStack stack)
-	{
-		if(stack.stackTagCompound == null)
-		{
-			return JetpackMode.NORMAL;
-		}
+    @Override
+    public GasStack getGas(ItemStack itemstack) {
+        if (itemstack.stackTagCompound == null) {
+            return null;
+        }
 
-		return JetpackMode.values()[stack.stackTagCompound.getInteger("mode")];
-	}
+        return GasStack.readFromNBT(itemstack.stackTagCompound.getCompoundTag("stored"));
+    }
 
-	public void setMode(ItemStack stack, JetpackMode mode)
-	{
-		if(stack.stackTagCompound == null)
-		{
-			stack.setTagCompound(new NBTTagCompound());
-		}
+    public JetpackMode getMode(ItemStack stack) {
+        if (stack.stackTagCompound == null) {
+            return JetpackMode.NORMAL;
+        }
 
-		stack.stackTagCompound.setInteger("mode", mode.ordinal());
-	}
+        return JetpackMode.values()[stack.stackTagCompound.getInteger("mode")];
+    }
 
-	@Override
-	public void setGas(ItemStack itemstack, GasStack stack)
-	{
-		if(itemstack.stackTagCompound == null)
-		{
-			itemstack.setTagCompound(new NBTTagCompound());
-		}
+    public void setMode(ItemStack stack, JetpackMode mode) {
+        if (stack.stackTagCompound == null) {
+            stack.setTagCompound(new NBTTagCompound());
+        }
 
-		if(stack == null || stack.amount == 0)
-		{
-			itemstack.stackTagCompound.removeTag("stored");
-		}
-		else {
-			int amount = Math.max(0, Math.min(stack.amount, getMaxGas(itemstack)));
-			GasStack gasStack = new GasStack(stack.getGas(), amount);
+        stack.stackTagCompound.setInteger("mode", mode.ordinal());
+    }
 
-			itemstack.stackTagCompound.setTag("stored", gasStack.write(new NBTTagCompound()));
-		}
-	}
+    @Override
+    public void setGas(ItemStack itemstack, GasStack stack) {
+        if (itemstack.stackTagCompound == null) {
+            itemstack.setTagCompound(new NBTTagCompound());
+        }
 
-	public ItemStack getEmptyItem()
-	{
-		ItemStack empty = new ItemStack(this);
-		setGas(empty, null);
-		
-		return empty;
-	}
+        if (stack == null || stack.amount == 0) {
+            itemstack.stackTagCompound.removeTag("stored");
+        } else {
+            int amount = Math.max(0, Math.min(stack.amount, getMaxGas(itemstack)));
+            GasStack gasStack = new GasStack(stack.getGas(), amount);
 
-	@Override
-	public void getSubItems(Item item, CreativeTabs tabs, List list)
-	{
-		ItemStack empty = new ItemStack(this);
-		setGas(empty, null);
-		list.add(empty);
+            itemstack.stackTagCompound.setTag(
+                "stored", gasStack.write(new NBTTagCompound())
+            );
+        }
+    }
 
-		ItemStack filled = new ItemStack(this);
-		setGas(filled, new GasStack(GasRegistry.getGas("hydrogen"), ((IGasItem)filled.getItem()).getMaxGas(filled)));
-		list.add(filled);
-	}
+    public ItemStack getEmptyItem() {
+        ItemStack empty = new ItemStack(this);
+        setGas(empty, null);
 
-	public static enum JetpackMode
-	{
-		NORMAL("tooltip.jetpack.regular", EnumColor.DARK_GREEN),
-		HOVER("tooltip.jetpack.hover", EnumColor.DARK_AQUA),
-		DISABLED("tooltip.jetpack.disabled", EnumColor.DARK_RED);
+        return empty;
+    }
 
-		private String unlocalized;
-		private EnumColor color;
+    @Override
+    public void getSubItems(Item item, CreativeTabs tabs, List list) {
+        ItemStack empty = new ItemStack(this);
+        setGas(empty, null);
+        list.add(empty);
 
-		private JetpackMode(String s, EnumColor c)
-		{
-			unlocalized = s;
-			color = c;
-		}
+        ItemStack filled = new ItemStack(this);
+        setGas(
+            filled,
+            new GasStack(
+                GasRegistry.getGas("hydrogen"),
+                ((IGasItem) filled.getItem()).getMaxGas(filled)
+            )
+        );
+        list.add(filled);
+    }
 
-		public JetpackMode increment()
-		{
-			return ordinal() < values().length-1 ? values()[ordinal()+1] : values()[0];
-		}
+    public static enum JetpackMode {
+        NORMAL("tooltip.jetpack.regular", EnumColor.DARK_GREEN),
+        HOVER("tooltip.jetpack.hover", EnumColor.DARK_AQUA),
+        DISABLED("tooltip.jetpack.disabled", EnumColor.DARK_RED);
 
-		public String getName()
-		{
-			return color + LangUtils.localize(unlocalized);
-		}
-	}
+        private String unlocalized;
+        private EnumColor color;
 
-	@Override
-	public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot)
-	{
-		if(this == MekanismItems.Jetpack)
-		{
-			return new ArmorProperties(0, 0, 0);
-		}
-		else if(this == MekanismItems.ArmoredJetpack)
-		{
-			return new ArmorProperties(1, general.armoredJetpackDamageRatio, general.armoredJetpackDamageMax);
-		}
+        private JetpackMode(String s, EnumColor c) {
+            unlocalized = s;
+            color = c;
+        }
 
-		return new ArmorProperties(0, 0, 0);
-	}
+        public JetpackMode increment() {
+            return ordinal() < values().length - 1 ? values()[ordinal() + 1]
+                                                   : values()[0];
+        }
 
-	@Override
-	public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot)
-	{
-		if(armor.getItem() == MekanismItems.Jetpack)
-		{
-			return 0;
-		}
-		else if(armor.getItem() == MekanismItems.ArmoredJetpack)
-		{
-			return 12;
-		}
+        public String getName() {
+            return color + LangUtils.localize(unlocalized);
+        }
+    }
 
-		return 0;
-	}
+    @Override
+    public ArmorProperties getProperties(
+        EntityLivingBase player,
+        ItemStack armor,
+        DamageSource source,
+        double damage,
+        int slot
+    ) {
+        if (this == MekanismItems.Jetpack) {
+            return new ArmorProperties(0, 0, 0);
+        } else if (this == MekanismItems.ArmoredJetpack) {
+            return new ArmorProperties(
+                1, general.armoredJetpackDamageRatio, general.armoredJetpackDamageMax
+            );
+        }
 
-	@Override
-	public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {}
+        return new ArmorProperties(0, 0, 0);
+    }
+
+    @Override
+    public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
+        if (armor.getItem() == MekanismItems.Jetpack) {
+            return 0;
+        } else if (armor.getItem() == MekanismItems.ArmoredJetpack) {
+            return 12;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public void damageArmor(
+        EntityLivingBase entity,
+        ItemStack stack,
+        DamageSource source,
+        int damage,
+        int slot
+    ) {}
 }

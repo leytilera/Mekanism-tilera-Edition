@@ -11,163 +11,141 @@ import mekanism.common.tile.TileEntityElectricBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public abstract class TileEntityReactorBlock extends TileEntityElectricBlock implements IReactorBlock
-{
-	public IFusionReactor fusionReactor;
-	
-	public boolean attempted;
-	
-	public boolean changed;
+public abstract class TileEntityReactorBlock
+    extends TileEntityElectricBlock implements IReactorBlock {
+    public IFusionReactor fusionReactor;
 
-	public TileEntityReactorBlock()
-	{
-		super("ReactorBlock", 0);
-		inventory = new ItemStack[0];
-	}
+    public boolean attempted;
 
-	public TileEntityReactorBlock(String name, double maxEnergy)
-	{
-		super(name, maxEnergy);
-	}
+    public boolean changed;
 
-	@Override
-	public void setReactor(IFusionReactor reactor)
-	{
-		if(reactor != fusionReactor)
-		{
-			changed = true;
-		}
-		
-		fusionReactor = reactor;
-	}
+    public TileEntityReactorBlock() {
+        super("ReactorBlock", 0);
+        inventory = new ItemStack[0];
+    }
 
-	@Override
-	public IFusionReactor getReactor()
-	{
-		return fusionReactor;
-	}
+    public TileEntityReactorBlock(String name, double maxEnergy) {
+        super(name, maxEnergy);
+    }
 
-	@Override
-	public void invalidate()
-	{
-		super.invalidate();
-		
-		if(getReactor() != null)
-		{
-			getReactor().formMultiblock(false);
-		}
-	}
+    @Override
+    public void setReactor(IFusionReactor reactor) {
+        if (reactor != fusionReactor) {
+            changed = true;
+        }
 
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
-		
-		if(changed)
-		{
-			changed = false;
-		}
-		
-		if(!worldObj.isRemote && ticker == 5 && !attempted && (getReactor() == null || !getReactor().isFormed()))
-		{
-			updateController();
-		}
-		
-		attempted = false;
-	}
+        fusionReactor = reactor;
+    }
 
-	@Override
-	public EnumSet<ForgeDirection> getOutputtingSides()
-	{
-		return EnumSet.noneOf(ForgeDirection.class);
-	}
+    @Override
+    public IFusionReactor getReactor() {
+        return fusionReactor;
+    }
 
-	@Override
-	public EnumSet<ForgeDirection> getConsumingSides()
-	{
-		return EnumSet.noneOf(ForgeDirection.class);
-	}
-	
-	@Override
-	public void onChunkUnload()
-	{
-		super.onChunkUnload();
+    @Override
+    public void invalidate() {
+        super.invalidate();
 
-		if(!(this instanceof TileEntityReactorController) && getReactor() != null)
-		{
-			getReactor().formMultiblock(true);
-		}
-	}
-	
-	@Override
-	public void onAdded()
-	{
-		super.onAdded();
+        if (getReactor() != null) {
+            getReactor().formMultiblock(false);
+        }
+    }
 
-		if(!worldObj.isRemote)
-		{
-			if(getReactor() != null)
-			{
-				getReactor().formMultiblock(true);
-			}
-			else {
-				updateController();
-			}
-		}
-	}
-	
-	public void updateController()
-	{
-		if(!(this instanceof TileEntityReactorController))
-		{
-			TileEntityReactorController found = new ControllerFinder().find();
-			
-			if(found != null && (found.getReactor() == null || !found.getReactor().isFormed()))
-			{
-				found.formMultiblock(true);
-			}
-		}
-	}
-	
-	public class ControllerFinder
-	{
-		public TileEntityReactorController found;
-		
-		public Set<Coord4D> iterated = new HashSet<Coord4D>();
-		
-		public void loop(Coord4D pos)
-		{
-			if(iterated.size() > 512 || found != null)
-			{
-				return;
-			}
-			
-			iterated.add(pos);
-			
-			for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS)
-			{
-				Coord4D coord = pos.getFromSide(side);
-				
-				if(!iterated.contains(coord) && coord.getTileEntity(worldObj) instanceof TileEntityReactorBlock)
-				{
-					((TileEntityReactorBlock)coord.getTileEntity(worldObj)).attempted = true;
-					
-					if(coord.getTileEntity(worldObj) instanceof TileEntityReactorController)
-					{
-						found = (TileEntityReactorController)coord.getTileEntity(worldObj);
-						return;
-					}
-					
-					loop(coord);
-				}
-			}
-		}
-		
-		public TileEntityReactorController find()
-		{
-			loop(Coord4D.get(TileEntityReactorBlock.this));
-			
-			return found;
-		}
-	}
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+
+        if (changed) {
+            changed = false;
+        }
+
+        if (!worldObj.isRemote && ticker == 5 && !attempted
+            && (getReactor() == null || !getReactor().isFormed())) {
+            updateController();
+        }
+
+        attempted = false;
+    }
+
+    @Override
+    public EnumSet<ForgeDirection> getOutputtingSides() {
+        return EnumSet.noneOf(ForgeDirection.class);
+    }
+
+    @Override
+    public EnumSet<ForgeDirection> getConsumingSides() {
+        return EnumSet.noneOf(ForgeDirection.class);
+    }
+
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+
+        if (!(this instanceof TileEntityReactorController) && getReactor() != null) {
+            getReactor().formMultiblock(true);
+        }
+    }
+
+    @Override
+    public void onAdded() {
+        super.onAdded();
+
+        if (!worldObj.isRemote) {
+            if (getReactor() != null) {
+                getReactor().formMultiblock(true);
+            } else {
+                updateController();
+            }
+        }
+    }
+
+    public void updateController() {
+        if (!(this instanceof TileEntityReactorController)) {
+            TileEntityReactorController found = new ControllerFinder().find();
+
+            if (found != null
+                && (found.getReactor() == null || !found.getReactor().isFormed())) {
+                found.formMultiblock(true);
+            }
+        }
+    }
+
+    public class ControllerFinder {
+        public TileEntityReactorController found;
+
+        public Set<Coord4D> iterated = new HashSet<Coord4D>();
+
+        public void loop(Coord4D pos) {
+            if (iterated.size() > 512 || found != null) {
+                return;
+            }
+
+            iterated.add(pos);
+
+            for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                Coord4D coord = pos.getFromSide(side);
+
+                if (!iterated.contains(coord)
+                    && coord.getTileEntity(worldObj) instanceof TileEntityReactorBlock) {
+                    ((TileEntityReactorBlock) coord.getTileEntity(worldObj)).attempted
+                        = true;
+
+                    if (coord.getTileEntity(worldObj)
+                            instanceof TileEntityReactorController) {
+                        found
+                            = (TileEntityReactorController) coord.getTileEntity(worldObj);
+                        return;
+                    }
+
+                    loop(coord);
+                }
+            }
+        }
+
+        public TileEntityReactorController find() {
+            loop(Coord4D.get(TileEntityReactorBlock.this));
+
+            return found;
+        }
+    }
 }

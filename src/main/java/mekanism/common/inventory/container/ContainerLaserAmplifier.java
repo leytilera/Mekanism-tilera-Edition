@@ -7,96 +7,81 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerLaserAmplifier extends Container
-{
-	private TileEntityLaserAmplifier tileEntity;
+public class ContainerLaserAmplifier extends Container {
+    private TileEntityLaserAmplifier tileEntity;
 
-	public ContainerLaserAmplifier(InventoryPlayer inventory, TileEntityLaserAmplifier tentity)
-	{
-		tileEntity = tentity;
-		
-		int slotY;
+    public ContainerLaserAmplifier(
+        InventoryPlayer inventory, TileEntityLaserAmplifier tentity
+    ) {
+        tileEntity = tentity;
 
-		for(slotY = 0; slotY < 3; slotY++)
-		{
-			for(int slotX = 0; slotX < 9; slotX++)
-			{
-				addSlotToContainer(new Slot(inventory, slotX + slotY * 9 + 9, 8 + slotX * 18, 84 + slotY * 18));
-			}
-		}
+        int slotY;
 
-		for(slotY = 0; slotY < 9; slotY++)
-		{
-			addSlotToContainer(new Slot(inventory, slotY, 8 + slotY * 18, 142));
-		}
+        for (slotY = 0; slotY < 3; slotY++) {
+            for (int slotX = 0; slotX < 9; slotX++) {
+                addSlotToContainer(new Slot(
+                    inventory, slotX + slotY * 9 + 9, 8 + slotX * 18, 84 + slotY * 18
+                ));
+            }
+        }
 
-		tileEntity.open(inventory.player);
-		tileEntity.openInventory();
-	}
+        for (slotY = 0; slotY < 9; slotY++) {
+            addSlotToContainer(new Slot(inventory, slotY, 8 + slotY * 18, 142));
+        }
 
-	@Override
-	public void onContainerClosed(EntityPlayer entityplayer)
-	{
-		super.onContainerClosed(entityplayer);
+        tileEntity.open(inventory.player);
+        tileEntity.openInventory();
+    }
 
-		tileEntity.close(entityplayer);
-		tileEntity.closeInventory();
-	}
+    @Override
+    public void onContainerClosed(EntityPlayer entityplayer) {
+        super.onContainerClosed(entityplayer);
 
-	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer)
-	{
-		return tileEntity.isUseableByPlayer(entityplayer);
-	}
-	
-	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int slotID)
-	{
-		ItemStack stack = null;
-		Slot currentSlot = (Slot)inventorySlots.get(slotID);
+        tileEntity.close(entityplayer);
+        tileEntity.closeInventory();
+    }
 
-		if(currentSlot != null && currentSlot.getHasStack())
-		{
-			ItemStack slotStack = currentSlot.getStack();
-			stack = slotStack.copy();
+    @Override
+    public boolean canInteractWith(EntityPlayer entityplayer) {
+        return tileEntity.isUseableByPlayer(entityplayer);
+    }
 
-			if(slotID >= 0 && slotID <= 26)
-			{
-				if(!mergeItemStack(slotStack, 27, inventorySlots.size(), false))
-				{
-					return null;
-				}
-			}
-			else if(slotID > 26)
-			{
-				if(!mergeItemStack(slotStack, 0, 26, false))
-				{
-					return null;
-				}
-			}
-			else {
-				if(!mergeItemStack(slotStack, 0, inventorySlots.size(), true))
-				{
-					return null;
-				}
-			}
+    @Override
+    public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
+        ItemStack stack = null;
+        Slot currentSlot = (Slot) inventorySlots.get(slotID);
 
-			if(slotStack.stackSize == 0)
-			{
-				currentSlot.putStack((ItemStack)null);
-			}
-			else {
-				currentSlot.onSlotChanged();
-			}
+        if (currentSlot != null && currentSlot.getHasStack()) {
+            ItemStack slotStack = currentSlot.getStack();
+            stack = slotStack.copy();
 
-			if(slotStack.stackSize == stack.stackSize)
-			{
-				return null;
-			}
+            if (slotID >= 0 && slotID <= 26) {
+                if (!mergeItemStack(slotStack, 27, inventorySlots.size(), false)) {
+                    return null;
+                }
+            } else if (slotID > 26) {
+                if (!mergeItemStack(slotStack, 0, 26, false)) {
+                    return null;
+                }
+            } else {
+                if (!mergeItemStack(slotStack, 0, inventorySlots.size(), true)) {
+                    return null;
+                }
+            }
 
-			currentSlot.onPickupFromSlot(player, slotStack);
-		}
+            if (slotStack.stackSize == 0) {
+                currentSlot.putStack((ItemStack) null);
+            } else {
+                currentSlot.onSlotChanged();
+            }
 
-		return stack;
-	}
+            if (slotStack.stackSize == stack.stackSize) {
+                return null;
+            }
+
+            currentSlot.onPickupFromSlot(player, slotStack);
+        }
+
+        return stack;
+    }
 }

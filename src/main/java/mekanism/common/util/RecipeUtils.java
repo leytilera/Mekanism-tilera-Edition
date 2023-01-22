@@ -32,319 +32,299 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class RecipeUtils 
-{
-	public static boolean areItemsEqualForCrafting(ItemStack target, ItemStack input)
-	{
-		if(target == null && input != null || target != null && input == null)
-		{
-			return false;
-		}
-		else if(target == null && input == null)
-		{
-			return true;
-		}
+public class RecipeUtils {
+    public static boolean areItemsEqualForCrafting(ItemStack target, ItemStack input) {
+        if (target == null && input != null || target != null && input == null) {
+            return false;
+        } else if (target == null && input == null) {
+            return true;
+        }
 
-		if(target.getItem() != input.getItem())
-		{
-			return false;
-		}
-		
-		if(target.getItemDamage() != input.getItemDamage() && target.getItemDamage() != OreDictionary.WILDCARD_VALUE)
-		{
-			return false;
-		}
+        if (target.getItem() != input.getItem()) {
+            return false;
+        }
 
-		if(target.getItem() instanceof IEnergyCube && input.getItem() instanceof IEnergyCube)
-		{
-			if(((IEnergyCube)target.getItem()).getEnergyCubeTier(target) != ((IEnergyCube)input.getItem()).getEnergyCubeTier(input))
-			{
-				return false;
-			}
-		}
-		
-		if(target.getItem() instanceof ITierItem && input.getItem() instanceof ITierItem)
-		{
-			if(((ITierItem)target.getItem()).getBaseTier(target) != ((ITierItem)input.getItem()).getBaseTier(input))
-			{
-				return false;
-			}
-		}
-		
-		if(target.getItem() instanceof IFactory && input.getItem() instanceof IFactory)
-		{
-			if(isFactory(target) && isFactory(input))
-			{
-				if(((IFactory)target.getItem()).getRecipeType(target) != ((IFactory)input.getItem()).getRecipeType(input))
-				{
-					return false;
-				}
-			}
-		}
+        if (target.getItemDamage() != input.getItemDamage()
+            && target.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
+            return false;
+        }
 
-		return true;
-	}
-	
-	private static boolean isFactory(ItemStack stack)
-	{
-		return MachineType.get(stack) == MachineType.BASIC_FACTORY || MachineType.get(stack) == MachineType.ADVANCED_FACTORY || MachineType.get(stack) == MachineType.ELITE_FACTORY;
-	}
-	
-	public static ItemStack getCraftingResult(InventoryCrafting inv, ItemStack toReturn)
-	{
-		if(toReturn.getItem() instanceof IEnergizedItem)
-		{
-			double energyFound = 0;
+        if (target.getItem() instanceof IEnergyCube
+            && input.getItem() instanceof IEnergyCube) {
+            if (((IEnergyCube) target.getItem()).getEnergyCubeTier(target)
+                != ((IEnergyCube) input.getItem()).getEnergyCubeTier(input)) {
+                return false;
+            }
+        }
 
-			for(int i = 0; i < 9; i++)
-			{
-				ItemStack itemstack = inv.getStackInSlot(i);
+        if (target.getItem() instanceof ITierItem
+            && input.getItem() instanceof ITierItem) {
+            if (((ITierItem) target.getItem()).getBaseTier(target)
+                != ((ITierItem) input.getItem()).getBaseTier(input)) {
+                return false;
+            }
+        }
 
-				if(itemstack != null && itemstack.getItem() instanceof IEnergizedItem)
-				{
-					energyFound += ((IEnergizedItem)itemstack.getItem()).getEnergy(itemstack);
-				}
-			}
+        if (target.getItem() instanceof IFactory && input.getItem() instanceof IFactory) {
+            if (isFactory(target) && isFactory(input)) {
+                if (((IFactory) target.getItem()).getRecipeType(target)
+                    != ((IFactory) input.getItem()).getRecipeType(input)) {
+                    return false;
+                }
+            }
+        }
 
-			((IEnergizedItem)toReturn.getItem()).setEnergy(toReturn, Math.min(((IEnergizedItem)toReturn.getItem()).getMaxEnergy(toReturn), energyFound));
-		}
-		
-		if(toReturn.getItem() instanceof IGasItem)
-		{
-			GasStack gasFound = null;
-			
-			for(int i = 0; i < 9; i++)
-			{
-				ItemStack itemstack = inv.getStackInSlot(i);
+        return true;
+    }
 
-				if(itemstack != null && itemstack.getItem() instanceof IGasItem)
-				{
-					GasStack stored = ((IGasItem)itemstack.getItem()).getGas(itemstack);
-					
-					if(stored != null)
-					{
-						if(!((IGasItem)toReturn.getItem()).canReceiveGas(toReturn, stored.getGas()))
-						{
-							return null;
-						}
-						
-						if(gasFound == null)
-						{
-							gasFound = stored;
-						}
-						else {
-							if(gasFound.getGas() != stored.getGas())
-							{
-								return null;
-							}
-							
-							gasFound.amount += stored.amount;
-						}
-					}
-				}
-			}
-			
-			if(gasFound != null)
-			{
-				gasFound.amount = Math.min(((IGasItem)toReturn.getItem()).getMaxGas(toReturn), gasFound.amount);
-				((IGasItem)toReturn.getItem()).setGas(toReturn, gasFound);
-			}
-		}
-		
-		if(toReturn.getItem() instanceof ISecurityItem)
-		{
-			for(int i = 0; i < 9; i++)
-			{
-				ItemStack itemstack = inv.getStackInSlot(i);
-				
-				if(itemstack != null && itemstack.getItem() instanceof ISecurityItem)
-				{
-					((ISecurityItem)toReturn.getItem()).setOwner(toReturn, ((ISecurityItem)itemstack.getItem()).getOwner(itemstack));
-					((ISecurityItem)toReturn.getItem()).setSecurity(toReturn, ((ISecurityItem)itemstack.getItem()).getSecurity(itemstack));
-					
-					break;
-				}
-			}
-		}
-		
-		if(toReturn.getItem() instanceof IFluidContainerItem)
-		{
-			FluidStack fluidFound = null;
-			
-			for(int i = 0; i < 9; i++)
-			{
-				ItemStack itemstack = inv.getStackInSlot(i);
+    private static boolean isFactory(ItemStack stack) {
+        return MachineType.get(stack) == MachineType.BASIC_FACTORY
+            || MachineType.get(stack) == MachineType.ADVANCED_FACTORY
+            || MachineType.get(stack) == MachineType.ELITE_FACTORY;
+    }
 
-				if(itemstack != null && itemstack.getItem() instanceof IFluidContainerItem)
-				{
-					FluidStack stored = ((IFluidContainerItem)itemstack.getItem()).getFluid(itemstack);
-					
-					if(stored != null)
-					{
-						if(((IFluidContainerItem)toReturn.getItem()).fill(toReturn, stored, false) == 0)
-						{
-							return null;
-						}
-						
-						if(fluidFound == null)
-						{
-							fluidFound = stored;
-						}
-						else {
-							if(fluidFound.getFluid() != stored.getFluid())
-							{
-								return null;
-							}
-							
-							fluidFound.amount += stored.amount;
-						}
-					}
-				}
-			}
-			
-			if(fluidFound != null)
-			{
-				fluidFound.amount = Math.min(((IFluidContainerItem)toReturn.getItem()).getCapacity(toReturn), fluidFound.amount);
-				((IFluidContainerItem)toReturn.getItem()).fill(toReturn, fluidFound, true);
-			}
-		}
-		
-		if(BasicType.get(toReturn) == BasicType.BIN)
-		{
-			int foundCount = 0;
-			ItemStack foundType = null;
-			
-			for(int i = 0; i < 9; i++)
-			{
-				ItemStack itemstack = inv.getStackInSlot(i);
+    public static ItemStack getCraftingResult(InventoryCrafting inv, ItemStack toReturn) {
+        if (toReturn.getItem() instanceof IEnergizedItem) {
+            double energyFound = 0;
 
-				if(itemstack != null && BasicType.get(itemstack) == BasicType.BIN)
-				{
-					InventoryBin binInv = new InventoryBin(itemstack);
-					
-					foundCount = binInv.getItemCount();
-					foundType = binInv.getItemType();
-				}
-			}
-			
-			if(foundCount > 0 && foundType != null)
-			{
-				InventoryBin binInv = new InventoryBin(toReturn);
-				binInv.setItemCount(foundCount);
-				binInv.setItemType(foundType);
-			}
-		}
+            for (int i = 0; i < 9; i++) {
+                ItemStack itemstack = inv.getStackInSlot(i);
 
-		if(MachineType.get(toReturn) != null && MachineType.get(toReturn).supportsUpgrades)
-		{
-			Map<Upgrade, Integer> upgrades = new HashMap<Upgrade, Integer>();
+                if (itemstack != null && itemstack.getItem() instanceof IEnergizedItem) {
+                    energyFound
+                        += ((IEnergizedItem) itemstack.getItem()).getEnergy(itemstack);
+                }
+            }
 
-			for(int i = 0; i < 9; i++)
-			{
-				ItemStack itemstack = inv.getStackInSlot(i);
+            ((IEnergizedItem) toReturn.getItem())
+                .setEnergy(
+                    toReturn,
+                    Math.min(
+                        ((IEnergizedItem) toReturn.getItem()).getMaxEnergy(toReturn),
+                        energyFound
+                    )
+                );
+        }
 
-				if(itemstack != null && MachineType.get(itemstack) != null && MachineType.get(itemstack).supportsUpgrades)
-				{
-					Map<Upgrade, Integer> stackMap = Upgrade.buildMap(itemstack.stackTagCompound);
-					
-					for(Map.Entry<Upgrade, Integer> entry : stackMap.entrySet())
-					{
-						if(entry != null && entry.getKey() != null && entry.getValue() != null)
-						{
-							Integer val = upgrades.get(entry.getKey());
-							
-							upgrades.put(entry.getKey(), Math.min(entry.getKey().getMax(), (val != null ? val : 0) + entry.getValue()));
-						}
-					}
-				}
-			}
-			
-			if(toReturn.stackTagCompound == null)
-			{
-				toReturn.setTagCompound(new NBTTagCompound());
-			}
-			
-			Upgrade.saveMap(upgrades, toReturn.stackTagCompound);
-		}
+        if (toReturn.getItem() instanceof IGasItem) {
+            GasStack gasFound = null;
 
-		return toReturn;
-	}
-	
-	public static ItemStack loadRecipeItemStack(NBTTagCompound nbtTags)
-	{
-		int meta = 0;
-		int amount = 1;
-		
-		if(nbtTags.hasKey("meta"))
-		{
-			meta = nbtTags.getInteger("meta");
-		}
-		
-		if(nbtTags.hasKey("amount"))
-		{
-			amount = nbtTags.getInteger("amount");
-		}
-		
-		if(nbtTags.hasKey("itemstack"))
-		{
-			return ItemStack.loadItemStackFromNBT(nbtTags.getCompoundTag("itemstack"));
-		}
-		else if(nbtTags.hasKey("itemname"))
-		{
-			Object obj = Item.itemRegistry.getObject(nbtTags.getString("itemname"));
-			
-			if(obj instanceof Item)
-			{
-				return new ItemStack((Item)obj, amount, meta);
-			}
-		}
-		else if(nbtTags.hasKey("blockname"))
-		{
-			Object obj = Block.blockRegistry.getObject(nbtTags.getString("blockname"));
-			
-			if(obj instanceof Block)
-			{
-				return new ItemStack((Block)obj, amount, meta);
-			}
-		}
-		
-		return null;
-	}
-	
-	public static boolean removeRecipes(ItemStack stack)
-	{
-		List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
-		
-		for(Iterator<IRecipe> iter = recipes.iterator(); iter.hasNext();)
-		{
-			IRecipe iterRecipe = iter.next();
-			
-			if(iterRecipe instanceof ShapedMekanismRecipe || iterRecipe instanceof ShapelessMekanismRecipe)
-			{
-				if(StackUtils.equalsWildcard(stack, iterRecipe.getRecipeOutput()))
-				{
-					iter.remove();
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	public static IRecipe getRecipeFromGrid(InventoryCrafting inv, World world)
-	{
-		List<IRecipe> list = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
-		
-		for(Iterator<IRecipe> iter = list.iterator(); iter.hasNext();)
-		{
-			IRecipe recipe = iter.next();
-			
-			if(recipe.matches(inv, world))
-			{
-				return recipe;
-			}
-		}
-		
-		return null;
-	}
+            for (int i = 0; i < 9; i++) {
+                ItemStack itemstack = inv.getStackInSlot(i);
+
+                if (itemstack != null && itemstack.getItem() instanceof IGasItem) {
+                    GasStack stored = ((IGasItem) itemstack.getItem()).getGas(itemstack);
+
+                    if (stored != null) {
+                        if (!((IGasItem) toReturn.getItem())
+                                 .canReceiveGas(toReturn, stored.getGas())) {
+                            return null;
+                        }
+
+                        if (gasFound == null) {
+                            gasFound = stored;
+                        } else {
+                            if (gasFound.getGas() != stored.getGas()) {
+                                return null;
+                            }
+
+                            gasFound.amount += stored.amount;
+                        }
+                    }
+                }
+            }
+
+            if (gasFound != null) {
+                gasFound.amount = Math.min(
+                    ((IGasItem) toReturn.getItem()).getMaxGas(toReturn), gasFound.amount
+                );
+                ((IGasItem) toReturn.getItem()).setGas(toReturn, gasFound);
+            }
+        }
+
+        if (toReturn.getItem() instanceof ISecurityItem) {
+            for (int i = 0; i < 9; i++) {
+                ItemStack itemstack = inv.getStackInSlot(i);
+
+                if (itemstack != null && itemstack.getItem() instanceof ISecurityItem) {
+                    ((ISecurityItem) toReturn.getItem())
+                        .setOwner(
+                            toReturn,
+                            ((ISecurityItem) itemstack.getItem()).getOwner(itemstack)
+                        );
+                    ((ISecurityItem) toReturn.getItem())
+                        .setSecurity(
+                            toReturn,
+                            ((ISecurityItem) itemstack.getItem()).getSecurity(itemstack)
+                        );
+
+                    break;
+                }
+            }
+        }
+
+        if (toReturn.getItem() instanceof IFluidContainerItem) {
+            FluidStack fluidFound = null;
+
+            for (int i = 0; i < 9; i++) {
+                ItemStack itemstack = inv.getStackInSlot(i);
+
+                if (itemstack != null
+                    && itemstack.getItem() instanceof IFluidContainerItem) {
+                    FluidStack stored
+                        = ((IFluidContainerItem) itemstack.getItem()).getFluid(itemstack);
+
+                    if (stored != null) {
+                        if (((IFluidContainerItem) toReturn.getItem())
+                                .fill(toReturn, stored, false)
+                            == 0) {
+                            return null;
+                        }
+
+                        if (fluidFound == null) {
+                            fluidFound = stored;
+                        } else {
+                            if (fluidFound.getFluid() != stored.getFluid()) {
+                                return null;
+                            }
+
+                            fluidFound.amount += stored.amount;
+                        }
+                    }
+                }
+            }
+
+            if (fluidFound != null) {
+                fluidFound.amount = Math.min(
+                    ((IFluidContainerItem) toReturn.getItem()).getCapacity(toReturn),
+                    fluidFound.amount
+                );
+                ((IFluidContainerItem) toReturn.getItem())
+                    .fill(toReturn, fluidFound, true);
+            }
+        }
+
+        if (BasicType.get(toReturn) == BasicType.BIN) {
+            int foundCount = 0;
+            ItemStack foundType = null;
+
+            for (int i = 0; i < 9; i++) {
+                ItemStack itemstack = inv.getStackInSlot(i);
+
+                if (itemstack != null && BasicType.get(itemstack) == BasicType.BIN) {
+                    InventoryBin binInv = new InventoryBin(itemstack);
+
+                    foundCount = binInv.getItemCount();
+                    foundType = binInv.getItemType();
+                }
+            }
+
+            if (foundCount > 0 && foundType != null) {
+                InventoryBin binInv = new InventoryBin(toReturn);
+                binInv.setItemCount(foundCount);
+                binInv.setItemType(foundType);
+            }
+        }
+
+        if (MachineType.get(toReturn) != null
+            && MachineType.get(toReturn).supportsUpgrades) {
+            Map<Upgrade, Integer> upgrades = new HashMap<Upgrade, Integer>();
+
+            for (int i = 0; i < 9; i++) {
+                ItemStack itemstack = inv.getStackInSlot(i);
+
+                if (itemstack != null && MachineType.get(itemstack) != null
+                    && MachineType.get(itemstack).supportsUpgrades) {
+                    Map<Upgrade, Integer> stackMap
+                        = Upgrade.buildMap(itemstack.stackTagCompound);
+
+                    for (Map.Entry<Upgrade, Integer> entry : stackMap.entrySet()) {
+                        if (entry != null && entry.getKey() != null
+                            && entry.getValue() != null) {
+                            Integer val = upgrades.get(entry.getKey());
+
+                            upgrades.put(
+                                entry.getKey(),
+                                Math.min(
+                                    entry.getKey().getMax(),
+                                    (val != null ? val : 0) + entry.getValue()
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+
+            if (toReturn.stackTagCompound == null) {
+                toReturn.setTagCompound(new NBTTagCompound());
+            }
+
+            Upgrade.saveMap(upgrades, toReturn.stackTagCompound);
+        }
+
+        return toReturn;
+    }
+
+    public static ItemStack loadRecipeItemStack(NBTTagCompound nbtTags) {
+        int meta = 0;
+        int amount = 1;
+
+        if (nbtTags.hasKey("meta")) {
+            meta = nbtTags.getInteger("meta");
+        }
+
+        if (nbtTags.hasKey("amount")) {
+            amount = nbtTags.getInteger("amount");
+        }
+
+        if (nbtTags.hasKey("itemstack")) {
+            return ItemStack.loadItemStackFromNBT(nbtTags.getCompoundTag("itemstack"));
+        } else if (nbtTags.hasKey("itemname")) {
+            Object obj = Item.itemRegistry.getObject(nbtTags.getString("itemname"));
+
+            if (obj instanceof Item) {
+                return new ItemStack((Item) obj, amount, meta);
+            }
+        } else if (nbtTags.hasKey("blockname")) {
+            Object obj = Block.blockRegistry.getObject(nbtTags.getString("blockname"));
+
+            if (obj instanceof Block) {
+                return new ItemStack((Block) obj, amount, meta);
+            }
+        }
+
+        return null;
+    }
+
+    public static boolean removeRecipes(ItemStack stack) {
+        List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
+
+        for (Iterator<IRecipe> iter = recipes.iterator(); iter.hasNext();) {
+            IRecipe iterRecipe = iter.next();
+
+            if (iterRecipe instanceof ShapedMekanismRecipe
+                || iterRecipe instanceof ShapelessMekanismRecipe) {
+                if (StackUtils.equalsWildcard(stack, iterRecipe.getRecipeOutput())) {
+                    iter.remove();
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static IRecipe getRecipeFromGrid(InventoryCrafting inv, World world) {
+        List<IRecipe> list
+            = new ArrayList<IRecipe>(CraftingManager.getInstance().getRecipeList());
+
+        for (Iterator<IRecipe> iter = list.iterator(); iter.hasNext();) {
+            IRecipe recipe = iter.next();
+
+            if (recipe.matches(inv, world)) {
+                return recipe;
+            }
+        }
+
+        return null;
+    }
 }

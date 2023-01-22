@@ -5,70 +5,61 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class ItemStackInput extends MachineInput<ItemStackInput>
-{
-	public ItemStack ingredient;
+public class ItemStackInput extends MachineInput<ItemStackInput> {
+    public ItemStack ingredient;
 
-	public ItemStackInput(ItemStack stack)
-	{
-		ingredient = stack;
-	}
-	
-	public ItemStackInput() {}
-	
-	@Override
-	public void load(NBTTagCompound nbtTags)
-	{
-		ingredient = ItemStack.loadItemStackFromNBT(nbtTags.getCompoundTag("input"));
-	}
+    public ItemStackInput(ItemStack stack) {
+        ingredient = stack;
+    }
 
-	@Override
-	public ItemStackInput copy()
-	{
-		return new ItemStackInput(ingredient.copy());
-	}
+    public ItemStackInput() {}
 
-	@Override
-	public boolean isValid()
-	{
-		return ingredient != null;
-	}
+    @Override
+    public void load(NBTTagCompound nbtTags) {
+        ingredient = ItemStack.loadItemStackFromNBT(nbtTags.getCompoundTag("input"));
+    }
 
-	public ItemStackInput wildCopy()
-	{
-		return new ItemStackInput(new ItemStack(ingredient.getItem(), ingredient.stackSize, OreDictionary.WILDCARD_VALUE));
-	}
+    @Override
+    public ItemStackInput copy() {
+        return new ItemStackInput(ingredient.copy());
+    }
 
-	public boolean useItemStackFromInventory(ItemStack[] inventory, int index, boolean deplete)
-	{
-		if(inputContains(inventory[index], ingredient))
-		{
-			if(deplete)
-			{
-				inventory[index] = StackUtils.subtract(inventory[index], ingredient);
-			}
-			
-			return true;
-		}
-		
-		return false;
-	}
+    @Override
+    public boolean isValid() {
+        return ingredient != null;
+    }
 
-	@Override
-	public int hashIngredients()
-	{
-		return StackUtils.hashItemStack(ingredient);
-	}
+    public ItemStackInput wildCopy() {
+        return new ItemStackInput(new ItemStack(
+            ingredient.getItem(), ingredient.stackSize, OreDictionary.WILDCARD_VALUE
+        ));
+    }
 
-	@Override
-	public boolean testEquality(ItemStackInput other)
-	{
-		return StackUtils.equalsWildcardWithNBT(ingredient, other.ingredient);
-	}
+    public boolean
+    useItemStackFromInventory(ItemStack[] inventory, int index, boolean deplete) {
+        if (inputContains(inventory[index], ingredient)) {
+            if (deplete) {
+                inventory[index] = StackUtils.subtract(inventory[index], ingredient);
+            }
 
-	@Override
-	public boolean isInstance(Object other)
-	{
-		return other instanceof ItemStackInput;
-	}
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashIngredients() {
+        return StackUtils.hashItemStack(ingredient);
+    }
+
+    @Override
+    public boolean testEquality(ItemStackInput other) {
+        return StackUtils.equalsWildcardWithNBT(ingredient, other.ingredient);
+    }
+
+    @Override
+    public boolean isInstance(Object other) {
+        return other instanceof ItemStackInput;
+    }
 }

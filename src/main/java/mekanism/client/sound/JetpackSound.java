@@ -1,37 +1,33 @@
 package mekanism.client.sound;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.client.ClientTickHandler;
 import mekanism.common.item.ItemJetpack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class JetpackSound extends PlayerSound
-{
-	public JetpackSound(EntityPlayer player)
-	{
-		super(player, new ResourceLocation("mekanism", "item.jetpack"));
-		
-		setFadeIn(10);
-		setFadeOut(5);
-	}
+public class JetpackSound extends PlayerSound {
+    public JetpackSound(EntityPlayer player) {
+        super(player, new ResourceLocation("mekanism", "item.jetpack"));
 
-	@Override
-	public boolean isDonePlaying()
-	{
-		return donePlaying;
-	}
+        setFadeIn(10);
+        setFadeOut(5);
+    }
 
-	@Override
-	public boolean shouldPlaySound()
-	{
-		return hasJetpack(player) && ClientTickHandler.isJetpackOn(player);
-	}
+    @Override
+    public boolean isDonePlaying() {
+        return donePlaying;
+    }
 
-	private boolean hasJetpack(EntityPlayer player)
-	{
-		return player.inventory.armorInventory[2] != null && player.inventory.armorInventory[2].getItem() instanceof ItemJetpack;
-	}
+    @Override
+    public boolean shouldPlaySound() {
+        return hasJetpack(player) && ClientTickHandler.isJetpackOn(player);
+    }
+
+    private boolean hasJetpack(EntityPlayer player) {
+        return player.inventory.armorInventory[2] != null
+            && player.inventory.armorInventory[2].getItem() instanceof ItemJetpack;
+    }
 }

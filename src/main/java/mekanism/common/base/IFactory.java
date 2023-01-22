@@ -28,247 +28,269 @@ import net.minecraftforge.common.util.ForgeDirection;
  * @author AidanBrady
  *
  */
-public interface IFactory
-{
-	/**
-	 * Gets the recipe type this Smelting Factory currently has.
-	 * @param itemStack - stack to check
-	 * @return RecipeType ordinal
-	 */
-	public int getRecipeType(ItemStack itemStack);
+public interface IFactory {
+    /**
+     * Gets the recipe type this Smelting Factory currently has.
+     * @param itemStack - stack to check
+     * @return RecipeType ordinal
+     */
+    public int getRecipeType(ItemStack itemStack);
 
-	/**
-	 * Sets the recipe type of this Smelting Factory to a new value.
-	 * @param type - RecipeType ordinal
-	 * @param itemStack - stack to set
-	 */
-	public void setRecipeType(int type, ItemStack itemStack);
+    /**
+     * Sets the recipe type of this Smelting Factory to a new value.
+     * @param type - RecipeType ordinal
+     * @param itemStack - stack to set
+     */
+    public void setRecipeType(int type, ItemStack itemStack);
 
-	public static enum RecipeType
-	{
-		SMELTING("Smelting", "smelter", MachineType.ENERGIZED_SMELTER.getStack(), false, false, Recipe.ENERGIZED_SMELTER),
-		ENRICHING("Enriching", "enrichment", MachineType.ENRICHMENT_CHAMBER.getStack(), false, false, Recipe.ENRICHMENT_CHAMBER),
-		CRUSHING("Crushing", "crusher", MachineType.CRUSHER.getStack(), false, false, Recipe.CRUSHER),
-		COMPRESSING("Compressing", "compressor", MachineType.OSMIUM_COMPRESSOR.getStack(), true, false, Recipe.OSMIUM_COMPRESSOR),
-		COMBINING("Combining", "combiner", MachineType.COMBINER.getStack(), true, false, Recipe.COMBINER),
-		PURIFYING("Purifying", "purifier", MachineType.PURIFICATION_CHAMBER.getStack(), true, true, Recipe.PURIFICATION_CHAMBER),
-		INJECTING("Injecting", "injection", MachineType.CHEMICAL_INJECTION_CHAMBER.getStack(), true, true, Recipe.CHEMICAL_INJECTION_CHAMBER),
-		INFUSING("Infusing", "metalinfuser", MachineType.METALLURGIC_INFUSER.getStack(), false, false, Recipe.METALLURGIC_INFUSER);
+    public static enum RecipeType {
+        SMELTING(
+            "Smelting",
+            "smelter",
+            MachineType.ENERGIZED_SMELTER.getStack(),
+            false,
+            false,
+            Recipe.ENERGIZED_SMELTER
+        ),
+        ENRICHING(
+            "Enriching",
+            "enrichment",
+            MachineType.ENRICHMENT_CHAMBER.getStack(),
+            false,
+            false,
+            Recipe.ENRICHMENT_CHAMBER
+        ),
+        CRUSHING(
+            "Crushing",
+            "crusher",
+            MachineType.CRUSHER.getStack(),
+            false,
+            false,
+            Recipe.CRUSHER
+        ),
+        COMPRESSING(
+            "Compressing",
+            "compressor",
+            MachineType.OSMIUM_COMPRESSOR.getStack(),
+            true,
+            false,
+            Recipe.OSMIUM_COMPRESSOR
+        ),
+        COMBINING(
+            "Combining",
+            "combiner",
+            MachineType.COMBINER.getStack(),
+            true,
+            false,
+            Recipe.COMBINER
+        ),
+        PURIFYING(
+            "Purifying",
+            "purifier",
+            MachineType.PURIFICATION_CHAMBER.getStack(),
+            true,
+            true,
+            Recipe.PURIFICATION_CHAMBER
+        ),
+        INJECTING(
+            "Injecting",
+            "injection",
+            MachineType.CHEMICAL_INJECTION_CHAMBER.getStack(),
+            true,
+            true,
+            Recipe.CHEMICAL_INJECTION_CHAMBER
+        ),
+        INFUSING(
+            "Infusing",
+            "metalinfuser",
+            MachineType.METALLURGIC_INFUSER.getStack(),
+            false,
+            false,
+            Recipe.METALLURGIC_INFUSER
+        );
 
-		private String name;
-		private ResourceLocation sound;
-		private ItemStack stack;
-		private boolean usesFuel;
-		private boolean fuelSpeed;
-		private Recipe recipe;
-		private TileEntityAdvancedElectricMachine cacheTile;
+        private String name;
+        private ResourceLocation sound;
+        private ItemStack stack;
+        private boolean usesFuel;
+        private boolean fuelSpeed;
+        private Recipe recipe;
+        private TileEntityAdvancedElectricMachine cacheTile;
 
-		public BasicMachineRecipe getRecipe(ItemStackInput input)
-		{
-			return RecipeHandler.getRecipe(input, recipe.get());
-		}
+        public BasicMachineRecipe getRecipe(ItemStackInput input) {
+            return RecipeHandler.getRecipe(input, recipe.get());
+        }
 
-		public BasicMachineRecipe getRecipe(ItemStack input)
-		{
-			return getRecipe(new ItemStackInput(input));
-		}
+        public BasicMachineRecipe getRecipe(ItemStack input) {
+            return getRecipe(new ItemStackInput(input));
+        }
 
-		public AdvancedMachineRecipe getRecipe(AdvancedMachineInput input)
-		{
-			return RecipeHandler.getRecipe(input, recipe.get());
-		}
+        public AdvancedMachineRecipe getRecipe(AdvancedMachineInput input) {
+            return RecipeHandler.getRecipe(input, recipe.get());
+        }
 
-		public AdvancedMachineRecipe getRecipe(ItemStack input, Gas gas)
-		{
-			return getRecipe(new AdvancedMachineInput(input, gas));
-		}
-		
-		public MetallurgicInfuserRecipe getRecipe(InfusionInput input)
-		{
-			return RecipeHandler.getMetallurgicInfuserRecipe(input);
-		}
-		
-		public MetallurgicInfuserRecipe getRecipe(ItemStack input, InfuseStorage storage)
-		{
-			return getRecipe(new InfusionInput(storage, input));
-		}
+        public AdvancedMachineRecipe getRecipe(ItemStack input, Gas gas) {
+            return getRecipe(new AdvancedMachineInput(input, gas));
+        }
 
-		public MachineRecipe getAnyRecipe(ItemStack slotStack, Gas gasType, InfuseStorage infuse)
-		{
-			if(usesFuel())
-			{
-				return getRecipe(slotStack, gasType);
-			}
-			else if(this == INFUSING)
-			{
-				if(infuse.type != null)
-				{
-					return RecipeHandler.getMetallurgicInfuserRecipe(new InfusionInput(infuse, slotStack));
-				}
-				else {
-					for(Object obj : Recipe.METALLURGIC_INFUSER.get().entrySet())
-					{
-						Map.Entry entry = (Map.Entry)obj;
-						InfusionInput input = (InfusionInput)entry.getKey();
-						
-						if(input.inputStack.isItemEqual(slotStack))
-						{
-							return (MetallurgicInfuserRecipe)entry.getValue();
-						}
-					}
-				}
-			}
-			
-			return getRecipe(slotStack);
-		}
+        public MetallurgicInfuserRecipe getRecipe(InfusionInput input) {
+            return RecipeHandler.getMetallurgicInfuserRecipe(input);
+        }
 
-		public GasStack getItemGas(ItemStack itemstack)
-		{
-			if(usesFuel)
-			{
-				return getTile().getItemGas(itemstack);
-			}
+        public MetallurgicInfuserRecipe
+        getRecipe(ItemStack input, InfuseStorage storage) {
+            return getRecipe(new InfusionInput(storage, input));
+        }
 
-			return null;
-		}
+        public MachineRecipe
+        getAnyRecipe(ItemStack slotStack, Gas gasType, InfuseStorage infuse) {
+            if (usesFuel()) {
+                return getRecipe(slotStack, gasType);
+            } else if (this == INFUSING) {
+                if (infuse.type != null) {
+                    return RecipeHandler.getMetallurgicInfuserRecipe(
+                        new InfusionInput(infuse, slotStack)
+                    );
+                } else {
+                    for (Object obj : Recipe.METALLURGIC_INFUSER.get().entrySet()) {
+                        Map.Entry entry = (Map.Entry) obj;
+                        InfusionInput input = (InfusionInput) entry.getKey();
 
-		public int getSecondaryEnergyPerTick()
-		{
-			if(usesFuel)
-			{
-				return getTile().BASE_SECONDARY_ENERGY_PER_TICK;
-			}
+                        if (input.inputStack.isItemEqual(slotStack)) {
+                            return (MetallurgicInfuserRecipe) entry.getValue();
+                        }
+                    }
+                }
+            }
 
-			return 0;
-		}
+            return getRecipe(slotStack);
+        }
 
-		public boolean canReceiveGas(ForgeDirection side, Gas type)
-		{
-			if(usesFuel)
-			{
-				return getTile().canReceiveGas(side, type);
-			}
+        public GasStack getItemGas(ItemStack itemstack) {
+            if (usesFuel) {
+                return getTile().getItemGas(itemstack);
+            }
 
-			return false;
-		}
+            return null;
+        }
 
-		public boolean canTubeConnect(ForgeDirection side)
-		{
-			if(usesFuel)
-			{
-				return getTile().canTubeConnect(side);
-			}
+        public int getSecondaryEnergyPerTick() {
+            if (usesFuel) {
+                return getTile().BASE_SECONDARY_ENERGY_PER_TICK;
+            }
 
-			return false;
-		}
+            return 0;
+        }
 
-		public boolean isValidGas(Gas gas)
-		{
-			if(usesFuel)
-			{
-				return getTile().isValidGas(gas);
-			}
+        public boolean canReceiveGas(ForgeDirection side, Gas type) {
+            if (usesFuel) {
+                return getTile().canReceiveGas(side, type);
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		public boolean hasRecipe(ItemStack itemStack)
-		{
-			if(itemStack == null)
-			{
-				return false;
-			}
+        public boolean canTubeConnect(ForgeDirection side) {
+            if (usesFuel) {
+                return getTile().canTubeConnect(side);
+            }
 
-			for(Object obj : recipe.get().entrySet())
-			{
-				if(((Map.Entry)obj).getKey() instanceof AdvancedMachineInput)
-				{
-					Map.Entry entry = (Map.Entry)obj;
+            return false;
+        }
 
-					ItemStack stack = ((AdvancedMachineInput)entry.getKey()).itemStack;
+        public boolean isValidGas(Gas gas) {
+            if (usesFuel) {
+                return getTile().isValidGas(gas);
+            }
 
-					if(StackUtils.equalsWildcard(stack, itemStack))
-					{
-						return true;
-					}
-				}
-			}
+            return false;
+        }
 
-			return false;
-		}
+        public boolean hasRecipe(ItemStack itemStack) {
+            if (itemStack == null) {
+                return false;
+            }
 
-		public TileEntityAdvancedElectricMachine getTile()
-		{
-			if(cacheTile == null)
-			{
-				MachineType type = MachineType.get(Block.getBlockFromItem(getStack().getItem()), getStack().getItemDamage());
-				cacheTile = (TileEntityAdvancedElectricMachine)type.create();
-			}
+            for (Object obj : recipe.get().entrySet()) {
+                if (((Map.Entry) obj).getKey() instanceof AdvancedMachineInput) {
+                    Map.Entry entry = (Map.Entry) obj;
 
-			return cacheTile;
-		}
+                    ItemStack stack = ((AdvancedMachineInput) entry.getKey()).itemStack;
 
-		public int getMaxSecondaryEnergy()
-		{
-			return 200;
-		}
+                    if (StackUtils.equalsWildcard(stack, itemStack)) {
+                        return true;
+                    }
+                }
+            }
 
-		public ItemStack getStack()
-		{
-			return stack;
-		}
-		
-		public String getUnlocalizedName()
-		{
-			return name;
-		}
+            return false;
+        }
 
-		public String getLocalizedName()
-		{
-			return LangUtils.localize("gui.factory." + name);
-		}
+        public TileEntityAdvancedElectricMachine getTile() {
+            if (cacheTile == null) {
+                MachineType type = MachineType.get(
+                    Block.getBlockFromItem(getStack().getItem()),
+                    getStack().getItemDamage()
+                );
+                cacheTile = (TileEntityAdvancedElectricMachine) type.create();
+            }
 
-		public ResourceLocation getSound()
-		{
-			return sound;
-		}
+            return cacheTile;
+        }
 
-		public boolean usesFuel()
-		{
-			return usesFuel;
-		}
-		
-		public boolean fuelEnergyUpgrades()
-		{
-			return fuelSpeed;
-		}
-		
-		public static RecipeType getFromMachine(Block block, int meta)
-		{
-			RecipeType type = null;
-			
-			for(RecipeType iterType : RecipeType.values())
-			{
-				ItemStack machineStack = iterType.getStack();
-				
-				if(Block.getBlockFromItem(machineStack.getItem()) == block && machineStack.getItemDamage() == meta)
-				{
-					type = iterType;
-					break;
-				}
-			}
-			
-			return type;
-		}
+        public int getMaxSecondaryEnergy() {
+            return 200;
+        }
 
-		private RecipeType(String s, String s1, ItemStack is, boolean b, boolean b1, Recipe r)
-		{
-			name = s;
-			sound = new ResourceLocation("mekanism", "tile.machine." + s1);
-			stack = is;
-			usesFuel = b;
-			fuelSpeed = b1;
-			recipe = r;
-		}
-	}
+        public ItemStack getStack() {
+            return stack;
+        }
+
+        public String getUnlocalizedName() {
+            return name;
+        }
+
+        public String getLocalizedName() {
+            return LangUtils.localize("gui.factory." + name);
+        }
+
+        public ResourceLocation getSound() {
+            return sound;
+        }
+
+        public boolean usesFuel() {
+            return usesFuel;
+        }
+
+        public boolean fuelEnergyUpgrades() {
+            return fuelSpeed;
+        }
+
+        public static RecipeType getFromMachine(Block block, int meta) {
+            RecipeType type = null;
+
+            for (RecipeType iterType : RecipeType.values()) {
+                ItemStack machineStack = iterType.getStack();
+
+                if (Block.getBlockFromItem(machineStack.getItem()) == block
+                    && machineStack.getItemDamage() == meta) {
+                    type = iterType;
+                    break;
+                }
+            }
+
+            return type;
+        }
+
+        private RecipeType(
+            String s, String s1, ItemStack is, boolean b, boolean b1, Recipe r
+        ) {
+            name = s;
+            sound = new ResourceLocation("mekanism", "tile.machine." + s1);
+            stack = is;
+            usesFuel = b;
+            fuelSpeed = b1;
+            recipe = r;
+        }
+    }
 }

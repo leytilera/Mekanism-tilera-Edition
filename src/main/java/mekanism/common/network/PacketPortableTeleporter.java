@@ -1,12 +1,15 @@
 package mekanism.common.network;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.Range4D;
 import mekanism.common.Mekanism;
@@ -26,12 +29,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketPortableTeleporter implements IMessageHandler<PortableTeleporterMessage, IMessage> {
+public class PacketPortableTeleporter
+    implements IMessageHandler<PortableTeleporterMessage, IMessage> {
     @Override
     public IMessage onMessage(PortableTeleporterMessage message, MessageContext context) {
         EntityPlayer player = PacketHandler.getPlayer(context);
@@ -49,7 +49,9 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
                     Mekanism.proxy.handleTeleporterUpdate(message);
                     break;
                 case SET_FREQ:
-                    FrequencyManager manager1 = getManager(message.frequency.access, player.getCommandSenderName(), world);
+                    FrequencyManager manager1 = getManager(
+                        message.frequency.access, player.getCommandSenderName(), world
+                    );
                     Frequency toUse = null;
 
                     for (Frequency freq : manager1.getFrequencies()) {
@@ -60,7 +62,10 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
                     }
 
                     if (toUse == null) {
-                        toUse = new Frequency(message.frequency.name, player.getCommandSenderName()).setAccess(message.frequency.access);
+                        toUse = new Frequency(
+                                    message.frequency.name, player.getCommandSenderName()
+                        )
+                                    .setAccess(message.frequency.access);
                         manager1.addFrequency(toUse);
                     }
 
@@ -71,7 +76,9 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
 
                     break;
                 case DEL_FREQ:
-                    FrequencyManager manager = getManager(message.frequency.access, player.getCommandSenderName(), world);
+                    FrequencyManager manager = getManager(
+                        message.frequency.access, player.getCommandSenderName(), world
+                    );
                     manager.remove(message.frequency.name, player.getCommandSenderName());
 
                     item.setFrequency(itemstack, null);
@@ -79,7 +86,9 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
 
                     break;
                 case TELEPORT:
-                    FrequencyManager manager2 = getManager(message.frequency.access,player.getCommandSenderName(), world);
+                    FrequencyManager manager2 = getManager(
+                        message.frequency.access, player.getCommandSenderName(), world
+                    );
                     Frequency found = null;
 
                     for (Frequency freq : manager2.getFrequencies()) {
@@ -96,30 +105,54 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
                     Coord4D coords = found.getClosestCoords(new Coord4D(player));
 
                     if (coords != null) {
-                        World teleWorld = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(coords.dimensionId);
-                        TileEntityTeleporter teleporter = (TileEntityTeleporter) coords.getTileEntity(teleWorld);
+                        World teleWorld
+                            = FMLCommonHandler.instance()
+                                  .getMinecraftServerInstance()
+                                  .worldServerForDimension(coords.dimensionId);
+                        TileEntityTeleporter teleporter
+                            = (TileEntityTeleporter) coords.getTileEntity(teleWorld);
 
                         if (teleporter != null) {
                             try {
                                 teleporter.didTeleport.add(player.getPersistentID());
                                 teleporter.teleDelay = 5;
 
-                                item.setEnergy(itemstack, item.getEnergy(itemstack) - item.calculateEnergyCost(player, coords));
+                                item.setEnergy(
+                                    itemstack,
+                                    item.getEnergy(itemstack)
+                                        - item.calculateEnergyCost(player, coords)
+                                );
 
                                 if (player instanceof EntityPlayerMP) {
-                                    MekanismUtils.setPrivateValue(((EntityPlayerMP) player).playerNetServerHandler, 0, NetHandlerPlayServer.class, ObfuscatedNames.NetHandlerPlayServer_floatingTickCount);
+                                    MekanismUtils.setPrivateValue(
+                                        ((EntityPlayerMP) player).playerNetServerHandler,
+                                        0,
+                                        NetHandlerPlayServer.class,
+                                        ObfuscatedNames
+                                            .NetHandlerPlayServer_floatingTickCount
+                                    );
                                 }
 
                                 player.closeScreen();
 
-                                Mekanism.packetHandler.sendToAllAround(new PortalFXMessage(new Coord4D(player)), coords.getTargetPoint(40D));
-                                TileEntityTeleporter.teleportPlayerTo((EntityPlayerMP) player, coords, teleporter);
-                                TileEntityTeleporter.alignPlayer((EntityPlayerMP) player, coords);
+                                Mekanism.packetHandler.sendToAllAround(
+                                    new PortalFXMessage(new Coord4D(player)),
+                                    coords.getTargetPoint(40D)
+                                );
+                                TileEntityTeleporter.teleportPlayerTo(
+                                    (EntityPlayerMP) player, coords, teleporter
+                                );
+                                TileEntityTeleporter.alignPlayer(
+                                    (EntityPlayerMP) player, coords
+                                );
 
-                                world.playSoundAtEntity(player, "mob.endermen.portal", 1.0F, 1.0F);
-                                Mekanism.packetHandler.sendToReceivers(new PortalFXMessage(coords), new Range4D(coords));
-                            } catch (Exception e) {
-                            }
+                                world.playSoundAtEntity(
+                                    player, "mob.endermen.portal", 1.0F, 1.0F
+                                );
+                                Mekanism.packetHandler.sendToReceivers(
+                                    new PortalFXMessage(coords), new Range4D(coords)
+                                );
+                            } catch (Exception e) {}
                         }
                     }
 
@@ -130,16 +163,27 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
         return null;
     }
 
-    public void sendDataResponse(Frequency given, World world, EntityPlayer player, ItemPortableTeleporter item, ItemStack itemstack) {
+    public void sendDataResponse(
+        Frequency given,
+        World world,
+        EntityPlayer player,
+        ItemPortableTeleporter item,
+        ItemStack itemstack
+    ) {
         List<Frequency> publicFreqs = new ArrayList<Frequency>();
 
-        for (Frequency f : getManager(ISecurityTile.SecurityMode.PUBLIC, null, world).getFrequencies()) {
+        for (Frequency f : getManager(ISecurityTile.SecurityMode.PUBLIC, null, world)
+                               .getFrequencies()) {
             publicFreqs.add(f);
         }
 
         List<Frequency> privateFreqs = new ArrayList<Frequency>();
 
-        for (Frequency f : getManager(ISecurityTile.SecurityMode.PRIVATE, player.getCommandSenderName(), world).getFrequencies()) {
+        for (Frequency f :
+             getManager(
+                 ISecurityTile.SecurityMode.PRIVATE, player.getCommandSenderName(), world
+             )
+                 .getFrequencies()) {
             privateFreqs.add(f);
         }
 
@@ -147,20 +191,29 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
 
         for (Frequency frequency : Mekanism.securityFrequencies.getFrequencies()) {
             SecurityFrequency secure = (SecurityFrequency) frequency;
-            if(secure.trusted.contains(player.getCommandSenderName())) {
-                FrequencyManager protected_ = Mekanism.protectedTeleporters.get(secure.owner);
-                if(protected_ != null) {
+            if (secure.trusted.contains(player.getCommandSenderName())) {
+                FrequencyManager protected_
+                    = Mekanism.protectedTeleporters.get(secure.owner);
+                if (protected_ != null) {
                     protectedFrqs.addAll(protected_.getFrequencies());
                 }
             }
         }
 
-        protectedFrqs.addAll(getManager(ISecurityTile.SecurityMode.TRUSTED, player.getCommandSenderName(), world).getFrequencies());
+        protectedFrqs.addAll(
+            getManager(
+                ISecurityTile.SecurityMode.TRUSTED, player.getCommandSenderName(), world
+            )
+                .getFrequencies()
+        );
 
         byte status = 3;
 
         if (given != null) {
-            FrequencyManager manager = getManager(given.access, given.owner, world);// given.isPublic() ? getManager(null, world) : getManager(player.getCommandSenderName(), world);
+            FrequencyManager manager = getManager(
+                given.access, given.owner, world
+            ); // given.isPublic() ? getManager(null, world) :
+               // getManager(player.getCommandSenderName(), world);
             boolean found = false;
 
             for (Frequency iterFreq : manager.getFrequencies()) {
@@ -172,17 +225,20 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
                 }
             }
 
-            if(given.isProtected() && !given.owner.equalsIgnoreCase(player.getCommandSenderName())) {
-                for (Frequency frequency : Mekanism.securityFrequencies.getFrequencies()) {
+            if (given.isProtected()
+                && !given.owner.equalsIgnoreCase(player.getCommandSenderName())) {
+                for (Frequency frequency :
+                     Mekanism.securityFrequencies.getFrequencies()) {
                     SecurityFrequency secure = (SecurityFrequency) frequency;
-                    if(secure.owner.equals(given.owner)) {
-                        if(!secure.trusted.contains(player.getCommandSenderName())) {
+                    if (secure.owner.equals(given.owner)) {
+                        if (!secure.trusted.contains(player.getCommandSenderName())) {
                             given = null;
                             break;
                         }
 
-                        FrequencyManager protected_ = Mekanism.protectedTeleporters.get(secure.owner);
-                        if(!protected_.containsFrequency(given.name)) {
+                        FrequencyManager protected_
+                            = Mekanism.protectedTeleporters.get(secure.owner);
+                        if (!protected_.containsFrequency(given.name)) {
                             given = null;
                             break;
                         }
@@ -209,10 +265,16 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
             }
         }
 
-        Mekanism.packetHandler.sendTo(new PortableTeleporterMessage(given, status, publicFreqs, privateFreqs, protectedFrqs), (EntityPlayerMP) player);
+        Mekanism.packetHandler.sendTo(
+            new PortableTeleporterMessage(
+                given, status, publicFreqs, privateFreqs, protectedFrqs
+            ),
+            (EntityPlayerMP) player
+        );
     }
 
-    public FrequencyManager getManager(ISecurityTile.SecurityMode mode, String owner, World world) {
+    public FrequencyManager
+    getManager(ISecurityTile.SecurityMode mode, String owner, World world) {
         if (mode == ISecurityTile.SecurityMode.PUBLIC) {
             return Mekanism.publicTeleporters;
         } else if (mode == ISecurityTile.SecurityMode.PRIVATE) {
@@ -243,10 +305,11 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
         public List<Frequency> privateCache = new ArrayList<Frequency>();
         public List<Frequency> protectedCache = new ArrayList<Frequency>();
 
-        public PortableTeleporterMessage() {
-        }
+        public PortableTeleporterMessage() {}
 
-        public PortableTeleporterMessage(PortableTeleporterPacketType type, Frequency freq) {
+        public PortableTeleporterMessage(
+            PortableTeleporterPacketType type, Frequency freq
+        ) {
             packetType = type;
 
             if (type == PortableTeleporterPacketType.DATA_REQUEST) {
@@ -260,7 +323,13 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
             }
         }
 
-        public PortableTeleporterMessage(Frequency freq, byte b, List<Frequency> publicFreqs, List<Frequency> privateFreqs, List<Frequency> protectedFreqs) {
+        public PortableTeleporterMessage(
+            Frequency freq,
+            byte b,
+            List<Frequency> publicFreqs,
+            List<Frequency> privateFreqs,
+            List<Frequency> protectedFreqs
+        ) {
             packetType = PortableTeleporterPacketType.DATA_RESPONSE;
 
             frequency = freq;
@@ -332,11 +401,15 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
 
             if (packetType == PortableTeleporterPacketType.DATA_REQUEST) {
                 if (buffer.readBoolean()) {
-                    frequency = new Frequency(PacketHandler.readString(buffer), null).setAccess(ISecurityTile.SecurityMode.values()[buffer.readInt()]);
+                    frequency = new Frequency(PacketHandler.readString(buffer), null)
+                                    .setAccess(ISecurityTile.SecurityMode.values(
+                                    )[buffer.readInt()]);
                 }
             } else if (packetType == PortableTeleporterPacketType.DATA_RESPONSE) {
                 if (buffer.readBoolean()) {
-                    frequency = new Frequency(PacketHandler.readString(buffer), null).setAccess(ISecurityTile.SecurityMode.values()[buffer.readInt()]);
+                    frequency = new Frequency(PacketHandler.readString(buffer), null)
+                                    .setAccess(ISecurityTile.SecurityMode.values(
+                                    )[buffer.readInt()]);
                 }
 
                 status = buffer.readByte();
@@ -359,11 +432,17 @@ public class PacketPortableTeleporter implements IMessageHandler<PortableTelepor
                 }
 
             } else if (packetType == PortableTeleporterPacketType.SET_FREQ) {
-                frequency = new Frequency(PacketHandler.readString(buffer), null).setAccess(ISecurityTile.SecurityMode.values()[buffer.readInt()]);
+                frequency = new Frequency(PacketHandler.readString(buffer), null)
+                                .setAccess(ISecurityTile.SecurityMode.values(
+                                )[buffer.readInt()]);
             } else if (packetType == PortableTeleporterPacketType.DEL_FREQ) {
-                frequency = new Frequency(PacketHandler.readString(buffer), null).setAccess(ISecurityTile.SecurityMode.values()[buffer.readInt()]);
+                frequency = new Frequency(PacketHandler.readString(buffer), null)
+                                .setAccess(ISecurityTile.SecurityMode.values(
+                                )[buffer.readInt()]);
             } else if (packetType == PortableTeleporterPacketType.TELEPORT) {
-                frequency = new Frequency(PacketHandler.readString(buffer), null).setAccess(ISecurityTile.SecurityMode.values()[buffer.readInt()]);
+                frequency = new Frequency(PacketHandler.readString(buffer), null)
+                                .setAccess(ISecurityTile.SecurityMode.values(
+                                )[buffer.readInt()]);
             }
         }
     }

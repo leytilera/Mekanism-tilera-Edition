@@ -1,9 +1,8 @@
 package mekanism.generators.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.api.MekanismConfig.generators;
 import mekanism.common.FluidSlot;
 import mekanism.common.MekanismItems;
@@ -20,300 +19,259 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-public class TileEntityBioGenerator extends TileEntityGenerator implements IFluidHandler, ISustainedData
-{
-	/** The FluidSlot biofuel instance for this generator. */
-	public FluidSlot bioFuelSlot = new FluidSlot(24000, -1);
+public class TileEntityBioGenerator
+    extends TileEntityGenerator implements IFluidHandler, ISustainedData {
+    /** The FluidSlot biofuel instance for this generator. */
+    public FluidSlot bioFuelSlot = new FluidSlot(24000, -1);
 
-	public TileEntityBioGenerator()
-	{
-		super("bio", "BioGenerator", 160000, generators.bioGeneration*2);
-		inventory = new ItemStack[2];
-	}
+    public TileEntityBioGenerator() {
+        super("bio", "BioGenerator", 160000, generators.bioGeneration * 2);
+        inventory = new ItemStack[2];
+    }
 
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-		if(inventory[0] != null)
-		{
-			ChargeUtils.charge(1, this);
-			
-			FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(inventory[0]);
+        if (inventory[0] != null) {
+            ChargeUtils.charge(1, this);
 
-			if(fluid != null && FluidRegistry.isFluidRegistered("bioethanol"))
-			{
-				if(fluid.getFluid() == FluidRegistry.getFluid("bioethanol"))
-				{
-					int fluidToAdd = fluid.amount;
+            FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(inventory[0]);
 
-					if(bioFuelSlot.fluidStored+fluidToAdd <= bioFuelSlot.MAX_FLUID)
-					{
-						bioFuelSlot.setFluid(bioFuelSlot.fluidStored+fluidToAdd);
+            if (fluid != null && FluidRegistry.isFluidRegistered("bioethanol")) {
+                if (fluid.getFluid() == FluidRegistry.getFluid("bioethanol")) {
+                    int fluidToAdd = fluid.amount;
 
-						if(inventory[0].getItem().getContainerItem(inventory[0]) != null)
-						{
-							inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
-						}
-						else {
-							inventory[0].stackSize--;
-						}
+                    if (bioFuelSlot.fluidStored + fluidToAdd <= bioFuelSlot.MAX_FLUID) {
+                        bioFuelSlot.setFluid(bioFuelSlot.fluidStored + fluidToAdd);
 
-						if(inventory[0].stackSize == 0)
-						{
-							inventory[0] = null;
-						}
-					}
-				}
-			}
-			else {
-				int fuel = getFuel(inventory[0]);
-				ItemStack prevStack = inventory[0].copy();
+                        if (inventory[0].getItem().getContainerItem(inventory[0])
+                            != null) {
+                            inventory[0]
+                                = inventory[0].getItem().getContainerItem(inventory[0]);
+                        } else {
+                            inventory[0].stackSize--;
+                        }
 
-				if(fuel > 0)
-				{
-					int fuelNeeded = bioFuelSlot.MAX_FLUID - bioFuelSlot.fluidStored;
+                        if (inventory[0].stackSize == 0) {
+                            inventory[0] = null;
+                        }
+                    }
+                }
+            } else {
+                int fuel = getFuel(inventory[0]);
+                ItemStack prevStack = inventory[0].copy();
 
-					if(fuel <= fuelNeeded)
-					{
-						bioFuelSlot.fluidStored += fuel;
+                if (fuel > 0) {
+                    int fuelNeeded = bioFuelSlot.MAX_FLUID - bioFuelSlot.fluidStored;
 
-						if(inventory[0].getItem().getContainerItem(inventory[0]) != null)
-						{
-							inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
-						}
-						else {
-							inventory[0].stackSize--;
-						}
+                    if (fuel <= fuelNeeded) {
+                        bioFuelSlot.fluidStored += fuel;
 
-						if(inventory[0].stackSize == 0)
-						{
-							inventory[0] = null;
-						}
-					}
-				}
-			}
-		}
+                        if (inventory[0].getItem().getContainerItem(inventory[0])
+                            != null) {
+                            inventory[0]
+                                = inventory[0].getItem().getContainerItem(inventory[0]);
+                        } else {
+                            inventory[0].stackSize--;
+                        }
 
-		if(canOperate())
-		{
-			if(!worldObj.isRemote)
-			{
-				setActive(true);
-			}
+                        if (inventory[0].stackSize == 0) {
+                            inventory[0] = null;
+                        }
+                    }
+                }
+            }
+        }
 
-			bioFuelSlot.setFluid(bioFuelSlot.fluidStored - 1);
-			setEnergy(electricityStored + generators.bioGeneration);
-		}
-		else {
-			if(!worldObj.isRemote)
-			{
-				setActive(false);
-			}
-		}
-	}
+        if (canOperate()) {
+            if (!worldObj.isRemote) {
+                setActive(true);
+            }
 
-	@Override
-	public boolean isItemValidForSlot(int slotID, ItemStack itemstack)
-	{
-		if(slotID == 0)
-		{
-			if(getFuel(itemstack ) > 0)
-			{
-				return true;
-			}
-			else {
-				if(FluidRegistry.isFluidRegistered("bioethanol"))
-				{
-					if(FluidContainerRegistry.getFluidForFilledItem(itemstack) != null)
-					{
-						if(FluidContainerRegistry.getFluidForFilledItem(itemstack).getFluid() == FluidRegistry.getFluid("bioethanol"))
-						{
-							return true;
-						}
-					}
-				}
+            bioFuelSlot.setFluid(bioFuelSlot.fluidStored - 1);
+            setEnergy(electricityStored + generators.bioGeneration);
+        } else {
+            if (!worldObj.isRemote) {
+                setActive(false);
+            }
+        }
+    }
 
-				return false;
-			}
-		}
-		else if(slotID == 1)
-		{
-			return ChargeUtils.canBeCharged(itemstack);
-		}
+    @Override
+    public boolean isItemValidForSlot(int slotID, ItemStack itemstack) {
+        if (slotID == 0) {
+            if (getFuel(itemstack) > 0) {
+                return true;
+            } else {
+                if (FluidRegistry.isFluidRegistered("bioethanol")) {
+                    if (FluidContainerRegistry.getFluidForFilledItem(itemstack) != null) {
+                        if (FluidContainerRegistry.getFluidForFilledItem(itemstack)
+                                .getFluid()
+                            == FluidRegistry.getFluid("bioethanol")) {
+                            return true;
+                        }
+                    }
+                }
 
-		return true;
-	}
+                return false;
+            }
+        } else if (slotID == 1) {
+            return ChargeUtils.canBeCharged(itemstack);
+        }
 
-	@Override
-	public boolean canOperate()
-	{
-		return electricityStored < BASE_MAX_ENERGY && bioFuelSlot.fluidStored > 0 && MekanismUtils.canFunction(this);
-	}
+        return true;
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+    @Override
+    public boolean canOperate() {
+        return electricityStored < BASE_MAX_ENERGY && bioFuelSlot.fluidStored > 0
+            && MekanismUtils.canFunction(this);
+    }
 
-		bioFuelSlot.fluidStored = nbtTags.getInteger("bioFuelStored");
-	}
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+        bioFuelSlot.fluidStored = nbtTags.getInteger("bioFuelStored");
+    }
 
-		nbtTags.setInteger("bioFuelStored", bioFuelSlot.fluidStored);
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
 
-	public int getFuel(ItemStack itemstack)
-	{
-		return itemstack.getItem() == MekanismItems.BioFuel ? 200 : 0;
-	}
+        nbtTags.setInteger("bioFuelStored", bioFuelSlot.fluidStored);
+    }
 
-	/**
-	 * Gets the scaled fuel level for the GUI.
-	 * @param i - multiplier
-	 * @return
-	 */
-	public int getScaledFuelLevel(int i)
-	{
-		return bioFuelSlot.fluidStored*i / bioFuelSlot.MAX_FLUID;
-	}
+    public int getFuel(ItemStack itemstack) {
+        return itemstack.getItem() == MekanismItems.BioFuel ? 200 : 0;
+    }
 
-	@Override
-	public int[] getAccessibleSlotsFromSide(int side)
-	{
-		return ForgeDirection.getOrientation(side) == MekanismUtils.getRight(facing) ? new int[] {1} : new int[] {0};
-	}
+    /**
+     * Gets the scaled fuel level for the GUI.
+     * @param i - multiplier
+     * @return
+     */
+    public int getScaledFuelLevel(int i) {
+        return bioFuelSlot.fluidStored * i / bioFuelSlot.MAX_FLUID;
+    }
 
-	@Override
-	public boolean canSetFacing(int facing)
-	{
-		return facing != 0 && facing != 1;
-	}
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side) {
+        return ForgeDirection.getOrientation(side) == MekanismUtils.getRight(facing)
+            ? new int[] { 1 }
+            : new int[] { 0 };
+    }
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		super.handlePacketData(dataStream);
-		
-		if(worldObj.isRemote)
-		{
-			bioFuelSlot.fluidStored = dataStream.readInt();
-		}
-	}
+    @Override
+    public boolean canSetFacing(int facing) {
+        return facing != 0 && facing != 1;
+    }
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
-		data.add(bioFuelSlot.fluidStored);
-		return data;
-	}
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        super.handlePacketData(dataStream);
 
-    private static final String[] methods = new String[] {"getEnergy", "getOutput", "getMaxEnergy", "getEnergyNeeded", "getBioFuel", "getBioFuelNeeded"};
+        if (worldObj.isRemote) {
+            bioFuelSlot.fluidStored = dataStream.readInt();
+        }
+    }
 
-	@Override
-	public String[] getMethods()
-	{
-		return methods;
-	}
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
+        data.add(bioFuelSlot.fluidStored);
+        return data;
+    }
 
-	@Override
-	public Object[] invoke(int method, Object[] arguments) throws Exception
-	{
-		switch(method)
-		{
-			case 0:
-				return new Object[] {electricityStored};
-			case 1:
-				return new Object[] {output};
-			case 2:
-				return new Object[] {BASE_MAX_ENERGY};
-			case 3:
-				return new Object[] {(BASE_MAX_ENERGY -electricityStored)};
-			case 4:
-				return new Object[] {bioFuelSlot.fluidStored};
-			case 5:
-				return new Object[] {bioFuelSlot.MAX_FLUID-bioFuelSlot.fluidStored};
-			default:
-				throw new NoSuchMethodException();
-		}
-	}
+    private static final String[] methods
+        = new String[] { "getEnergy",       "getOutput",  "getMaxEnergy",
+                         "getEnergyNeeded", "getBioFuel", "getBioFuelNeeded" };
 
-	@Override
-	public int fill(ForgeDirection from, FluidStack resource, boolean doFill)
-	{
-		if(FluidRegistry.isFluidRegistered("bioethanol") && from != ForgeDirection.getOrientation(facing))
-		{
-			if(resource.getFluid() == FluidRegistry.getFluid("bioethanol"))
-			{
-				int fuelTransfer = 0;
-				int fuelNeeded = bioFuelSlot.MAX_FLUID - bioFuelSlot.fluidStored;
-				int attemptTransfer = resource.amount;
+    @Override
+    public String[] getMethods() {
+        return methods;
+    }
 
-				if(attemptTransfer <= fuelNeeded)
-				{
-					fuelTransfer = attemptTransfer;
-				}
-				else {
-					fuelTransfer = fuelNeeded;
-				}
+    @Override
+    public Object[] invoke(int method, Object[] arguments) throws Exception {
+        switch (method) {
+            case 0:
+                return new Object[] { electricityStored };
+            case 1:
+                return new Object[] { output };
+            case 2:
+                return new Object[] { BASE_MAX_ENERGY };
+            case 3:
+                return new Object[] { (BASE_MAX_ENERGY - electricityStored) };
+            case 4:
+                return new Object[] { bioFuelSlot.fluidStored };
+            case 5:
+                return new Object[] { bioFuelSlot.MAX_FLUID - bioFuelSlot.fluidStored };
+            default:
+                throw new NoSuchMethodException();
+        }
+    }
 
-				if(doFill)
-				{
-					bioFuelSlot.setFluid(bioFuelSlot.fluidStored + fuelTransfer);
-				}
+    @Override
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+        if (FluidRegistry.isFluidRegistered("bioethanol")
+            && from != ForgeDirection.getOrientation(facing)) {
+            if (resource.getFluid() == FluidRegistry.getFluid("bioethanol")) {
+                int fuelTransfer = 0;
+                int fuelNeeded = bioFuelSlot.MAX_FLUID - bioFuelSlot.fluidStored;
+                int attemptTransfer = resource.amount;
 
-				return fuelTransfer;
-			}
-		}
+                if (attemptTransfer <= fuelNeeded) {
+                    fuelTransfer = attemptTransfer;
+                } else {
+                    fuelTransfer = fuelNeeded;
+                }
 
-		return 0;
-	}
+                if (doFill) {
+                    bioFuelSlot.setFluid(bioFuelSlot.fluidStored + fuelTransfer);
+                }
 
-	@Override
-	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain)
-	{
-		return null;
-	}
+                return fuelTransfer;
+            }
+        }
 
-	@Override
-	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain)
-	{
-		return null;
-	}
+        return 0;
+    }
 
-	@Override
-	public boolean canFill(ForgeDirection from, Fluid fluid)
-	{
-		return FluidRegistry.isFluidRegistered("bioethanol") && fluid == FluidRegistry.getFluid("bioethanol");
-	}
+    @Override
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+        return null;
+    }
 
-	@Override
-	public boolean canDrain(ForgeDirection from, Fluid fluid)
-	{
-		return false;
-	}
+    @Override
+    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+        return null;
+    }
 
-	@Override
-	public FluidTankInfo[] getTankInfo(ForgeDirection from)
-	{
-		return null;
-	}
+    @Override
+    public boolean canFill(ForgeDirection from, Fluid fluid) {
+        return FluidRegistry.isFluidRegistered("bioethanol")
+            && fluid == FluidRegistry.getFluid("bioethanol");
+    }
 
-	@Override
-	public void writeSustainedData(ItemStack itemStack)
-	{
-		itemStack.stackTagCompound.setInteger("fluidStored", bioFuelSlot.fluidStored);
-	}
+    @Override
+    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+        return false;
+    }
 
-	@Override
-	public void readSustainedData(ItemStack itemStack) 
-	{
-		bioFuelSlot.setFluid(itemStack.stackTagCompound.getInteger("fluidStored"));
-	}
+    @Override
+    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+        return null;
+    }
+
+    @Override
+    public void writeSustainedData(ItemStack itemStack) {
+        itemStack.stackTagCompound.setInteger("fluidStored", bioFuelSlot.fluidStored);
+    }
+
+    @Override
+    public void readSustainedData(ItemStack itemStack) {
+        bioFuelSlot.setFluid(itemStack.stackTagCompound.getInteger("fluidStored"));
+    }
 }

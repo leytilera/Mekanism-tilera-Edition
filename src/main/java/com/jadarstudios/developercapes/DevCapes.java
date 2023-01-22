@@ -6,19 +6,20 @@
  */
 package com.jadarstudios.developercapes;
 
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import com.jadarstudios.developercapes.cape.CapeConfig;
 import com.jadarstudios.developercapes.cape.CapeConfigManager;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
 /**
- * DeveloperCapes is a library for Minecraft. It allows developers to quickly add capes for players they specify. DevCapes uses Minecraft Forge.
+ * DeveloperCapes is a library for Minecraft. It allows developers to quickly add capes
+ * for players they specify. DevCapes uses Minecraft Forge.
  *
  * @author jadar
  */
@@ -40,14 +41,16 @@ public class DevCapes {
 
     /**
      * InputStream.close() needs to be called on this after you're done!
-     * 
+     *
      * @return {@link InputStream} for the {@link URL}
      */
     public InputStream getStreamForURL(URL url) {
         InputStream is = null;
         try {
             URLConnection connection = url.openConnection();
-            connection.setRequestProperty("User-Agent", System.getProperty("java.version"));
+            connection.setRequestProperty(
+                "User-Agent", System.getProperty("java.version")
+            );
             connection.connect();
 
             is = connection.getInputStream();
@@ -59,7 +62,7 @@ public class DevCapes {
 
     /**
      * InputStream.close() needs to be called on this after you're done!
-     * 
+     *
      * @return {@link InputStream} for the {@link File}
      */
     public InputStream getStreamForFile(File file) {
@@ -132,7 +135,9 @@ public class DevCapes {
         InputStream is = this.getStreamForURL(jsonUrl);
 
         if (is == null) {
-            DevCapes.logger.error(String.format("Unable to establish a connection to the server, %s", jsonUrl.getHost()));
+            DevCapes.logger.error(String.format(
+                "Unable to establish a connection to the server, %s", jsonUrl.getHost()
+            ));
             return id;
         }
 
@@ -153,7 +158,6 @@ public class DevCapes {
     private static void silentClose(InputStream is) {
         try {
             is.close();
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
     }
 }

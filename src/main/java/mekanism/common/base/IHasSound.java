@@ -8,11 +8,10 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @author AidanBrady
  *
  */
-public interface IHasSound
-{
-	@SideOnly(Side.CLIENT)
-	public SoundWrapper getSound();
+public interface IHasSound {
+    @SideOnly(Side.CLIENT)
+    public SoundWrapper getSound();
 
-	@SideOnly(Side.CLIENT)
-	public boolean shouldPlaySound();
+    @SideOnly(Side.CLIENT)
+    public boolean shouldPlaySound();
 }

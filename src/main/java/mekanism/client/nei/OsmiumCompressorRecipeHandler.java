@@ -13,47 +13,39 @@ import mekanism.common.recipe.machines.OsmiumCompressorRecipe;
 import mekanism.common.util.LangUtils;
 import net.minecraft.item.ItemStack;
 
-public class OsmiumCompressorRecipeHandler extends AdvancedMachineRecipeHandler
-{
-	@Override
-	public String getRecipeName()
-	{
-		return LangUtils.localize("tile.MachineBlock.OsmiumCompressor.name");
-	}
+public class OsmiumCompressorRecipeHandler extends AdvancedMachineRecipeHandler {
+    @Override
+    public String getRecipeName() {
+        return LangUtils.localize("tile.MachineBlock.OsmiumCompressor.name");
+    }
 
-	@Override
-	public String getRecipeId()
-	{
-		return "mekanism.compressor";
-	}
+    @Override
+    public String getRecipeId() {
+        return "mekanism.compressor";
+    }
 
-	@Override
-	public String getOverlayIdentifier()
-	{
-		return "compressor";
-	}
+    @Override
+    public String getOverlayIdentifier() {
+        return "compressor";
+    }
 
-	@Override
-	public Collection<OsmiumCompressorRecipe> getRecipes()
-	{
-		return Recipe.OSMIUM_COMPRESSOR.get().values();
-	}
-	
-	@Override
-	public ProgressBar getProgressType()
-	{
-		return ProgressBar.RED;
-	}
+    @Override
+    public Collection<OsmiumCompressorRecipe> getRecipes() {
+        return Recipe.OSMIUM_COMPRESSOR.get().values();
+    }
 
-	@Override
-	public List<ItemStack> getFuelStacks(Gas gasType)
-	{
-		return ListUtils.asList(new ItemStack(MekanismItems.Ingot, 1, 1));
-	}
+    @Override
+    public ProgressBar getProgressType() {
+        return ProgressBar.RED;
+    }
 
-	@Override
-	public Class getGuiClass()
-	{
-		return GuiOsmiumCompressor.class;
-	}
+    @Override
+    public List<ItemStack> getFuelStacks(Gas gasType) {
+        return ListUtils.asList(new ItemStack(MekanismItems.Ingot, 1, 1));
+    }
+
+    @Override
+    public Class getGuiClass() {
+        return GuiOsmiumCompressor.class;
+    }
 }

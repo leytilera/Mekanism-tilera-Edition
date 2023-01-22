@@ -1,5 +1,8 @@
 package mekanism.common.recipe;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import mekanism.common.MekanismItems;
 import mekanism.common.block.BlockBasic.BasicType;
 import mekanism.common.inventory.InventoryBin;
@@ -9,171 +12,143 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 
-public class BinRecipe implements IRecipe
-{
-	private static boolean registered;
-	
-	public BinRecipe()
-	{
-		if(!registered)
-		{
-			FMLCommonHandler.instance().bus().register(this);
-			registered = true;
-		}
-	}
+public class BinRecipe implements IRecipe {
+    private static boolean registered;
 
-	@Override
-	public boolean matches(InventoryCrafting inv, World world)
-	{
-		return getCraftingResult(inv) != null;
-	}
+    public BinRecipe() {
+        if (!registered) {
+            FMLCommonHandler.instance().bus().register(this);
+            registered = true;
+        }
+    }
 
-	private boolean isBin(ItemStack itemStack)
-	{
-		if(itemStack == null)
-		{
-			return false;
-		}
+    @Override
+    public boolean matches(InventoryCrafting inv, World world) {
+        return getCraftingResult(inv) != null;
+    }
 
-		return BasicType.get(itemStack) == BasicType.BIN && itemStack.stackSize <= 1;
-	}
+    private boolean isBin(ItemStack itemStack) {
+        if (itemStack == null) {
+            return false;
+        }
 
-	@Override
-	public ItemStack getCraftingResult(InventoryCrafting inv)
-	{
-		return getResult(inv);
-	}
+        return BasicType.get(itemStack) == BasicType.BIN && itemStack.stackSize <= 1;
+    }
 
-	public ItemStack getResult(IInventory inv)
-	{
-		ItemStack bin = null;
+    @Override
+    public ItemStack getCraftingResult(InventoryCrafting inv) {
+        return getResult(inv);
+    }
 
-		for(int i = 0; i < inv.getSizeInventory(); i++)
-		{
-			ItemStack stack = inv.getStackInSlot(i);
+    public ItemStack getResult(IInventory inv) {
+        ItemStack bin = null;
 
-			if(isBin(stack))
-			{
-				if(bin != null)
-				{
-					return null;
-				}
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
 
-				bin = stack.copy();
-			}
-		}
+            if (isBin(stack)) {
+                if (bin != null) {
+                    return null;
+                }
 
-		if(bin == null || bin.stackSize > 1)
-		{
-			return null;
-		}
+                bin = stack.copy();
+            }
+        }
 
-		ItemStack addStack = null;
+        if (bin == null || bin.stackSize > 1) {
+            return null;
+        }
 
-		for(int i = 0; i < 9; i++)
-		{
-			ItemStack stack = inv.getStackInSlot(i);
+        ItemStack addStack = null;
 
-			if(stack != null && !isBin(stack))
-			{
-				if(addStack != null)
-				{
-					return null;
-				}
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = inv.getStackInSlot(i);
 
-				addStack = stack.copy();
-			}
-		}
+            if (stack != null && !isBin(stack)) {
+                if (addStack != null) {
+                    return null;
+                }
 
-		InventoryBin binInv = new InventoryBin(bin);
+                addStack = stack.copy();
+            }
+        }
 
-		if(addStack != null)
-		{
-			if(binInv.getItemType() != null && !binInv.getItemType().isItemEqual(addStack))
-			{
-				return null;
-			}
+        InventoryBin binInv = new InventoryBin(bin);
 
-			binInv.add(addStack);
-			
-			return bin;
-		}
-		else {
-			return binInv.removeStack();
-		}
-	}
+        if (addStack != null) {
+            if (binInv.getItemType() != null
+                && !binInv.getItemType().isItemEqual(addStack)) {
+                return null;
+            }
 
-	@Override
-	public int getRecipeSize()
-	{
-		return 0;
-	}
+            binInv.add(addStack);
 
-	@Override
-	public ItemStack getRecipeOutput()
-	{
-		return null;
-	}
+            return bin;
+        } else {
+            return binInv.removeStack();
+        }
+    }
 
-	@SubscribeEvent
-	public void onCrafting(ItemCraftedEvent event)
-	{
-		if(getResult(event.craftMatrix) != null)
-		{
-			if(!isBin(event.crafting))
-			{
-				for(int i = 0; i < event.craftMatrix.getSizeInventory(); i++)
-				{
-					if(isBin(event.craftMatrix.getStackInSlot(i)))
-					{
-						ItemStack bin = event.craftMatrix.getStackInSlot(i);
-						InventoryBin inv = new InventoryBin(bin.copy());
+    @Override
+    public int getRecipeSize() {
+        return 0;
+    }
 
-						int size = inv.getItemCount();
+    @Override
+    public ItemStack getRecipeOutput() {
+        return null;
+    }
 
-						ItemStack testRemove = inv.removeStack();
+    @SubscribeEvent
+    public void onCrafting(ItemCraftedEvent event) {
+        if (getResult(event.craftMatrix) != null) {
+            if (!isBin(event.crafting)) {
+                for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
+                    if (isBin(event.craftMatrix.getStackInSlot(i))) {
+                        ItemStack bin = event.craftMatrix.getStackInSlot(i);
+                        InventoryBin inv = new InventoryBin(bin.copy());
 
-						bin.stackTagCompound.setInteger("newCount", size-(testRemove != null ? testRemove.stackSize : 0));
-					}
-				}
-			}
-			else {
-				int bin = -1;
-				int other = -1;
+                        int size = inv.getItemCount();
 
-				for(int i = 0; i < event.craftMatrix.getSizeInventory(); i++)
-				{
-					if(isBin(event.craftMatrix.getStackInSlot(i)))
-					{
-						bin = i;
-					}
+                        ItemStack testRemove = inv.removeStack();
+
+                        bin.stackTagCompound.setInteger(
+                            "newCount",
+                            size - (testRemove != null ? testRemove.stackSize : 0)
+                        );
+                    }
+                }
+            } else {
+                int bin = -1;
+                int other = -1;
+
+                for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
+                    if (isBin(event.craftMatrix.getStackInSlot(i))) {
+                        bin = i;
+                    }
 					else if(!isBin(event.craftMatrix.getStackInSlot(i)) && event.craftMatrix.getStackInSlot(i) != null)
 					{
-						other = i;
-					}
-				}
+                        other = i;
+                    }
+                }
 
-				ItemStack binStack = event.craftMatrix.getStackInSlot(bin);
-				ItemStack otherStack = event.craftMatrix.getStackInSlot(other);
+                ItemStack binStack = event.craftMatrix.getStackInSlot(bin);
+                ItemStack otherStack = event.craftMatrix.getStackInSlot(other);
 
-				ItemStack testRemain = new InventoryBin(binStack.copy()).add(otherStack.copy());
+                ItemStack testRemain
+                    = new InventoryBin(binStack.copy()).add(otherStack.copy());
 
-				if(testRemain != null && testRemain.stackSize > 0)
-				{
-					ItemStack proxy = new ItemStack(MekanismItems.ItemProxy);
-					((ItemProxy)proxy.getItem()).setSavedItem(proxy, testRemain.copy());
-					event.craftMatrix.setInventorySlotContents(other, proxy);
-				}
-				else {
-					event.craftMatrix.setInventorySlotContents(other, null);
-				}
+                if (testRemain != null && testRemain.stackSize > 0) {
+                    ItemStack proxy = new ItemStack(MekanismItems.ItemProxy);
+                    ((ItemProxy) proxy.getItem()).setSavedItem(proxy, testRemain.copy());
+                    event.craftMatrix.setInventorySlotContents(other, proxy);
+                } else {
+                    event.craftMatrix.setInventorySlotContents(other, null);
+                }
 
-				event.craftMatrix.setInventorySlotContents(bin, null);
-			}
-		}
-	}
+                event.craftMatrix.setInventorySlotContents(bin, null);
+            }
+        }
+    }
 }

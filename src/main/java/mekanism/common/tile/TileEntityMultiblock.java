@@ -1,9 +1,10 @@
 package mekanism.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.Range4D;
 import mekanism.common.Mekanism;
@@ -19,289 +20,269 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityMultiblock<T extends SynchronizedData<T>> extends TileEntityContainerBlock implements IMultiblock<T>
-{
-	/** The multiblock data for this structure. */
-	public T structure;
-	
-	/** Whether or not to send this multiblock's structure in the next update packet. */
-	public boolean sendStructure;
+public abstract class TileEntityMultiblock<T extends SynchronizedData<T>>
+    extends TileEntityContainerBlock implements IMultiblock<T> {
+    /** The multiblock data for this structure. */
+    public T structure;
 
-	/** This multiblock's previous "has structure" state. */
-	public boolean prevStructure;
+    /** Whether or not to send this multiblock's structure in the next update packet. */
+    public boolean sendStructure;
 
-	/** Whether or not this multiblock has it's structure, for the client side mechanics. */
-	public boolean clientHasStructure;
-	
-	/** Whether or not this multiblock segment is rendering the structure. */
-	public boolean isRendering;
-	
-	/** This multiblock segment's cached data */
-	public MultiblockCache cachedData = getNewCache();
-	
-	/** This multiblock segment's cached inventory ID */
-	public String cachedID = null;
-	
-	public TileEntityMultiblock(String name)
-	{
-		super(name);
-	}
-	
-	@Override
-	public void onUpdate()
-	{
-		if(worldObj.isRemote)
-		{
-			if(structure == null)
-			{
-				structure = getNewStructure();
-			}
+    /** This multiblock's previous "has structure" state. */
+    public boolean prevStructure;
 
-			if(structure != null && clientHasStructure && isRendering)
-			{
-				if(!prevStructure)
-				{
-					Mekanism.proxy.doMultiblockSparkle(this);
-				}
-			}
+    /**
+     * Whether or not this multiblock has it's structure, for the client side mechanics.
+     */
+    public boolean clientHasStructure;
 
-			prevStructure = clientHasStructure;
-		}
+    /** Whether or not this multiblock segment is rendering the structure. */
+    public boolean isRendering;
 
-		if(playersUsing.size() > 0 && ((worldObj.isRemote && !clientHasStructure) || (!worldObj.isRemote && structure == null)))
-		{
-			for(EntityPlayer player : playersUsing)
-			{
-				player.closeScreen();
-			}
-		}
+    /** This multiblock segment's cached data */
+    public MultiblockCache cachedData = getNewCache();
 
-		if(!worldObj.isRemote)
-		{
-			if(structure == null)
-			{
-				isRendering = false;
-				
-				if(cachedID != null)
-				{
-					getManager().updateCache(this);
-				}
-			}
+    /** This multiblock segment's cached inventory ID */
+    public String cachedID = null;
 
-			if(structure == null && ticker == 5)
-			{
-				update();
-			}
+    public TileEntityMultiblock(String name) {
+        super(name);
+    }
 
-			if(prevStructure != (structure != null))
-			{
-				if(structure != null && !getSynchronizedData().hasRenderer)
-				{
-					getSynchronizedData().hasRenderer = true;
-					isRendering = true;
-					sendStructure = true;
-				}
+    @Override
+    public void onUpdate() {
+        if (worldObj.isRemote) {
+            if (structure == null) {
+                structure = getNewStructure();
+            }
 
-				for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS)
-				{
-					Coord4D obj = Coord4D.get(this).getFromSide(side);
+            if (structure != null && clientHasStructure && isRendering) {
+                if (!prevStructure) {
+                    Mekanism.proxy.doMultiblockSparkle(this);
+                }
+            }
 
-					if(!obj.isAirBlock(worldObj) && (obj.getTileEntity(worldObj) == null || obj.getTileEntity(worldObj).getClass() != getClass()))
-					{
-						obj.getBlock(worldObj).onNeighborChange(worldObj, obj.xCoord, obj.yCoord, obj.zCoord, xCoord, yCoord, zCoord);
-					}
-				}
+            prevStructure = clientHasStructure;
+        }
 
-				Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-			}
+        if (playersUsing.size() > 0
+            && ((worldObj.isRemote && !clientHasStructure)
+                || (!worldObj.isRemote && structure == null))) {
+            for (EntityPlayer player : playersUsing) {
+                player.closeScreen();
+            }
+        }
 
-			prevStructure = structure != null;
+        if (!worldObj.isRemote) {
+            if (structure == null) {
+                isRendering = false;
 
-			if(structure != null)
-			{
-				getSynchronizedData().didTick = false;
+                if (cachedID != null) {
+                    getManager().updateCache(this);
+                }
+            }
 
-				if(getSynchronizedData().inventoryID != null)
-				{
-					cachedData.sync(getSynchronizedData());
-					cachedID = getSynchronizedData().inventoryID;
-					getManager().updateCache(this);
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void update()
-	{
-		if(!worldObj.isRemote && (structure == null || !getSynchronizedData().didTick))
-		{
-			getProtocol().doUpdate();
+            if (structure == null && ticker == 5) {
+                update();
+            }
 
-			if(structure != null)
-			{
-				getSynchronizedData().didTick = true;
-			}
-		}
-	}
-	
-	public void sendPacketToRenderer()
-	{
-		if(structure != null)
-		{
-			for(Coord4D obj : getSynchronizedData().locations)
-			{
-				TileEntityMultiblock<T> tileEntity = (TileEntityMultiblock<T>)obj.getTileEntity(worldObj);
+            if (prevStructure != (structure != null)) {
+                if (structure != null && !getSynchronizedData().hasRenderer) {
+                    getSynchronizedData().hasRenderer = true;
+                    isRendering = true;
+                    sendStructure = true;
+                }
 
-				if(tileEntity != null && tileEntity.isRendering)
-				{
-					Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(tileEntity), tileEntity.getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(tileEntity)));
-				}
-			}
-		}
-	}
-	
-	protected abstract T getNewStructure();
-	
-	public abstract MultiblockCache<T> getNewCache();
-	
-	protected abstract UpdateProtocol<T> getProtocol();
-	
-	public abstract MultiblockManager<T> getManager();
-	
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
+                for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                    Coord4D obj = Coord4D.get(this).getFromSide(side);
 
-		data.add(isRendering);
-		data.add(structure != null);
+                    if (!obj.isAirBlock(worldObj)
+                        && (obj.getTileEntity(worldObj) == null
+                            || obj.getTileEntity(worldObj).getClass() != getClass())) {
+                        obj.getBlock(worldObj).onNeighborChange(
+                            worldObj,
+                            obj.xCoord,
+                            obj.yCoord,
+                            obj.zCoord,
+                            xCoord,
+                            yCoord,
+                            zCoord
+                        );
+                    }
+                }
 
-		if(structure != null && isRendering)
-		{
-			if(sendStructure)
-			{
-				sendStructure = false;
+                Mekanism.packetHandler.sendToReceivers(
+                    new TileEntityMessage(
+                        Coord4D.get(this), getNetworkedData(new ArrayList())
+                    ),
+                    new Range4D(Coord4D.get(this))
+                );
+            }
 
-				data.add(true);
+            prevStructure = structure != null;
 
-				data.add(getSynchronizedData().volHeight);
-				data.add(getSynchronizedData().volWidth);
-				data.add(getSynchronizedData().volLength);
+            if (structure != null) {
+                getSynchronizedData().didTick = false;
 
-				getSynchronizedData().renderLocation.write(data);
-				data.add(getSynchronizedData().inventoryID);
-			}
-			else {
-				data.add(false);
-			}
-		}
+                if (getSynchronizedData().inventoryID != null) {
+                    cachedData.sync(getSynchronizedData());
+                    cachedID = getSynchronizedData().inventoryID;
+                    getManager().updateCache(this);
+                }
+            }
+        }
+    }
 
-		return data;
-	}
+    @Override
+    public void update() {
+        if (!worldObj.isRemote && (structure == null || !getSynchronizedData().didTick)) {
+            getProtocol().doUpdate();
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		super.handlePacketData(dataStream);
+            if (structure != null) {
+                getSynchronizedData().didTick = true;
+            }
+        }
+    }
 
-		if(worldObj.isRemote)
-		{
-			if(structure == null)
-			{
-				structure = getNewStructure();
-			}
-	
-			isRendering = dataStream.readBoolean();
-			clientHasStructure = dataStream.readBoolean();
-	
-			if(clientHasStructure && isRendering)
-			{
-				if(dataStream.readBoolean())
-				{
-					getSynchronizedData().volHeight = dataStream.readInt();
-					getSynchronizedData().volWidth = dataStream.readInt();
-					getSynchronizedData().volLength = dataStream.readInt();
-	
-					getSynchronizedData().renderLocation = Coord4D.read(dataStream);
-					getSynchronizedData().inventoryID = PacketHandler.readString(dataStream);
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+    public void sendPacketToRenderer() {
+        if (structure != null) {
+            for (Coord4D obj : getSynchronizedData().locations) {
+                TileEntityMultiblock<T> tileEntity
+                    = (TileEntityMultiblock<T>) obj.getTileEntity(worldObj);
 
-		if(structure == null)
-		{
-			if(nbtTags.hasKey("cachedID"))
-			{
-				cachedID = nbtTags.getString("cachedID");
-				cachedData.load(nbtTags);
-			}
-		}
-	}
+                if (tileEntity != null && tileEntity.isRendering) {
+                    Mekanism.packetHandler.sendToReceivers(
+                        new TileEntityMessage(
+                            Coord4D.get(tileEntity),
+                            tileEntity.getNetworkedData(new ArrayList())
+                        ),
+                        new Range4D(Coord4D.get(tileEntity))
+                    );
+                }
+            }
+        }
+    }
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+    protected abstract T getNewStructure();
 
-		if(cachedID != null)
-		{
-			nbtTags.setString("cachedID", cachedID);
-			cachedData.save(nbtTags);
-		}
-	}
-	
-	@Override
-	public ItemStack getStackInSlot(int slotID)
-	{
-		return structure != null && getSynchronizedData().getInventory() != null ? getSynchronizedData().getInventory()[slotID] : null;
-	}
+    public abstract MultiblockCache<T> getNewCache();
 
-	@Override
-	public void setInventorySlotContents(int slotID, ItemStack itemstack)
-	{
-		if(structure != null && getSynchronizedData().getInventory() != null)
-		{
-			getSynchronizedData().getInventory()[slotID] = itemstack;
+    protected abstract UpdateProtocol<T> getProtocol();
 
-			if(itemstack != null && itemstack.stackSize > getInventoryStackLimit())
-			{
-				itemstack.stackSize = getInventoryStackLimit();
-			}
-		}
-	}
-	
-	@Override
-	public boolean onActivate(EntityPlayer player)
-	{
-		return false;
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public AxisAlignedBB getRenderBoundingBox()
-	{
-		return INFINITE_EXTENT_AABB;
-	}
-	
-	@Override
-	public boolean handleInventory()
-	{
-		return false;
-	}
+    public abstract MultiblockManager<T> getManager();
 
-	@Override
-	public T getSynchronizedData()
-	{
-		return structure;
-	}
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
+
+        data.add(isRendering);
+        data.add(structure != null);
+
+        if (structure != null && isRendering) {
+            if (sendStructure) {
+                sendStructure = false;
+
+                data.add(true);
+
+                data.add(getSynchronizedData().volHeight);
+                data.add(getSynchronizedData().volWidth);
+                data.add(getSynchronizedData().volLength);
+
+                getSynchronizedData().renderLocation.write(data);
+                data.add(getSynchronizedData().inventoryID);
+            } else {
+                data.add(false);
+            }
+        }
+
+        return data;
+    }
+
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        super.handlePacketData(dataStream);
+
+        if (worldObj.isRemote) {
+            if (structure == null) {
+                structure = getNewStructure();
+            }
+
+            isRendering = dataStream.readBoolean();
+            clientHasStructure = dataStream.readBoolean();
+
+            if (clientHasStructure && isRendering) {
+                if (dataStream.readBoolean()) {
+                    getSynchronizedData().volHeight = dataStream.readInt();
+                    getSynchronizedData().volWidth = dataStream.readInt();
+                    getSynchronizedData().volLength = dataStream.readInt();
+
+                    getSynchronizedData().renderLocation = Coord4D.read(dataStream);
+                    getSynchronizedData().inventoryID
+                        = PacketHandler.readString(dataStream);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
+
+        if (structure == null) {
+            if (nbtTags.hasKey("cachedID")) {
+                cachedID = nbtTags.getString("cachedID");
+                cachedData.load(nbtTags);
+            }
+        }
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
+
+        if (cachedID != null) {
+            nbtTags.setString("cachedID", cachedID);
+            cachedData.save(nbtTags);
+        }
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slotID) {
+        return structure != null && getSynchronizedData().getInventory() != null
+            ? getSynchronizedData().getInventory()[slotID]
+            : null;
+    }
+
+    @Override
+    public void setInventorySlotContents(int slotID, ItemStack itemstack) {
+        if (structure != null && getSynchronizedData().getInventory() != null) {
+            getSynchronizedData().getInventory()[slotID] = itemstack;
+
+            if (itemstack != null && itemstack.stackSize > getInventoryStackLimit()) {
+                itemstack.stackSize = getInventoryStackLimit();
+            }
+        }
+    }
+
+    @Override
+    public boolean onActivate(EntityPlayer player) {
+        return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
+
+    @Override
+    public boolean handleInventory() {
+        return false;
+    }
+
+    @Override
+    public T getSynchronizedData() {
+        return structure;
+    }
 }

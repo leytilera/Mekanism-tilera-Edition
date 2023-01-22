@@ -17,55 +17,48 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-public class PurificationChamberRecipeHandler extends AdvancedMachineRecipeHandler
-{
-	@Override
-	public String getRecipeName()
-	{
-		return LangUtils.localize("tile.MachineBlock.PurificationChamber.name");
-	}
+public class PurificationChamberRecipeHandler extends AdvancedMachineRecipeHandler {
+    @Override
+    public String getRecipeName() {
+        return LangUtils.localize("tile.MachineBlock.PurificationChamber.name");
+    }
 
-	@Override
-	public String getRecipeId()
-	{
-		return "mekanism.purificationchamber";
-	}
+    @Override
+    public String getRecipeId() {
+        return "mekanism.purificationchamber";
+    }
 
-	@Override
-	public String getOverlayIdentifier()
-	{
-		return "purificationchamber";
-	}
+    @Override
+    public String getOverlayIdentifier() {
+        return "purificationchamber";
+    }
 
-	@Override
-	public Collection<PurificationRecipe> getRecipes()
-	{
-		return Recipe.PURIFICATION_CHAMBER.get().values();
-	}
-	
-	@Override
-	public ProgressBar getProgressType()
-	{
-		return ProgressBar.RED;
-	}
+    @Override
+    public Collection<PurificationRecipe> getRecipes() {
+        return Recipe.PURIFICATION_CHAMBER.get().values();
+    }
 
-	@Override
-	public List<ItemStack> getFuelStacks(Gas gasType)
-	{
-		if(gasType == GasRegistry.getGas("oxygen"))
-		{
-			for(GasTankTier tier : GasTankTier.values())
-			{
-				return ListUtils.asList(new ItemStack(Items.flint), MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("oxygen")));
-			}
-		}
+    @Override
+    public ProgressBar getProgressType() {
+        return ProgressBar.RED;
+    }
 
-		return new ArrayList<ItemStack>();
-	}
+    @Override
+    public List<ItemStack> getFuelStacks(Gas gasType) {
+        if (gasType == GasRegistry.getGas("oxygen")) {
+            for (GasTankTier tier : GasTankTier.values()) {
+                return ListUtils.asList(
+                    new ItemStack(Items.flint),
+                    MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("oxygen"))
+                );
+            }
+        }
 
-	@Override
-	public Class getGuiClass()
-	{
-		return GuiPurificationChamber.class;
-	}
+        return new ArrayList<ItemStack>();
+    }
+
+    @Override
+    public Class getGuiClass() {
+        return GuiPurificationChamber.class;
+    }
 }

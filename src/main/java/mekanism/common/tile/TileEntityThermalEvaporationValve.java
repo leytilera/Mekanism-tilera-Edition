@@ -9,144 +9,136 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-public class TileEntityThermalEvaporationValve extends TileEntityThermalEvaporationBlock implements IFluidHandler, IHeatTransfer
-{
-	public boolean prevMaster = false;
-	
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
-		
-		if(!worldObj.isRemote)
-		{
-			if((master != null) != prevMaster)
-			{
-				for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS)
-				{
-					Coord4D obj = Coord4D.get(this).getFromSide(side);
+public class TileEntityThermalEvaporationValve
+    extends TileEntityThermalEvaporationBlock implements IFluidHandler, IHeatTransfer {
+    public boolean prevMaster = false;
 
-					if(!obj.isAirBlock(worldObj) && !(obj.getTileEntity(worldObj) instanceof TileEntityThermalEvaporationBlock))
-					{
-						obj.getBlock(worldObj).onNeighborChange(worldObj, obj.xCoord, obj.yCoord, obj.zCoord, xCoord, yCoord, zCoord);
-					}
-				}
-			}
-			
-			prevMaster = (master != null);
-		}
-	}
-	
-	@Override
-	public int fill(ForgeDirection from, FluidStack resource, boolean doFill)
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		return controller == null ? 0 : controller.inputTank.fill(resource, doFill);
-	}
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-	@Override
-	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain)
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		
-		if(controller != null && (resource == null || resource.isFluidEqual(controller.outputTank.getFluid())))
-		{
-			return controller.outputTank.drain(resource.amount, doDrain);
-		}
+        if (!worldObj.isRemote) {
+            if ((master != null) != prevMaster) {
+                for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                    Coord4D obj = Coord4D.get(this).getFromSide(side);
 
-		return null;
-	}
+                    if (!obj.isAirBlock(worldObj)
+                        && !(
+                            obj.getTileEntity(worldObj)
+                                instanceof TileEntityThermalEvaporationBlock
+                        )) {
+                        obj.getBlock(worldObj).onNeighborChange(
+                            worldObj,
+                            obj.xCoord,
+                            obj.yCoord,
+                            obj.zCoord,
+                            xCoord,
+                            yCoord,
+                            zCoord
+                        );
+                    }
+                }
+            }
 
-	@Override
-	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain)
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		
-		if(controller != null)
-		{
-			return controller.outputTank.drain(maxDrain, doDrain);
-		}
+            prevMaster = (master != null);
+        }
+    }
 
-		return null;
-	}
+    @Override
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+        TileEntityThermalEvaporationController controller = getController();
+        return controller == null ? 0 : controller.inputTank.fill(resource, doFill);
+    }
 
-	@Override
-	public boolean canFill(ForgeDirection from, Fluid fluid)
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		return controller != null && controller.hasRecipe(fluid);
-	}
+    @Override
+    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+        TileEntityThermalEvaporationController controller = getController();
 
-	@Override
-	public boolean canDrain(ForgeDirection from, Fluid fluid)
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		return controller != null && controller.outputTank.getFluidAmount() > 0;
-	}
+        if (controller != null
+            && (resource == null
+                || resource.isFluidEqual(controller.outputTank.getFluid()))) {
+            return controller.outputTank.drain(resource.amount, doDrain);
+        }
 
-	@Override
-	public FluidTankInfo[] getTankInfo(ForgeDirection from)
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		
-		if(controller == null)
-		{
-			return PipeUtils.EMPTY;
-		}
+        return null;
+    }
 
-		return new FluidTankInfo[] {new FluidTankInfo(controller.inputTank), new FluidTankInfo(controller.outputTank)};
-	}
+    @Override
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+        TileEntityThermalEvaporationController controller = getController();
 
-	@Override
-	public double getTemp() 
-	{
-		return 0;
-	}
+        if (controller != null) {
+            return controller.outputTank.drain(maxDrain, doDrain);
+        }
 
-	@Override
-	public double getInverseConductionCoefficient() 
-	{
-		return 1;
-	}
+        return null;
+    }
 
-	@Override
-	public double getInsulationCoefficient(ForgeDirection side) 
-	{
-		return 0;
-	}
+    @Override
+    public boolean canFill(ForgeDirection from, Fluid fluid) {
+        TileEntityThermalEvaporationController controller = getController();
+        return controller != null && controller.hasRecipe(fluid);
+    }
 
-	@Override
-	public void transferHeatTo(double heat) 
-	{
-		TileEntityThermalEvaporationController controller = getController();
-		
-		if(controller != null)
-		{
-			controller.heatToAbsorb += heat;
-		}
-	}
+    @Override
+    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+        TileEntityThermalEvaporationController controller = getController();
+        return controller != null && controller.outputTank.getFluidAmount() > 0;
+    }
 
-	@Override
-	public double[] simulateHeat() 
-	{
-		return new double[] {0, 0};
-	}
+    @Override
+    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+        TileEntityThermalEvaporationController controller = getController();
 
-	@Override
-	public double applyTemperatureChange() 
-	{
-		return 0;
-	}
+        if (controller == null) {
+            return PipeUtils.EMPTY;
+        }
 
-	@Override
-	public boolean canConnectHeat(ForgeDirection side) 
-	{
-		return getController() != null;
-	}
+        return new FluidTankInfo[] { new FluidTankInfo(controller.inputTank),
+                                     new FluidTankInfo(controller.outputTank) };
+    }
 
-	@Override
-	public IHeatTransfer getAdjacent(ForgeDirection side) 
-	{
-		return null;
-	}
+    @Override
+    public double getTemp() {
+        return 0;
+    }
+
+    @Override
+    public double getInverseConductionCoefficient() {
+        return 1;
+    }
+
+    @Override
+    public double getInsulationCoefficient(ForgeDirection side) {
+        return 0;
+    }
+
+    @Override
+    public void transferHeatTo(double heat) {
+        TileEntityThermalEvaporationController controller = getController();
+
+        if (controller != null) {
+            controller.heatToAbsorb += heat;
+        }
+    }
+
+    @Override
+    public double[] simulateHeat() {
+        return new double[] { 0, 0 };
+    }
+
+    @Override
+    public double applyTemperatureChange() {
+        return 0;
+    }
+
+    @Override
+    public boolean canConnectHeat(ForgeDirection side) {
+        return getController() != null;
+    }
+
+    @Override
+    public IHeatTransfer getAdjacent(ForgeDirection side) {
+        return null;
+    }
 }

@@ -7,108 +7,101 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-public class InventoryPersonalChest extends InventoryBasic
-{
-	public EntityPlayer entityPlayer;
-	public ItemStack itemStack;
+public class InventoryPersonalChest extends InventoryBasic {
+    public EntityPlayer entityPlayer;
+    public ItemStack itemStack;
 
-	public boolean reading;
+    public boolean reading;
 
-	public InventoryPersonalChest(EntityPlayer player)
-	{
-		super("PersonalChest", false, 55);
-		entityPlayer = player;
+    public InventoryPersonalChest(EntityPlayer player) {
+        super("PersonalChest", false, 55);
+        entityPlayer = player;
 
-		read();
-	}
+        read();
+    }
 
-	public InventoryPersonalChest(ItemStack stack)
-	{
-		super("PersonalChest", false, 55);
-		itemStack = stack;
+    public InventoryPersonalChest(ItemStack stack) {
+        super("PersonalChest", false, 55);
+        itemStack = stack;
 
-		read();
-	}
+        read();
+    }
 
-	@Override
-	public void markDirty()
-	{
-		super.markDirty();
+    @Override
+    public void markDirty() {
+        super.markDirty();
 
-		if(!reading)
-		{
-			write();
-		}
-	}
+        if (!reading) {
+            write();
+        }
+    }
 
-	@Override
-	public void openInventory()
-	{
-		read();
-	}
+    @Override
+    public void openInventory() {
+        read();
+    }
 
-	@Override
-	public void closeInventory()
-	{
-		write();
-	}
+    @Override
+    public void closeInventory() {
+        write();
+    }
 
-	public void write()
-	{
-		NBTTagList tagList = new NBTTagList();
+    public void write() {
+        NBTTagList tagList = new NBTTagList();
 
-		for(int slotCount = 0; slotCount < getSizeInventory(); slotCount++)
-		{
-			if(getStackInSlot(slotCount) != null)
-			{
-				NBTTagCompound tagCompound = new NBTTagCompound();
-				tagCompound.setByte("Slot", (byte)slotCount);
-				getStackInSlot(slotCount).writeToNBT(tagCompound);
-				tagList.appendTag(tagCompound);
-			}
-		}
+        for (int slotCount = 0; slotCount < getSizeInventory(); slotCount++) {
+            if (getStackInSlot(slotCount) != null) {
+                NBTTagCompound tagCompound = new NBTTagCompound();
+                tagCompound.setByte("Slot", (byte) slotCount);
+                getStackInSlot(slotCount).writeToNBT(tagCompound);
+                tagList.appendTag(tagCompound);
+            }
+        }
 
-		if(getStack() != null)
-		{
-			if (getStack().getItem() instanceof ISustainedInventory) {
-                            ((ISustainedInventory)getStack().getItem()).setInventory(tagList, getStack());
-                        } else {
-                            System.out.println("Avoiding a server crash as : " + getStack().getItem().getClass().getName() + " is not a sustained inventory.");
-                        }
-		}
-	}
+        if (getStack() != null) {
+            if (getStack().getItem() instanceof ISustainedInventory) {
+                ((ISustainedInventory) getStack().getItem())
+                    .setInventory(tagList, getStack());
+            } else {
+                System.out.println(
+                    "Avoiding a server crash as : "
+                    + getStack().getItem().getClass().getName()
+                    + " is not a sustained inventory."
+                );
+            }
+        }
+    }
 
-	public void read()
-	{
-		if(reading)
-		{
-			return;
-		}
+    public void read() {
+        if (reading) {
+            return;
+        }
 
-                if (getStack() != null && !(getStack().getItem() instanceof ISustainedInventory)) return;
-		reading = true;
+        if (getStack() != null && !(getStack().getItem() instanceof ISustainedInventory))
+            return;
+        reading = true;
 
-		NBTTagList tagList = ((ISustainedInventory)getStack().getItem()).getInventory(getStack());
+        NBTTagList tagList
+            = ((ISustainedInventory) getStack().getItem()).getInventory(getStack());
 
-		if(tagList != null)
-		{
-			for(int tagCount = 0; tagCount < tagList.tagCount(); tagCount++)
-			{
-				NBTTagCompound tagCompound = (NBTTagCompound)tagList.getCompoundTagAt(tagCount);
-				byte slotID = tagCompound.getByte("Slot");
+        if (tagList != null) {
+            for (int tagCount = 0; tagCount < tagList.tagCount(); tagCount++) {
+                NBTTagCompound tagCompound
+                    = (NBTTagCompound) tagList.getCompoundTagAt(tagCount);
+                byte slotID = tagCompound.getByte("Slot");
 
-				if(slotID >= 0 && slotID < getSizeInventory())
-				{
-					setInventorySlotContents(slotID, ItemStack.loadItemStackFromNBT(tagCompound));
-				}
-			}
-		}
+                if (slotID >= 0 && slotID < getSizeInventory()) {
+                    setInventorySlotContents(
+                        slotID, ItemStack.loadItemStackFromNBT(tagCompound)
+                    );
+                }
+            }
+        }
 
-		reading = false;
-	}
+        reading = false;
+    }
 
-	public ItemStack getStack()
-	{
-		return itemStack != null ? itemStack : entityPlayer.getCurrentEquippedItem();
-	}
+    public ItemStack getStack() {
+        return itemStack != null ? itemStack : entityPlayer.getCurrentEquippedItem();
+    }
 }

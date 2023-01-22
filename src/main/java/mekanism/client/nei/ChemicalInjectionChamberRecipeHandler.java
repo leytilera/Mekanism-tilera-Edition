@@ -17,79 +17,69 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class ChemicalInjectionChamberRecipeHandler extends AdvancedMachineRecipeHandler
-{
-	@Override
-	public String getRecipeName()
-	{
-		return LangUtils.localize("nei.chemicalInjectionChamber");
-	}
+public class ChemicalInjectionChamberRecipeHandler extends AdvancedMachineRecipeHandler {
+    @Override
+    public String getRecipeName() {
+        return LangUtils.localize("nei.chemicalInjectionChamber");
+    }
 
-	@Override
-	public String getRecipeId()
-	{
-		return "mekanism.chemicalinjectionchamber";
-	}
+    @Override
+    public String getRecipeId() {
+        return "mekanism.chemicalinjectionchamber";
+    }
 
-	@Override
-	public String getOverlayIdentifier()
-	{
-		return "chemicalinjectionchamber";
-	}
+    @Override
+    public String getOverlayIdentifier() {
+        return "chemicalinjectionchamber";
+    }
 
-	@Override
-	public Collection<InjectionRecipe> getRecipes()
-	{
-		return Recipe.CHEMICAL_INJECTION_CHAMBER.get().values();
-	}
+    @Override
+    public Collection<InjectionRecipe> getRecipes() {
+        return Recipe.CHEMICAL_INJECTION_CHAMBER.get().values();
+    }
 
-	@Override
-	public List<ItemStack> getFuelStacks(Gas gasType)
-	{
-		if(gasType == GasRegistry.getGas("sulfuricAcid"))
-		{
-			List<ItemStack> fuels = new ArrayList<ItemStack>();
-			fuels.addAll(OreDictionary.getOres("dustSulfur"));
+    @Override
+    public List<ItemStack> getFuelStacks(Gas gasType) {
+        if (gasType == GasRegistry.getGas("sulfuricAcid")) {
+            List<ItemStack> fuels = new ArrayList<ItemStack>();
+            fuels.addAll(OreDictionary.getOres("dustSulfur"));
 
-			for(GasTankTier tier : GasTankTier.values())
-			{
-				fuels.add(MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("sulfuricAcid")));
-			}
-			
-			return fuels;
-		}
-		else if(gasType == GasRegistry.getGas("water"))
-		{
-			for(GasTankTier tier : GasTankTier.values())
-			{
-				return ListUtils.asList(MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("water")));
-			}
-		}
-		else if(gasType == GasRegistry.getGas("hydrogenChloride"))
-		{
-			List<ItemStack> fuels = new ArrayList<ItemStack>();
-			fuels.addAll(OreDictionary.getOres("dustSalt"));
-			
-			for(GasTankTier tier : GasTankTier.values())
-			{
-				fuels.add(MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("hydrogenChloride")));
-			}
-			
-			return fuels;
-		}
+            for (GasTankTier tier : GasTankTier.values()) {
+                fuels.add(
+                    MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("sulfuricAcid"))
+                );
+            }
 
-		return new ArrayList<ItemStack>();
-	}
-	
-	@Override
-	public ProgressBar getProgressType()
-	{
-		return ProgressBar.YELLOW;
-	}
+            return fuels;
+        } else if (gasType == GasRegistry.getGas("water")) {
+            for (GasTankTier tier : GasTankTier.values()) {
+                return ListUtils.asList(
+                    MekanismUtils.getFullGasTank(tier, GasRegistry.getGas("water"))
+                );
+            }
+        } else if (gasType == GasRegistry.getGas("hydrogenChloride")) {
+            List<ItemStack> fuels = new ArrayList<ItemStack>();
+            fuels.addAll(OreDictionary.getOres("dustSalt"));
 
-	@Override
-	public Class getGuiClass()
-	{
-		return GuiChemicalInjectionChamber.class;
-	}
+            for (GasTankTier tier : GasTankTier.values()) {
+                fuels.add(MekanismUtils.getFullGasTank(
+                    tier, GasRegistry.getGas("hydrogenChloride")
+                ));
+            }
+
+            return fuels;
+        }
+
+        return new ArrayList<ItemStack>();
+    }
+
+    @Override
+    public ProgressBar getProgressType() {
+        return ProgressBar.YELLOW;
+    }
+
+    @Override
+    public Class getGuiClass() {
+        return GuiChemicalInjectionChamber.class;
+    }
 }

@@ -9,8 +9,8 @@ import mekanism.common.network.PacketChangeWeather.ChangeWeatherMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-public class PacketChangeWeather implements IMessageHandler<ChangeWeatherMessage, IMessage> {
-
+public class PacketChangeWeather
+    implements IMessageHandler<ChangeWeatherMessage, IMessage> {
     public static enum WeatherType {
         CLEAR,
         HAZE,
@@ -18,14 +18,13 @@ public class PacketChangeWeather implements IMessageHandler<ChangeWeatherMessage
         STORM;
 
         public static WeatherType valueOf(int ordinal) {
-            if (ordinal >= WeatherType.values().length || ordinal < 0) return null;
+            if (ordinal >= WeatherType.values().length || ordinal < 0)
+                return null;
             return WeatherType.values()[ordinal];
         }
-
     }
 
     public static class ChangeWeatherMessage implements IMessage {
-
         public WeatherType type;
 
         public ChangeWeatherMessage() {}
@@ -43,7 +42,6 @@ public class PacketChangeWeather implements IMessageHandler<ChangeWeatherMessage
         public void toBytes(ByteBuf buf) {
             buf.writeInt(type.ordinal());
         }
-
     }
 
     @Override
@@ -73,6 +71,4 @@ public class PacketChangeWeather implements IMessageHandler<ChangeWeatherMessage
 
         return null;
     }
-
-
 }

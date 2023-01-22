@@ -14,12 +14,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
-public class TileEntityTheoreticalElementizer extends TileEntityAdvancedElectricMachine<TheoreticalElementizerRecipe> {
-
+public class TileEntityTheoreticalElementizer
+    extends TileEntityAdvancedElectricMachine<TheoreticalElementizerRecipe> {
     public TileEntityTheoreticalElementizer() {
-        super("elementizer", "TheoreticalElementizer", 24, 1, 1000, BlockMachine.MachineType.THEORETICAL_ELEMENTIZER.baseEnergy, 1000);
+        super(
+            "elementizer",
+            "TheoreticalElementizer",
+            24,
+            1,
+            1000,
+            BlockMachine.MachineType.THEORETICAL_ELEMENTIZER.baseEnergy,
+            1000
+        );
     }
-    
+
     @Override
     public HashMap getRecipes() {
         return new HashMap();
@@ -58,8 +66,7 @@ public class TileEntityTheoreticalElementizer extends TileEntityAdvancedElectric
     }
 
     @Override
-	public TheoreticalElementizerRecipe getRecipe()
-	{
+    public TheoreticalElementizerRecipe getRecipe() {
         return null;
     }
 

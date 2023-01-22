@@ -11,10 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 public class PacketChangeTime implements IMessageHandler<ChangeTimeMessage, IMessage> {
-    
-
     public static class ChangeTimeMessage implements IMessage {
-
         public int time;
 
         public ChangeTimeMessage() {}
@@ -32,7 +29,6 @@ public class PacketChangeTime implements IMessageHandler<ChangeTimeMessage, IMes
         public void toBytes(ByteBuf buf) {
             buf.writeInt(time);
         }
-
     }
 
     @Override
@@ -47,5 +43,4 @@ public class PacketChangeTime implements IMessageHandler<ChangeTimeMessage, IMes
 
         return null;
     }
-
 }

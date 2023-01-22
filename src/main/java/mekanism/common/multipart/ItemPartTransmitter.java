@@ -3,6 +3,12 @@ package mekanism.common.multipart;
 import java.util.ArrayList;
 import java.util.List;
 
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Vector3;
+import codechicken.multipart.JItemMultiPart;
+import codechicken.multipart.TMultiPart;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.Coord4D;
 import mekanism.api.EnumColor;
 import mekanism.api.transmitters.DynamicNetwork;
@@ -24,163 +30,255 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
-import codechicken.multipart.JItemMultiPart;
-import codechicken.multipart.TMultiPart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemPartTransmitter extends JItemMultiPart
-{
-	public ItemPartTransmitter()
-	{
-		super();
-		setHasSubtypes(true);
-		setCreativeTab(Mekanism.tabMekanism);
-	}
+public class ItemPartTransmitter extends JItemMultiPart {
+    public ItemPartTransmitter() {
+        super();
+        setHasSubtypes(true);
+        setCreativeTab(Mekanism.tabMekanism);
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister register) {}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister register) {}
 
-	@Override
-	public TMultiPart newPart(ItemStack stack, EntityPlayer player, World world, BlockCoord coord, int face, Vector3 vecHit)
-	{
-		TransmitterType type = TransmitterType.values()[stack.getItemDamage()];
+    @Override
+    public TMultiPart newPart(
+        ItemStack stack,
+        EntityPlayer player,
+        World world,
+        BlockCoord coord,
+        int face,
+        Vector3 vecHit
+    ) {
+        TransmitterType type = TransmitterType.values()[stack.getItemDamage()];
 
-		if(type.getTransmission() != TransmissionType.ITEM)
-		{
-			Coord4D obj = new Coord4D(coord.x, coord.y, coord.z, world.provider.dimensionId);
+        if (type.getTransmission() != TransmissionType.ITEM) {
+            Coord4D obj
+                = new Coord4D(coord.x, coord.y, coord.z, world.provider.dimensionId);
 
-			List<DynamicNetwork> networks = new ArrayList<>();
+            List<DynamicNetwork> networks = new ArrayList<>();
 
-			for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS)
-			{
-				TileEntity tile = obj.getFromSide(side).getTileEntity(world);
+            for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                TileEntity tile = obj.getFromSide(side).getTileEntity(world);
 
-				if(tile instanceof ITransmitterTile && TransmissionType.checkTransmissionType(((ITransmitterTile)tile).getTransmitter(), type.getTransmission()))
-				{
-					networks.add(((ITransmitterTile)tile).getTransmitter().getTransmitterNetwork());
-				}
-			}
-		}
+                if (tile instanceof ITransmitterTile
+                    && TransmissionType.checkTransmissionType(
+                        ((ITransmitterTile) tile).getTransmitter(), type.getTransmission()
+                    )) {
+                    networks.add(
+                        ((ITransmitterTile) tile).getTransmitter().getTransmitterNetwork()
+                    );
+                }
+            }
+        }
 
-		return PartTransmitter.getPartType(TransmitterType.values()[getDamage(stack)]);
-	}
+        return PartTransmitter.getPartType(TransmitterType.values()[getDamage(stack)]);
+    }
 
-	@Override
-	public int getMetadata(int damage)
-	{
-		return damage;
-	}
+    @Override
+    public int getMetadata(int damage) {
+        return damage;
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag)
-	{
-		if(!MekKeyHandler.getIsKeyPressed(MekanismKeyHandler.sneakKey))
-		{
-			TransmissionType transmission = TransmitterType.values()[itemstack.getItemDamage()].getTransmission();
-			BaseTier tier = TransmitterType.values()[itemstack.getItemDamage()].getTier();
-			
-			if(transmission == TransmissionType.ENERGY)
-			{
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.capacity") + ": " + EnumColor.GREY + MekanismUtils.getEnergyDisplay(Tier.CableTier.values()[itemstack.getItemDamage()].cableCapacity) + "/t");
-			}
-			else if(transmission == TransmissionType.FLUID)
-			{
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.capacity") + ": " + EnumColor.GREY + Tier.PipeTier.get(tier).pipeCapacity + "mB/t");
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.pumpRate") + ": " + EnumColor.GREY + Tier.PipeTier.get(tier).pipePullAmount + "mB/t");
-			}
-			else if(transmission == TransmissionType.GAS)
-			{
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.capacity") + ": " + EnumColor.GREY + Tier.TubeTier.get(tier).tubeCapacity + "mB/t");
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.pumpRate") + ": " + EnumColor.GREY + Tier.TubeTier.get(tier).tubePullAmount + "mB/t");
-			}
-			else if(transmission == TransmissionType.ITEM)
-			{
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.speed") + ": " + EnumColor.GREY + (Tier.TransporterTier.get(tier).speed/(100/20)) + " m/s");
-				list.add(EnumColor.INDIGO + LangUtils.localize("tooltip.pumpRate") + ": " + EnumColor.GREY + Tier.TransporterTier.get(tier).pullAmount*2 + "/s");
-			}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(
+        ItemStack itemstack, EntityPlayer entityplayer, List list, boolean flag
+    ) {
+        if (!MekKeyHandler.getIsKeyPressed(MekanismKeyHandler.sneakKey)) {
+            TransmissionType transmission
+                = TransmitterType.values()[itemstack.getItemDamage()].getTransmission();
+            BaseTier tier = TransmitterType.values()[itemstack.getItemDamage()].getTier();
 
-			list.add(LangUtils.localize("tooltip.hold") + " " + EnumColor.AQUA + GameSettings.getKeyDisplayString(MekanismKeyHandler.sneakKey.getKeyCode()) + EnumColor.GREY + " " + LangUtils.localize("tooltip.forDetails"));
-		}
-		else {
-			switch(itemstack.getItemDamage())
-			{
-				case 0: case 1: case 2: case 3:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + "RF " + EnumColor.GREY + "(ThermalExpansion)");
-					list.add("- " + EnumColor.PURPLE + "EU " + EnumColor.GREY +  "(IndustrialCraft)");
-					list.add("- " + EnumColor.PURPLE + "Joules " + EnumColor.GREY +  "(Mekanism)");
-					break;
-				}
-				case 4: case 5: case 6: case 7:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.fluids") + " " + EnumColor.GREY + "(MinecraftForge)");
-					break;
-				}
-				case 8: case 9: case 10: case 11:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.gasses") + " (Mekanism)");
-					break;
-				}
-				case 12: case 13: case 14: case 15:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.items") + " (" + LangUtils.localize("tooltip.universal") + ")");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.blocks") + " (" + LangUtils.localize("tooltip.universal") + ")");
-					break;
-				}
-				case 16:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.items") + " (" + LangUtils.localize("tooltip.universal") + ")");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.blocks") + " (" + LangUtils.localize("tooltip.universal") + ")");
-					list.add("- " + EnumColor.DARK_RED + LangUtils.localize("tooltip.restrictiveDesc"));
-					break;
-				}
-				case 17:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.items") + " (" + LangUtils.localize("tooltip.universal") + ")");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.blocks") + " (" + LangUtils.localize("tooltip.universal") + ")");
-					list.add("- " + EnumColor.DARK_RED + LangUtils.localize("tooltip.diversionDesc"));
-					break;
-				}
-				case 18: case 19: case 20: case 21:
-				{
-					list.add(EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans") + ":");
-					list.add("- " + EnumColor.PURPLE + LangUtils.localize("tooltip.heat") + " (Mekanism)");
-					break;
-				}
-			}
-		}
-	}
+            if (transmission == TransmissionType.ENERGY) {
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.capacity") + ": "
+                    + EnumColor.GREY
+                    + MekanismUtils.getEnergyDisplay(
+                        Tier.CableTier.values()[itemstack.getItemDamage()].cableCapacity
+                    )
+                    + "/t"
+                );
+            } else if (transmission == TransmissionType.FLUID) {
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.capacity") + ": "
+                    + EnumColor.GREY + Tier.PipeTier.get(tier).pipeCapacity + "mB/t"
+                );
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.pumpRate") + ": "
+                    + EnumColor.GREY + Tier.PipeTier.get(tier).pipePullAmount + "mB/t"
+                );
+            } else if (transmission == TransmissionType.GAS) {
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.capacity") + ": "
+                    + EnumColor.GREY + Tier.TubeTier.get(tier).tubeCapacity + "mB/t"
+                );
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.pumpRate") + ": "
+                    + EnumColor.GREY + Tier.TubeTier.get(tier).tubePullAmount + "mB/t"
+                );
+            } else if (transmission == TransmissionType.ITEM) {
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.speed") + ": "
+                    + EnumColor.GREY + (Tier.TransporterTier.get(tier).speed / (100 / 20))
+                    + " m/s"
+                );
+                list.add(
+                    EnumColor.INDIGO + LangUtils.localize("tooltip.pumpRate") + ": "
+                    + EnumColor.GREY + Tier.TransporterTier.get(tier).pullAmount * 2
+                    + "/s"
+                );
+            }
 
-	@Override
-	public void getSubItems(Item item, CreativeTabs tab, List listToAddTo)
-	{
-		for(TransmitterType type : TransmitterType.values())
-		{
-			listToAddTo.add(new ItemStack(item, 1, type.ordinal()));
-		}
-	}
+            list.add(
+                LangUtils.localize("tooltip.hold") + " " + EnumColor.AQUA
+                + GameSettings.getKeyDisplayString(MekanismKeyHandler.sneakKey.getKeyCode(
+                ))
+                + EnumColor.GREY + " " + LangUtils.localize("tooltip.forDetails")
+            );
+        } else {
+            switch (itemstack.getItemDamage()) {
+                case 0:
+                case 1:
+                case 2:
+                case 3: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + "RF " + EnumColor.GREY
+                        + "(ThermalExpansion)"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + "EU " + EnumColor.GREY
+                        + "(IndustrialCraft)"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + "Joules " + EnumColor.GREY
+                        + "(Mekanism)"
+                    );
+                    break;
+                }
+                case 4:
+                case 5:
+                case 6:
+                case 7: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.fluids")
+                        + " " + EnumColor.GREY + "(MinecraftForge)"
+                    );
+                    break;
+                }
+                case 8:
+                case 9:
+                case 10:
+                case 11: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.gasses")
+                        + " (Mekanism)"
+                    );
+                    break;
+                }
+                case 12:
+                case 13:
+                case 14:
+                case 15: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.items")
+                        + " (" + LangUtils.localize("tooltip.universal") + ")"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.blocks")
+                        + " (" + LangUtils.localize("tooltip.universal") + ")"
+                    );
+                    break;
+                }
+                case 16: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.items")
+                        + " (" + LangUtils.localize("tooltip.universal") + ")"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.blocks")
+                        + " (" + LangUtils.localize("tooltip.universal") + ")"
+                    );
+                    list.add(
+                        "- " + EnumColor.DARK_RED
+                        + LangUtils.localize("tooltip.restrictiveDesc")
+                    );
+                    break;
+                }
+                case 17: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.items")
+                        + " (" + LangUtils.localize("tooltip.universal") + ")"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.blocks")
+                        + " (" + LangUtils.localize("tooltip.universal") + ")"
+                    );
+                    list.add(
+                        "- " + EnumColor.DARK_RED
+                        + LangUtils.localize("tooltip.diversionDesc")
+                    );
+                    break;
+                }
+                case 18:
+                case 19:
+                case 20:
+                case 21: {
+                    list.add(
+                        EnumColor.DARK_GREY + LangUtils.localize("tooltip.capableTrans")
+                        + ":"
+                    );
+                    list.add(
+                        "- " + EnumColor.PURPLE + LangUtils.localize("tooltip.heat")
+                        + " (Mekanism)"
+                    );
+                    break;
+                }
+            }
+        }
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber()
-	{
-		return 0;
-	}
+    @Override
+    public void getSubItems(Item item, CreativeTabs tab, List listToAddTo) {
+        for (TransmitterType type : TransmitterType.values()) {
+            listToAddTo.add(new ItemStack(item, 1, type.ordinal()));
+        }
+    }
 
-	@Override
-	public String getUnlocalizedName(ItemStack stack)
-	{
-		return getUnlocalizedName() + "." + TransmitterType.values()[stack.getItemDamage()].getName();
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getSpriteNumber() {
+        return 0;
+    }
+
+    @Override
+    public String getUnlocalizedName(ItemStack stack) {
+        return getUnlocalizedName() + "."
+            + TransmitterType.values()[stack.getItemDamage()].getName();
+    }
 }

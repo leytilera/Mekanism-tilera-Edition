@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 /**
  * Abstract Implementation of ICape used within Dev. Capes
- * 
+ *
  * @author jadar
  */
 public abstract class AbstractCape implements ICape {

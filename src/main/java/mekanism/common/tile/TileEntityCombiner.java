@@ -14,33 +14,36 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-public class TileEntityCombiner extends TileEntityAdvancedElectricMachine<CombinerRecipe>
-{
-	public TileEntityCombiner()
-	{
-		super("combiner", "Combiner", usage.combinerUsage, 1, 200, MachineType.COMBINER.baseEnergy);
-	}
+public class TileEntityCombiner
+    extends TileEntityAdvancedElectricMachine<CombinerRecipe> {
+    public TileEntityCombiner() {
+        super(
+            "combiner",
+            "Combiner",
+            usage.combinerUsage,
+            1,
+            200,
+            MachineType.COMBINER.baseEnergy
+        );
+    }
 
-	@Override
-	public Map getRecipes()
-	{
-		return Recipe.COMBINER.get();
-	}
+    @Override
+    public Map getRecipes() {
+        return Recipe.COMBINER.get();
+    }
 
-	@Override
-	public GasStack getItemGas(ItemStack itemstack)
-	{
-		if(itemstack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemstack.getItem()) == Blocks.cobblestone)
-		{
-			return new GasStack(GasRegistry.getGas("liquidStone"), 200);
-		}
+    @Override
+    public GasStack getItemGas(ItemStack itemstack) {
+        if (itemstack.getItem() instanceof ItemBlock
+            && Block.getBlockFromItem(itemstack.getItem()) == Blocks.cobblestone) {
+            return new GasStack(GasRegistry.getGas("liquidStone"), 200);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public boolean isValidGas(Gas gas)
-	{
-		return false;
-	}
+    @Override
+    public boolean isValidGas(Gas gas) {
+        return false;
+    }
 }

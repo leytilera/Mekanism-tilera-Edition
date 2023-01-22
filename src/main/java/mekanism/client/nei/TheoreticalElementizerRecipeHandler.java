@@ -12,7 +12,6 @@ import mekanism.common.util.LangUtils;
 import net.minecraft.item.ItemStack;
 
 public class TheoreticalElementizerRecipeHandler extends AdvancedMachineRecipeHandler {
-
     @Override
     public String getRecipeName() {
         return LangUtils.localize("tile.MachineBlock3.TheoreticalElementizer.name");
@@ -37,11 +36,9 @@ public class TheoreticalElementizerRecipeHandler extends AdvancedMachineRecipeHa
     public ProgressBar getProgressType() {
         return ProgressBar.BLUE;
     }
-    
-    @Override
-	public Class getGuiClass()
-	{
-		return GuiTheoreticalElementizer.class;
-	}
 
+    @Override
+    public Class getGuiClass() {
+        return GuiTheoreticalElementizer.class;
+    }
 }

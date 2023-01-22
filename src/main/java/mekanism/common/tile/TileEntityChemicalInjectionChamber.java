@@ -21,98 +21,107 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityChemicalInjectionChamber extends TileEntityAdvancedElectricMachine<InjectionRecipe>
-{
-	public TileEntityChemicalInjectionChamber()
-	{
-		super("injection", "ChemicalInjectionChamber", usage.chemicalInjectionChamberUsage, 1, 200, MachineType.CHEMICAL_INJECTION_CHAMBER.baseEnergy);
-		
-		configComponent.addSupported(TransmissionType.GAS);
-		configComponent.addOutput(TransmissionType.GAS, new SideData("None", EnumColor.GREY, InventoryUtils.EMPTY));
-		configComponent.addOutput(TransmissionType.GAS, new SideData("Gas", EnumColor.DARK_RED, new int[] {0}));
-		configComponent.fillConfig(TransmissionType.GAS, 1);
-		configComponent.setCanEject(TransmissionType.GAS, false);
-	}
+public class TileEntityChemicalInjectionChamber
+    extends TileEntityAdvancedElectricMachine<InjectionRecipe> {
+    public TileEntityChemicalInjectionChamber() {
+        super(
+            "injection",
+            "ChemicalInjectionChamber",
+            usage.chemicalInjectionChamberUsage,
+            1,
+            200,
+            MachineType.CHEMICAL_INJECTION_CHAMBER.baseEnergy
+        );
 
-	@Override
-	public Map getRecipes()
-	{
-		return Recipe.CHEMICAL_INJECTION_CHAMBER.get();
-	}
+        configComponent.addSupported(TransmissionType.GAS);
+        configComponent.addOutput(
+            TransmissionType.GAS,
+            new SideData("None", EnumColor.GREY, InventoryUtils.EMPTY)
+        );
+        configComponent.addOutput(
+            TransmissionType.GAS, new SideData("Gas", EnumColor.DARK_RED, new int[] { 0 })
+        );
+        configComponent.fillConfig(TransmissionType.GAS, 1);
+        configComponent.setCanEject(TransmissionType.GAS, false);
+    }
 
-	@Override
-	public GasStack getItemGas(ItemStack itemstack)
-	{
-		if(MekanismUtils.getOreDictName(itemstack).contains("dustSulfur")) return new GasStack(GasRegistry.getGas("sulfuricAcid"), 2);
-		if(MekanismUtils.getOreDictName(itemstack).contains("dustSalt")) return new GasStack(GasRegistry.getGas("hydrogenChloride"), 2);
-		if(Block.getBlockFromItem(itemstack.getItem()) == MekanismBlocks.GasTank && ((IGasItem)itemstack.getItem()).getGas(itemstack) != null &&
-				isValidGas(((IGasItem)itemstack.getItem()).getGas(itemstack).getGas())) return new GasStack(GasRegistry.getGas("sulfuricAcid"), 1);
+    @Override
+    public Map getRecipes() {
+        return Recipe.CHEMICAL_INJECTION_CHAMBER.get();
+    }
 
-		return null;
-	}
+    @Override
+    public GasStack getItemGas(ItemStack itemstack) {
+        if (MekanismUtils.getOreDictName(itemstack).contains("dustSulfur"))
+            return new GasStack(GasRegistry.getGas("sulfuricAcid"), 2);
+        if (MekanismUtils.getOreDictName(itemstack).contains("dustSalt"))
+            return new GasStack(GasRegistry.getGas("hydrogenChloride"), 2);
+        if (Block.getBlockFromItem(itemstack.getItem()) == MekanismBlocks.GasTank
+            && ((IGasItem) itemstack.getItem()).getGas(itemstack) != null
+            && isValidGas(((IGasItem) itemstack.getItem()).getGas(itemstack).getGas()))
+            return new GasStack(GasRegistry.getGas("sulfuricAcid"), 1);
 
-	@Override
-	public int receiveGas(ForgeDirection side, GasStack stack, boolean doTransfer)
-	{
-		if(canReceiveGas(side, stack.getGas()))
-		{
-			return gasTank.receive(stack, doTransfer);
-		}
+        return null;
+    }
 
-		return 0;
-	}
+    @Override
+    public int receiveGas(ForgeDirection side, GasStack stack, boolean doTransfer) {
+        if (canReceiveGas(side, stack.getGas())) {
+            return gasTank.receive(stack, doTransfer);
+        }
 
-	@Override
-	public boolean canReceiveGas(ForgeDirection side, Gas type)
-	{
-		if(configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing).hasSlot(0))
-		{
-			return isValidGas(type);
-		}
-		
-		return false;
-	}
+        return 0;
+    }
 
-	@Override
-	public void handleSecondaryFuel()
-	{
-		if(inventory[1] != null && gasTank.getNeeded() > 0 && inventory[1].getItem() instanceof IGasItem)
-		{
-			GasStack gas = ((IGasItem)inventory[1].getItem()).getGas(inventory[1]);
+    @Override
+    public boolean canReceiveGas(ForgeDirection side, Gas type) {
+        if (configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing)
+                .hasSlot(0)) {
+            return isValidGas(type);
+        }
 
-			if(gas != null && isValidGas(gas.getGas()))
-			{
-				GasStack removed = GasTransmission.removeGas(inventory[1], gasTank.getGasType(), gasTank.getNeeded());
-				gasTank.receive(removed, true);
-			}
+        return false;
+    }
 
-			return;
-		}
+    @Override
+    public void handleSecondaryFuel() {
+        if (inventory[1] != null && gasTank.getNeeded() > 0
+            && inventory[1].getItem() instanceof IGasItem) {
+            GasStack gas = ((IGasItem) inventory[1].getItem()).getGas(inventory[1]);
 
-		super.handleSecondaryFuel();
-	}
+            if (gas != null && isValidGas(gas.getGas())) {
+                GasStack removed = GasTransmission.removeGas(
+                    inventory[1], gasTank.getGasType(), gasTank.getNeeded()
+                );
+                gasTank.receive(removed, true);
+            }
 
-	@Override
-	public boolean canTubeConnect(ForgeDirection side)
-	{
-		return configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing).hasSlot(0);
-	}
+            return;
+        }
 
-	@Override
-	public boolean isValidGas(Gas gas)
-	{
-		return gas == GasRegistry.getGas("sulfuricAcid") || gas == GasRegistry.getGas("water") || gas == GasRegistry.getGas("hydrogenChloride");
-	}
+        super.handleSecondaryFuel();
+    }
 
-	@Override
-	public boolean upgradeableSecondaryEfficiency()
-	{
-		return true;
-	}
+    @Override
+    public boolean canTubeConnect(ForgeDirection side) {
+        return configComponent.getOutput(TransmissionType.GAS, side.ordinal(), facing)
+            .hasSlot(0);
+    }
 
-	@Override
-	public boolean useStatisticalMechanics()
-	{
-		return true;
-	}
+    @Override
+    public boolean isValidGas(Gas gas) {
+        return gas == GasRegistry.getGas("sulfuricAcid")
+            || gas == GasRegistry.getGas("water")
+            || gas == GasRegistry.getGas("hydrogenChloride");
+    }
+
+    @Override
+    public boolean upgradeableSecondaryEfficiency() {
+        return true;
+    }
+
+    @Override
+    public boolean useStatisticalMechanics() {
+        return true;
+    }
 }

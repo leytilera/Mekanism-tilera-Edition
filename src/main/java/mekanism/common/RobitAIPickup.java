@@ -15,139 +15,148 @@ import net.minecraft.world.World;
  * 	Written by pixlepix (I'm in mekanism! Yay!)
  *	Boilerplate copied from RobitAIFollow
  */
-public class RobitAIPickup extends EntityAIBase
-{
-	/** The robit entity. */
-	private EntityRobit theRobit;
+public class RobitAIPickup extends EntityAIBase {
+    /** The robit entity. */
+    private EntityRobit theRobit;
 
-	/** The world the robit is located in. */
-	private World theWorld;
+    /** The world the robit is located in. */
+    private World theWorld;
 
-	/** How fast the robit can travel. */
-	private float moveSpeed;
+    /** How fast the robit can travel. */
+    private float moveSpeed;
 
-	/** The robit's pathfinder. */
-	private PathNavigate thePathfinder;
+    /** The robit's pathfinder. */
+    private PathNavigate thePathfinder;
 
-	/** The ticker for updates. */
-	private int ticker;
+    /** The ticker for updates. */
+    private int ticker;
 
-	/** Whether or not this robit avoids water. */
-	private boolean avoidWater;
-	private EntityItem closest;
+    /** Whether or not this robit avoids water. */
+    private boolean avoidWater;
+    private EntityItem closest;
 
-	public RobitAIPickup(EntityRobit entityRobit, float speed)
-	{
-		theRobit = entityRobit;
-		theWorld = entityRobit.worldObj;
-		moveSpeed = speed;
-		thePathfinder = entityRobit.getNavigator();
-	}
+    public RobitAIPickup(EntityRobit entityRobit, float speed) {
+        theRobit = entityRobit;
+        theWorld = entityRobit.worldObj;
+        moveSpeed = speed;
+        thePathfinder = entityRobit.getNavigator();
+    }
 
-	@Override
-	public boolean shouldExecute()
-	{
-		if(!theRobit.getDropPickup())
-		{
-			return false;
-		}
-		
-		if(closest != null && closest.getDistanceSqToEntity(closest) > 100 && thePathfinder.getPathToXYZ(closest.posX, closest.posY, closest.posZ) != null)
-		{
-			return true;
-		}
+    @Override
+    public boolean shouldExecute() {
+        if (!theRobit.getDropPickup()) {
+            return false;
+        }
 
-		List items = theRobit.worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(theRobit.posX-10, theRobit.posY-10, theRobit.posZ-10, theRobit.posX+10, theRobit.posY+10, theRobit.posZ+10));
-		Iterator iter = items.iterator();
-		//Cached for slight performance
-		double closestDistance = -1;
+        if (closest != null && closest.getDistanceSqToEntity(closest) > 100
+            && thePathfinder.getPathToXYZ(closest.posX, closest.posY, closest.posZ)
+                != null) {
+            return true;
+        }
 
-		while(iter.hasNext())
-		{
-			EntityItem entity = (EntityItem)iter.next();
+        List items = theRobit.worldObj.getEntitiesWithinAABB(
+            EntityItem.class,
+            AxisAlignedBB.getBoundingBox(
+                theRobit.posX - 10,
+                theRobit.posY - 10,
+                theRobit.posZ - 10,
+                theRobit.posX + 10,
+                theRobit.posY + 10,
+                theRobit.posZ + 10
+            )
+        );
+        Iterator iter = items.iterator();
+        //Cached for slight performance
+        double closestDistance = -1;
 
-			double distance = theRobit.getDistanceToEntity(entity);
+        while (iter.hasNext()) {
+            EntityItem entity = (EntityItem) iter.next();
 
-			if(distance <= 10)
-			{
-				if(closestDistance == -1 || distance < closestDistance)
-				{
-					if(thePathfinder.getPathToXYZ(entity.posX, entity.posY, entity.posZ) != null)
-					{
-						closest = entity;
-						closestDistance = distance;
-					}
-				}
-			}
-		}
+            double distance = theRobit.getDistanceToEntity(entity);
 
-		if(closest == null || closest.isDead)
-		{
-			//No valid items
-			return false;
-		}
+            if (distance <= 10) {
+                if (closestDistance == -1 || distance < closestDistance) {
+                    if (thePathfinder.getPathToXYZ(entity.posX, entity.posY, entity.posZ)
+                        != null) {
+                        closest = entity;
+                        closestDistance = distance;
+                    }
+                }
+            }
+        }
 
-		return true;
+        if (closest == null || closest.isDead) {
+            //No valid items
+            return false;
+        }
 
-	}
+        return true;
+    }
 
-	@Override
-	public boolean continueExecuting()
-	{
-		return !closest.isDead && !thePathfinder.noPath() && theRobit.getDistanceSqToEntity(closest) > 100 && theRobit.getDropPickup() && theRobit.getEnergy() > 0 && closest.worldObj.provider.dimensionId == theRobit.worldObj.provider.dimensionId;
-	}
+    @Override
+    public boolean continueExecuting() {
+        return !closest.isDead && !thePathfinder.noPath()
+            && theRobit.getDistanceSqToEntity(closest) > 100 && theRobit.getDropPickup()
+            && theRobit.getEnergy() > 0
+            && closest.worldObj.provider.dimensionId
+            == theRobit.worldObj.provider.dimensionId;
+    }
 
-	@Override
-	public void startExecuting()
-	{
-		ticker = 0;
-		avoidWater = theRobit.getNavigator().getAvoidsWater();
-		theRobit.getNavigator().setAvoidsWater(false);
-	}
+    @Override
+    public void startExecuting() {
+        ticker = 0;
+        avoidWater = theRobit.getNavigator().getAvoidsWater();
+        theRobit.getNavigator().setAvoidsWater(false);
+    }
 
-	@Override
-	public void resetTask()
-	{
-		thePathfinder.clearPathEntity();
-		theRobit.getNavigator().setAvoidsWater(avoidWater);
-	}
+    @Override
+    public void resetTask() {
+        thePathfinder.clearPathEntity();
+        theRobit.getNavigator().setAvoidsWater(avoidWater);
+    }
 
-	@Override
-	public void updateTask()
-	{
-		if(!theRobit.getDropPickup())
-		{
-			return;
-		}
-		
-		theRobit.getLookHelper().setLookPositionWithEntity(closest, 6.0F, theRobit.getVerticalFaceSpeed()/10);
+    @Override
+    public void updateTask() {
+        if (!theRobit.getDropPickup()) {
+            return;
+        }
 
-		if(--ticker <= 0)
-		{
-			ticker = 10;
+        theRobit.getLookHelper().setLookPositionWithEntity(
+            closest, 6.0F, theRobit.getVerticalFaceSpeed() / 10
+        );
 
-			if(!thePathfinder.tryMoveToEntityLiving(closest, moveSpeed))
-			{
-				if(theRobit.getDistanceSqToEntity(closest) >= 144.0D)
-				{
-					int x = MathHelper.floor_double(closest.posX) - 2;
-					int y = MathHelper.floor_double(closest.posZ) - 2;
-					int z = MathHelper.floor_double(closest.boundingBox.minY);
+        if (--ticker <= 0) {
+            ticker = 10;
 
-					for(int l = 0; l <= 4; ++l)
-					{
-						for(int i1 = 0; i1 <= 4; ++i1)
-						{
-							if((l < 1 || i1 < 1 || l > 3 || i1 > 3) && theWorld.doesBlockHaveSolidTopSurface(theWorld, x + l, z - 1, y + i1) && !theWorld.getBlock(x + l, z, y + i1).isNormalCube() && !theWorld.getBlock(x + l, z + 1, y + i1).isNormalCube())
-							{
-								theRobit.setLocationAndAngles((x + l) + 0.5F, z, (y + i1) + 0.5F, theRobit.rotationYaw, theRobit.rotationPitch);
-								thePathfinder.clearPathEntity();
-								return;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+            if (!thePathfinder.tryMoveToEntityLiving(closest, moveSpeed)) {
+                if (theRobit.getDistanceSqToEntity(closest) >= 144.0D) {
+                    int x = MathHelper.floor_double(closest.posX) - 2;
+                    int y = MathHelper.floor_double(closest.posZ) - 2;
+                    int z = MathHelper.floor_double(closest.boundingBox.minY);
+
+                    for (int l = 0; l <= 4; ++l) {
+                        for (int i1 = 0; i1 <= 4; ++i1) {
+                            if ((l < 1 || i1 < 1 || l > 3 || i1 > 3)
+                                && theWorld.doesBlockHaveSolidTopSurface(
+                                    theWorld, x + l, z - 1, y + i1
+                                )
+                                && !theWorld.getBlock(x + l, z, y + i1).isNormalCube()
+                                && !theWorld.getBlock(x + l, z + 1, y + i1)
+                                        .isNormalCube()) {
+                                theRobit.setLocationAndAngles(
+                                    (x + l) + 0.5F,
+                                    z,
+                                    (y + i1) + 0.5F,
+                                    theRobit.rotationYaw,
+                                    theRobit.rotationPitch
+                                );
+                                thePathfinder.clearPathEntity();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

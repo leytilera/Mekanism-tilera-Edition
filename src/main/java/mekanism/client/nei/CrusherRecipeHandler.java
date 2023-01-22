@@ -8,41 +8,34 @@ import mekanism.common.recipe.RecipeHandler.Recipe;
 import mekanism.common.recipe.machines.CrusherRecipe;
 import mekanism.common.util.LangUtils;
 
-public class CrusherRecipeHandler extends MachineRecipeHandler
-{
-	@Override
-	public String getRecipeName()
-	{
-		return LangUtils.localize("tile.MachineBlock.Crusher.name");
-	}
+public class CrusherRecipeHandler extends MachineRecipeHandler {
+    @Override
+    public String getRecipeName() {
+        return LangUtils.localize("tile.MachineBlock.Crusher.name");
+    }
 
-	@Override
-	public String getRecipeId()
-	{
-		return "mekanism.crusher";
-	}
+    @Override
+    public String getRecipeId() {
+        return "mekanism.crusher";
+    }
 
-	@Override
-	public String getOverlayIdentifier()
-	{
-		return "crusher";
-	}
-	
-	@Override
-	public ProgressBar getProgressType()
-	{
-		return ProgressBar.CRUSH;
-	}
+    @Override
+    public String getOverlayIdentifier() {
+        return "crusher";
+    }
 
-	@Override
-	public Collection<CrusherRecipe> getRecipes()
-	{
-		return Recipe.CRUSHER.get().values();
-	}
+    @Override
+    public ProgressBar getProgressType() {
+        return ProgressBar.CRUSH;
+    }
 
-	@Override
-	public Class getGuiClass()
-	{
-		return GuiCrusher.class;
-	}
+    @Override
+    public Collection<CrusherRecipe> getRecipes() {
+        return Recipe.CRUSHER.get().values();
+    }
+
+    @Override
+    public Class getGuiClass() {
+        return GuiCrusher.class;
+    }
 }

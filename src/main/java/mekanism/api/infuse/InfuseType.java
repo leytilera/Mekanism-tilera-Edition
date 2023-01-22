@@ -8,40 +8,35 @@ import net.minecraft.util.StatCollector;
  * @author AidanBrady
  *
  */
-public final class InfuseType
-{
-	/** The name of this infusion */
-	public String name;
+public final class InfuseType {
+    /** The name of this infusion */
+    public String name;
 
-	/** This infuse GUI's icon */
-	public IIcon icon;
-	
-	/** The location of this infuse GUI's icon */
-	public String textureLocation;
+    /** This infuse GUI's icon */
+    public IIcon icon;
 
-	/** The unlocalized name of this type. */
-	public String unlocalizedName;
+    /** The location of this infuse GUI's icon */
+    public String textureLocation;
 
-	public InfuseType(String s, String tex)
-	{
-		name = s;
-		textureLocation = tex;
-	}
-	
-	public void setIcon(IIcon i)
-	{
-		icon = i;
-	}
+    /** The unlocalized name of this type. */
+    public String unlocalizedName;
 
-	public InfuseType setUnlocalizedName(String name)
-	{
-		unlocalizedName = "infuse." + name;
+    public InfuseType(String s, String tex) {
+        name = s;
+        textureLocation = tex;
+    }
 
-		return this;
-	}
+    public void setIcon(IIcon i) {
+        icon = i;
+    }
 
-	public String getLocalizedName()
-	{
-		return StatCollector.translateToLocal(unlocalizedName);
-	}
+    public InfuseType setUnlocalizedName(String name) {
+        unlocalizedName = "infuse." + name;
+
+        return this;
+    }
+
+    public String getLocalizedName() {
+        return StatCollector.translateToLocal(unlocalizedName);
+    }
 }

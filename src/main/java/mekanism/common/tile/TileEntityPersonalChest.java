@@ -1,122 +1,119 @@
 package mekanism.common.tile;
 
+import cpw.mods.fml.relauncher.Side;
 import mekanism.common.security.ISecurityTile;
 import mekanism.common.tile.component.TileComponentSecurity;
 import mekanism.common.util.InventoryUtils;
 import mekanism.common.util.SecurityUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.Side;
 
-public class TileEntityPersonalChest extends TileEntityContainerBlock implements ISecurityTile
-{
-	public static int[] INV;
+public class TileEntityPersonalChest
+    extends TileEntityContainerBlock implements ISecurityTile {
+    public static int[] INV;
 
-	public float lidAngle;
+    public float lidAngle;
 
-	public float prevLidAngle;
-	
-	public TileComponentSecurity securityComponent;
+    public float prevLidAngle;
 
-	public TileEntityPersonalChest()
-	{
-		super("PersonalChest");
-		inventory = new ItemStack[54];
-		
-		securityComponent = new TileComponentSecurity(this);
-	}
+    public TileComponentSecurity securityComponent;
 
-	@Override
-	public void onUpdate()
-	{
-		prevLidAngle = lidAngle;
-		float increment = 0.1F;
+    public TileEntityPersonalChest() {
+        super("PersonalChest");
+        inventory = new ItemStack[54];
 
-		if((playersUsing.size() > 0) && (lidAngle == 0.0F))
-		{
-			worldObj.playSoundEffect(xCoord + 0.5F, yCoord + 0.5D, zCoord + 0.5F, "random.chestopen", 0.5F, (worldObj.rand.nextFloat()*0.1F) + 0.9F);
-		}
+        securityComponent = new TileComponentSecurity(this);
+    }
 
-		if((playersUsing.size() == 0 && lidAngle > 0.0F) || (playersUsing.size() > 0 && lidAngle < 1.0F))
-		{
-			float angle = lidAngle;
+    @Override
+    public void onUpdate() {
+        prevLidAngle = lidAngle;
+        float increment = 0.1F;
 
-			if(playersUsing.size() > 0)
-			{
-				lidAngle += increment;
-			}
-			else {
-				lidAngle -= increment;
-			}
+        if ((playersUsing.size() > 0) && (lidAngle == 0.0F)) {
+            worldObj.playSoundEffect(
+                xCoord + 0.5F,
+                yCoord + 0.5D,
+                zCoord + 0.5F,
+                "random.chestopen",
+                0.5F,
+                (worldObj.rand.nextFloat() * 0.1F) + 0.9F
+            );
+        }
 
-			if(lidAngle > 1.0F)
-			{
-				lidAngle = 1.0F;
-			}
+        if ((playersUsing.size() == 0 && lidAngle > 0.0F)
+            || (playersUsing.size() > 0 && lidAngle < 1.0F)) {
+            float angle = lidAngle;
 
-			float split = 0.5F;
+            if (playersUsing.size() > 0) {
+                lidAngle += increment;
+            } else {
+                lidAngle -= increment;
+            }
 
-			if(lidAngle < split && angle >= split)
-			{
-				worldObj.playSoundEffect(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, "random.chestclosed", 0.5F, (worldObj.rand.nextFloat()*0.1F) + 0.9F);
-			}
+            if (lidAngle > 1.0F) {
+                lidAngle = 1.0F;
+            }
 
-			if(lidAngle < 0.0F)
-			{
-				lidAngle = 0.0F;
-			}
-		}
-	}
+            float split = 0.5F;
 
-	@Override
-	public boolean isItemValidForSlot(int slotID, ItemStack itemstack)
-	{
-		return true;
-	}
+            if (lidAngle < split && angle >= split) {
+                worldObj.playSoundEffect(
+                    xCoord + 0.5D,
+                    yCoord + 0.5D,
+                    zCoord + 0.5D,
+                    "random.chestclosed",
+                    0.5F,
+                    (worldObj.rand.nextFloat() * 0.1F) + 0.9F
+                );
+            }
 
-	@Override
-	public int[] getAccessibleSlotsFromSide(int side)
-	{
-		if(side == 0 || SecurityUtils.getSecurity(this, Side.SERVER) != SecurityMode.PUBLIC)
-		{
-			return InventoryUtils.EMPTY;
-		}
-		else {
-			if(INV == null)
-			{
-				INV = new int[54];
+            if (lidAngle < 0.0F) {
+                lidAngle = 0.0F;
+            }
+        }
+    }
 
-				for(int i = 0; i < INV.length; i++)
-				{
-					INV[i] = i;
-				}
-			}
+    @Override
+    public boolean isItemValidForSlot(int slotID, ItemStack itemstack) {
+        return true;
+    }
 
-			return INV;
-		}
-	}
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side) {
+        if (side == 0
+            || SecurityUtils.getSecurity(this, Side.SERVER) != SecurityMode.PUBLIC) {
+            return InventoryUtils.EMPTY;
+        } else {
+            if (INV == null) {
+                INV = new int[54];
 
-	@Override
-	public boolean canExtractItem(int slotID, ItemStack itemstack, int side)
-	{
-		return true;
-	}
+                for (int i = 0; i < INV.length; i++) {
+                    INV[i] = i;
+                }
+            }
 
-	@Override
-	public boolean wrenchCanRemove(EntityPlayer entityPlayer)
-	{
-		return SecurityUtils.canAccess(entityPlayer, this);
-	}
+            return INV;
+        }
+    }
 
-	@Override
-	public boolean canSetFacing(int side)
-	{
-		return side != 0 && side != 1;
-	}
+    @Override
+    public boolean canExtractItem(int slotID, ItemStack itemstack, int side) {
+        return true;
+    }
 
-	@Override
-	public TileComponentSecurity getSecurity() 
-	{
-		return securityComponent;
-	}
+    @Override
+    public boolean wrenchCanRemove(EntityPlayer entityPlayer) {
+        return SecurityUtils.canAccess(entityPlayer, this);
+    }
+
+    @Override
+    public boolean canSetFacing(int side) {
+        return side != 0 && side != 1;
+    }
+
+    @Override
+    public TileComponentSecurity getSecurity() {
+        return securityComponent;
+    }
 }

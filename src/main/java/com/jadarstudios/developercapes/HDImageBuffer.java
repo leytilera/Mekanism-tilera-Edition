@@ -6,12 +6,12 @@
  */
 package com.jadarstudios.developercapes;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.IImageBuffer;
-
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 
 /**
  * This class is an implementation of {@link IImageBuffer} that allows capes to be in HD

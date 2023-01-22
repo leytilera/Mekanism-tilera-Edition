@@ -13,47 +13,39 @@ import mekanism.common.util.LangUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
-public class CombinerRecipeHandler extends AdvancedMachineRecipeHandler
-{
-	@Override
-	public String getRecipeName()
-	{
-		return LangUtils.localize("tile.MachineBlock.Combiner.name");
-	}
+public class CombinerRecipeHandler extends AdvancedMachineRecipeHandler {
+    @Override
+    public String getRecipeName() {
+        return LangUtils.localize("tile.MachineBlock.Combiner.name");
+    }
 
-	@Override
-	public String getRecipeId()
-	{
-		return "mekanism.combiner";
-	}
+    @Override
+    public String getRecipeId() {
+        return "mekanism.combiner";
+    }
 
-	@Override
-	public String getOverlayIdentifier()
-	{
-		return "combiner";
-	}
+    @Override
+    public String getOverlayIdentifier() {
+        return "combiner";
+    }
 
-	@Override
-	public Collection<CombinerRecipe> getRecipes()
-	{
-		return Recipe.COMBINER.get().values();
-	}
-	
-	@Override
-	public ProgressBar getProgressType()
-	{
-		return ProgressBar.STONE;
-	}
+    @Override
+    public Collection<CombinerRecipe> getRecipes() {
+        return Recipe.COMBINER.get().values();
+    }
 
-	@Override
-	public List<ItemStack> getFuelStacks(Gas gasType)
-	{
-		return ListUtils.asList(new ItemStack(Blocks.cobblestone));
-	}
+    @Override
+    public ProgressBar getProgressType() {
+        return ProgressBar.STONE;
+    }
 
-	@Override
-	public Class getGuiClass()
-	{
-		return GuiCombiner.class;
-	}
+    @Override
+    public List<ItemStack> getFuelStacks(Gas gasType) {
+        return ListUtils.asList(new ItemStack(Blocks.cobblestone));
+    }
+
+    @Override
+    public Class getGuiClass() {
+        return GuiCombiner.class;
+    }
 }

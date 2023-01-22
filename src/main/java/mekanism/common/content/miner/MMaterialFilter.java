@@ -1,9 +1,8 @@
 package mekanism.common.content.miner;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.common.content.transporter.Finder.MaterialFinder;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.block.Block;
@@ -13,89 +12,83 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class MMaterialFilter extends MinerFilter
-{
-	public ItemStack materialItem;
-	
-	public Material getMaterial()
-	{
-		return Block.getBlockFromItem(materialItem.getItem()).getMaterial();
-	}
+public class MMaterialFilter extends MinerFilter {
+    public ItemStack materialItem;
 
-	@Override
-	public boolean canFilter(ItemStack itemStack)
-	{
-		if(itemStack == null || !(itemStack.getItem() instanceof ItemBlock))
-		{
-			return false;
-		}
+    public Material getMaterial() {
+        return Block.getBlockFromItem(materialItem.getItem()).getMaterial();
+    }
 
-		return new MaterialFinder(getMaterial()).modifies(itemStack);
-	}
+    @Override
+    public boolean canFilter(ItemStack itemStack) {
+        if (itemStack == null || !(itemStack.getItem() instanceof ItemBlock)) {
+            return false;
+        }
 
-	@Override
-	public NBTTagCompound write(NBTTagCompound nbtTags)
-	{
-		super.write(nbtTags);
-		
-		nbtTags.setInteger("type", 2);
-		materialItem.writeToNBT(nbtTags);
+        return new MaterialFinder(getMaterial()).modifies(itemStack);
+    }
 
-		return nbtTags;
-	}
+    @Override
+    public NBTTagCompound write(NBTTagCompound nbtTags) {
+        super.write(nbtTags);
 
-	@Override
-	protected void read(NBTTagCompound nbtTags)
-	{
-		super.read(nbtTags);
-		
-		materialItem = ItemStack.loadItemStackFromNBT(nbtTags);
-	}
+        nbtTags.setInteger("type", 2);
+        materialItem.writeToNBT(nbtTags);
 
-	@Override
-	public void write(ArrayList data)
-	{
-		data.add(2);
-		
-		super.write(data);
+        return nbtTags;
+    }
 
-		data.add(MekanismUtils.getID(materialItem));
-		data.add(materialItem.stackSize);
-		data.add(materialItem.getItemDamage());
-	}
+    @Override
+    protected void read(NBTTagCompound nbtTags) {
+        super.read(nbtTags);
 
-	@Override
-	protected void read(ByteBuf dataStream)
-	{
-		super.read(dataStream);
-		
-		materialItem = new ItemStack(Item.getItemById(dataStream.readInt()), dataStream.readInt(), dataStream.readInt());
-	}
+        materialItem = ItemStack.loadItemStackFromNBT(nbtTags);
+    }
 
-	@Override
-	public int hashCode()
-	{
-		int code = 1;
-		code = 31 * code + MekanismUtils.getID(materialItem);
-		code = 31 * code + materialItem.stackSize;
-		code = 31 * code + materialItem.getItemDamage();
-		return code;
-	}
+    @Override
+    public void write(ArrayList data) {
+        data.add(2);
 
-	@Override
-	public boolean equals(Object filter)
-	{
-		return super.equals(filter) && filter instanceof MMaterialFilter && ((MMaterialFilter)filter).materialItem.isItemEqual(materialItem);
-	}
+        super.write(data);
 
-	@Override
-	public MMaterialFilter clone()
-	{
-		MMaterialFilter filter = new MMaterialFilter();
-		filter.replaceStack = replaceStack;
-		filter.requireStack = requireStack;
-		filter.materialItem = materialItem;
+        data.add(MekanismUtils.getID(materialItem));
+        data.add(materialItem.stackSize);
+        data.add(materialItem.getItemDamage());
+    }
 
-		return filter;
-	}
+    @Override
+    protected void read(ByteBuf dataStream) {
+        super.read(dataStream);
+
+        materialItem = new ItemStack(
+            Item.getItemById(dataStream.readInt()),
+            dataStream.readInt(),
+            dataStream.readInt()
+        );
+    }
+
+    @Override
+    public int hashCode() {
+        int code = 1;
+        code = 31 * code + MekanismUtils.getID(materialItem);
+        code = 31 * code + materialItem.stackSize;
+        code = 31 * code + materialItem.getItemDamage();
+        return code;
+    }
+
+    @Override
+    public boolean equals(Object filter) {
+        return super.equals(filter) && filter instanceof MMaterialFilter
+            && ((MMaterialFilter) filter).materialItem.isItemEqual(materialItem);
+    }
+
+    @Override
+    public MMaterialFilter clone() {
+        MMaterialFilter filter = new MMaterialFilter();
+        filter.replaceStack = replaceStack;
+        filter.requireStack = requireStack;
+        filter.materialItem = materialItem;
+
+        return filter;
+    }
 }

@@ -17,59 +17,55 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 
-public class MekanismClient extends Mekanism
-{
-	public static Map<String, SecurityData> clientSecurityMap = new HashMap<String, SecurityData>();
-	
-	public static VoiceClient voiceClient;
+public class MekanismClient extends Mekanism {
+    public static Map<String, SecurityData> clientSecurityMap
+        = new HashMap<String, SecurityData>();
 
-	public static long ticksPassed = 0;
+    public static VoiceClient voiceClient;
 
-	public static void updateKey(KeyBinding key, int type)
-	{
-		boolean down = Minecraft.getMinecraft().currentScreen == null ? key.getIsKeyPressed() : false;
+    public static long ticksPassed = 0;
 
-		if(down != keyMap.has(Minecraft.getMinecraft().thePlayer, type))
-		{
-			Mekanism.packetHandler.sendToServer(new KeyMessage(type, down));
-			keyMap.update(Minecraft.getMinecraft().thePlayer, type, down);
-		}
-	}
+    public static void updateKey(KeyBinding key, int type) {
+        boolean down = Minecraft.getMinecraft().currentScreen == null
+            ? key.getIsKeyPressed()
+            : false;
 
-	public static void reset()
-	{
-		clientSecurityMap.clear();
-		
-		if(general.voiceServerEnabled)
-		{
-			if(MekanismClient.voiceClient != null)
-			{
-				MekanismClient.voiceClient.disconnect();
-				MekanismClient.voiceClient = null;
-			}
-		}
+        if (down != keyMap.has(Minecraft.getMinecraft().thePlayer, type)) {
+            Mekanism.packetHandler.sendToServer(new KeyMessage(type, down));
+            keyMap.update(Minecraft.getMinecraft().thePlayer, type, down);
+        }
+    }
 
-		ClientTickHandler.tickingSet.clear();
+    public static void reset() {
+        clientSecurityMap.clear();
 
-		MekanismAPI.getBoxIgnore().clear();
-		MinecraftForge.EVENT_BUS.post(new BoxBlacklistEvent());
+        if (general.voiceServerEnabled) {
+            if (MekanismClient.voiceClient != null) {
+                MekanismClient.voiceClient.disconnect();
+                MekanismClient.voiceClient = null;
+            }
+        }
 
-		Mekanism.jetpackOn.clear();
-		Mekanism.gasmaskOn.clear();
-		Mekanism.flamethrowerActive.clear();
-		Mekanism.activeVibrators.clear();
-		
-		SynchronizedBoilerData.clientHotMap.clear();
-		
-		for(IModule module : Mekanism.modulesLoaded)
-		{
-			module.resetClient();
-		}
+        ClientTickHandler.tickingSet.clear();
 
-		SoundHandler.soundMaps.clear();
+        MekanismAPI.getBoxIgnore().clear();
+        MinecraftForge.EVENT_BUS.post(new BoxBlacklistEvent());
 
-		Mekanism.proxy.loadConfiguration();
+        Mekanism.jetpackOn.clear();
+        Mekanism.gasmaskOn.clear();
+        Mekanism.flamethrowerActive.clear();
+        Mekanism.activeVibrators.clear();
 
-		Mekanism.logger.info("Reloaded config.");
-	}
+        SynchronizedBoilerData.clientHotMap.clear();
+
+        for (IModule module : Mekanism.modulesLoaded) {
+            module.resetClient();
+        }
+
+        SoundHandler.soundMaps.clear();
+
+        Mekanism.proxy.loadConfiguration();
+
+        Mekanism.logger.info("Reloaded config.");
+    }
 }

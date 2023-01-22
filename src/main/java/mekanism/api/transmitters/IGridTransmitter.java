@@ -6,59 +6,59 @@ import mekanism.api.Coord4D;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public interface IGridTransmitter<A, N extends DynamicNetwork<A, N>> extends ITransmitter
-{
-	public boolean hasTransmitterNetwork();
+public interface IGridTransmitter<A, N extends DynamicNetwork<A, N>>
+    extends ITransmitter {
+    public boolean hasTransmitterNetwork();
 
-	/**
-	 * Gets the network currently in use by this transmitter segment.
-	 * @return network this transmitter is using
-	 */
-	public N getTransmitterNetwork();
+    /**
+     * Gets the network currently in use by this transmitter segment.
+     * @return network this transmitter is using
+     */
+    public N getTransmitterNetwork();
 
-	/**
-	 * Sets this transmitter segment's network to a new value.
-	 * @param network - network to set to
-	 */
-	public void setTransmitterNetwork(N network);
+    /**
+     * Sets this transmitter segment's network to a new value.
+     * @param network - network to set to
+     */
+    public void setTransmitterNetwork(N network);
 
-	public int getTransmitterNetworkSize();
+    public int getTransmitterNetworkSize();
 
-	public int getTransmitterNetworkAcceptorSize();
+    public int getTransmitterNetworkAcceptorSize();
 
-	public String getTransmitterNetworkNeeded();
+    public String getTransmitterNetworkNeeded();
 
-	public String getTransmitterNetworkFlow();
+    public String getTransmitterNetworkFlow();
 
-	public String getTransmitterNetworkBuffer();
+    public String getTransmitterNetworkBuffer();
 
-	public double getTransmitterNetworkCapacity();
+    public double getTransmitterNetworkCapacity();
 
-	public int getCapacity();
+    public int getCapacity();
 
-	public World world();
-	
-	public Coord4D coord();
+    public World world();
 
-	public Coord4D getAdjacentConnectableTransmitterCoord(ForgeDirection side);
+    public Coord4D coord();
 
-	public A getAcceptor(ForgeDirection side);
+    public Coord4D getAdjacentConnectableTransmitterCoord(ForgeDirection side);
 
-	public boolean isValid();
+    public A getAcceptor(ForgeDirection side);
 
-	public boolean isOrphan();
+    public boolean isValid();
 
-	public void setOrphan(boolean orphaned);
+    public boolean isOrphan();
 
-	public N createEmptyNetwork();
+    public void setOrphan(boolean orphaned);
 
-	public N mergeNetworks(Collection<N> toMerge);
+    public N createEmptyNetwork();
 
-	public N getExternalNetwork(Coord4D from);
+    public N mergeNetworks(Collection<N> toMerge);
 
-	public void takeShare();
+    public N getExternalNetwork(Coord4D from);
+
+    public void takeShare();
 
     public void updateShare();
 
-	public Object getBuffer();
+    public Object getBuffer();
 }

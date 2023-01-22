@@ -1,5 +1,7 @@
 package mekanism.client.gui;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.client.gui.element.GuiScrollList;
 import mekanism.client.sound.SoundHandler;
 import mekanism.common.inventory.container.ContainerDictionary;
@@ -9,146 +11,142 @@ import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 @SideOnly(Side.CLIENT)
-public class GuiDictionary extends GuiMekanism
-{
-	public ItemStack itemType;
-	
-	public GuiScrollList scrollList;
+public class GuiDictionary extends GuiMekanism {
+    public ItemStack itemType;
 
-	public GuiDictionary(InventoryPlayer inventory)
-	{
-		super(new ContainerDictionary(inventory));
-		
-		guiElements.add(scrollList = new GuiScrollList(this, MekanismUtils.getResource(ResourceType.GUI, "GuiChemicalOxidizer.png"), 8, 30, 160, 4));
-	}
+    public GuiScrollList scrollList;
 
-	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
-	{
-		int xAxis = (mouseX - (width - xSize) / 2);
-		int yAxis = (mouseY - (height - ySize) / 2);
+    public GuiDictionary(InventoryPlayer inventory) {
+        super(new ContainerDictionary(inventory));
 
-		fontRendererObj.drawString(LangUtils.localize("item.Dictionary.name"), 64, 5, 0x404040);
-		fontRendererObj.drawString(LangUtils.localize("container.inventory"), 8, ySize - 96 + 2, 0x404040);
+        guiElements.add(
+            scrollList = new GuiScrollList(
+                this,
+                MekanismUtils.getResource(ResourceType.GUI, "GuiChemicalOxidizer.png"),
+                8,
+                30,
+                160,
+                4
+            )
+        );
+    }
 
-		if(itemType != null)
-		{
-			GL11.glPushMatrix();
-			GL11.glEnable(GL11.GL_LIGHTING);
-			itemRender.renderItemAndEffectIntoGUI(fontRendererObj, mc.getTextureManager(), itemType, 6, 6);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glPopMatrix();
-		}
+    @Override
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+        int xAxis = (mouseX - (width - xSize) / 2);
+        int yAxis = (mouseY - (height - ySize) / 2);
 
-		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-	}
+        fontRendererObj.drawString(
+            LangUtils.localize("item.Dictionary.name"), 64, 5, 0x404040
+        );
+        fontRendererObj.drawString(
+            LangUtils.localize("container.inventory"), 8, ySize - 96 + 2, 0x404040
+        );
 
-	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTick, int mouseX, int mouseY)
-	{
-		mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.GUI, "GuiDictionary.png"));
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		int guiWidth = (width - xSize) / 2;
-		int guiHeight = (height - ySize) / 2;
-		drawTexturedModalRect(guiWidth, guiHeight, 0, 0, xSize, ySize);
+        if (itemType != null) {
+            GL11.glPushMatrix();
+            GL11.glEnable(GL11.GL_LIGHTING);
+            itemRender.renderItemAndEffectIntoGUI(
+                fontRendererObj, mc.getTextureManager(), itemType, 6, 6
+            );
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glPopMatrix();
+        }
 
-		int xAxis = mouseX - guiWidth;
-		int yAxis = mouseY - guiHeight;
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+    }
 
-		if(xAxis >= 6 && xAxis <= 22 && yAxis >= 6 && yAxis <= 22)
-		{
-			GL11.glPushMatrix();
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+    @Override
+    protected void
+    drawGuiContainerBackgroundLayer(float partialTick, int mouseX, int mouseY) {
+        mc.renderEngine.bindTexture(
+            MekanismUtils.getResource(ResourceType.GUI, "GuiDictionary.png")
+        );
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        int guiWidth = (width - xSize) / 2;
+        int guiHeight = (height - ySize) / 2;
+        drawTexturedModalRect(guiWidth, guiHeight, 0, 0, xSize, ySize);
 
-			int x = guiWidth + 6;
-			int y = guiHeight + 6;
-			drawGradientRect(x, y, x + 16, y + 16, -2130706433, -2130706433);
+        int xAxis = mouseX - guiWidth;
+        int yAxis = mouseY - guiHeight;
 
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glPopMatrix();
-		}
-		
-		super.drawGuiContainerBackgroundLayer(partialTick, mouseX, mouseY);
-	}
+        if (xAxis >= 6 && xAxis <= 22 && yAxis >= 6 && yAxis <= 22) {
+            GL11.glPushMatrix();
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-	@Override
-	public boolean doesGuiPauseGame()
-	{
-		return false;
-	}
+            int x = guiWidth + 6;
+            int y = guiHeight + 6;
+            drawGradientRect(x, y, x + 16, y + 16, -2130706433, -2130706433);
 
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int button)
-	{
-		int xAxis = (mouseX - (width - xSize) / 2);
-		int yAxis = (mouseY - (height - ySize) / 2);
+            GL11.glEnable(GL11.GL_LIGHTING);
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glPopMatrix();
+        }
 
-		if(button == 0)
-		{
-			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			{
-				Slot hovering = null;
+        super.drawGuiContainerBackgroundLayer(partialTick, mouseX, mouseY);
+    }
 
-				for(int i = 0; i < inventorySlots.inventorySlots.size(); i++)
-				{
-					Slot slot = (Slot)inventorySlots.inventorySlots.get(i);
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
 
-					if(isMouseOverSlot(slot, mouseX, mouseY))
-					{
-						hovering = slot;
-						break;
-					}
-				}
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int button) {
+        int xAxis = (mouseX - (width - xSize) / 2);
+        int yAxis = (mouseY - (height - ySize) / 2);
 
-				if(hovering != null)
-				{
-					ItemStack stack = hovering.getStack();
+        if (button == 0) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                Slot hovering = null;
 
-					if(stack != null)
-					{
-						itemType = stack.copy();
-						itemType.stackSize = 1;
+                for (int i = 0; i < inventorySlots.inventorySlots.size(); i++) {
+                    Slot slot = (Slot) inventorySlots.inventorySlots.get(i);
 
-						scrollList.setText(MekanismUtils.getOreDictName(itemType));
-						SoundHandler.playSound("gui.button.press");
-						
-						return;
-					}
-				}
-			}
+                    if (isMouseOverSlot(slot, mouseX, mouseY)) {
+                        hovering = slot;
+                        break;
+                    }
+                }
 
-			if(xAxis >= 6 && xAxis <= 22 && yAxis >= 6 && yAxis <= 22)
-			{
-				ItemStack stack = mc.thePlayer.inventory.getItemStack();
+                if (hovering != null) {
+                    ItemStack stack = hovering.getStack();
 
-				if(stack != null && !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-				{
-					itemType = stack.copy();
-					itemType.stackSize = 1;
+                    if (stack != null) {
+                        itemType = stack.copy();
+                        itemType.stackSize = 1;
 
-					scrollList.setText(MekanismUtils.getOreDictName(itemType));
-				}
-				else if(stack == null && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-				{
-					itemType = null;
-					
-					scrollList.setText(null);
-				}
+                        scrollList.setText(MekanismUtils.getOreDictName(itemType));
+                        SoundHandler.playSound("gui.button.press");
+
+                        return;
+                    }
+                }
+            }
+
+            if (xAxis >= 6 && xAxis <= 22 && yAxis >= 6 && yAxis <= 22) {
+                ItemStack stack = mc.thePlayer.inventory.getItemStack();
+
+                if (stack != null && !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                    itemType = stack.copy();
+                    itemType.stackSize = 1;
+
+                    scrollList.setText(MekanismUtils.getOreDictName(itemType));
+                } else if (stack == null && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                    itemType = null;
+
+                    scrollList.setText(null);
+                }
 
                 SoundHandler.playSound("gui.button.press");
-			}
-		}
+            }
+        }
 
-		super.mouseClicked(mouseX, mouseY, button);
-	}
+        super.mouseClicked(mouseX, mouseY, button);
+    }
 }

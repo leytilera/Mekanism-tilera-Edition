@@ -1,10 +1,9 @@
 package mekanism.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.MekanismConfig.usage;
@@ -23,170 +22,180 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityLaser extends TileEntityNoisyElectricBlock implements IActiveState
-{
-	public Coord4D digging;
-	public double diggingProgress;
-	
-	public boolean isActive;
+public class TileEntityLaser
+    extends TileEntityNoisyElectricBlock implements IActiveState {
+    public Coord4D digging;
+    public double diggingProgress;
 
-	public boolean clientActive;
+    public boolean isActive;
 
-	public TileEntityLaser()
-	{
-		super("machine.laser", "Laser", 2*usage.laserUsage);
-		inventory = new ItemStack[0];
-	}
+    public boolean clientActive;
 
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
+    public TileEntityLaser() {
+        super("machine.laser", "Laser", 2 * usage.laserUsage);
+        inventory = new ItemStack[0];
+    }
 
-		if(worldObj.isRemote)
-		{
-			if(isActive)
-			{
-				MovingObjectPosition mop = LaserManager.fireLaserClient(this, ForgeDirection.getOrientation(facing), usage.laserUsage, worldObj);
-				Coord4D hitCoord = mop == null ? null : new Coord4D(mop.blockX, mop.blockY, mop.blockZ, worldObj.provider.dimensionId);
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-				if(hitCoord == null || !hitCoord.equals(digging))
-				{
-					digging = hitCoord;
-					diggingProgress = 0;
-				}
+        if (worldObj.isRemote) {
+            if (isActive) {
+                MovingObjectPosition mop = LaserManager.fireLaserClient(
+                    this,
+                    ForgeDirection.getOrientation(facing),
+                    usage.laserUsage,
+                    worldObj
+                );
+                Coord4D hitCoord = mop == null
+                    ? null
+                    : new Coord4D(
+                        mop.blockX, mop.blockY, mop.blockZ, worldObj.provider.dimensionId
+                    );
 
-				if(hitCoord != null)
-				{
-					Block blockHit = hitCoord.getBlock(worldObj);
-					TileEntity tileHit = hitCoord.getTileEntity(worldObj);
-					float hardness = blockHit.getBlockHardness(worldObj, hitCoord.xCoord, hitCoord.yCoord, hitCoord.zCoord);
+                if (hitCoord == null || !hitCoord.equals(digging)) {
+                    digging = hitCoord;
+                    diggingProgress = 0;
+                }
 
-					if(!(hardness < 0 || (tileHit instanceof ILaserReceptor && !((ILaserReceptor)tileHit).canLasersDig())))
-					{
-						diggingProgress += usage.laserUsage;
+                if (hitCoord != null) {
+                    Block blockHit = hitCoord.getBlock(worldObj);
+                    TileEntity tileHit = hitCoord.getTileEntity(worldObj);
+                    float hardness = blockHit.getBlockHardness(
+                        worldObj, hitCoord.xCoord, hitCoord.yCoord, hitCoord.zCoord
+                    );
 
-						if(diggingProgress < hardness*general.laserEnergyNeededPerHardness)
-						{
-							Mekanism.proxy.addHitEffects(hitCoord, mop);
-						}
-					}
-				}
-			}
-		}
-		else {
-			if(getEnergy() >= usage.laserUsage)
-			{
-				setActive(true);
-				
-				LaserInfo info = LaserManager.fireLaser(this, ForgeDirection.getOrientation(facing), usage.laserUsage, worldObj);
-				Coord4D hitCoord = info.movingPos == null ? null : new Coord4D(info.movingPos.blockX, info.movingPos.blockY, info.movingPos.blockZ, worldObj.provider.dimensionId);
+                    if (!(hardness < 0
+                          || (tileHit instanceof ILaserReceptor
+                              && !((ILaserReceptor) tileHit).canLasersDig()))) {
+                        diggingProgress += usage.laserUsage;
 
-				if(hitCoord == null || !hitCoord.equals(digging))
-				{
-					digging = hitCoord;
-					diggingProgress = 0;
-				}
+                        if (diggingProgress
+                            < hardness * general.laserEnergyNeededPerHardness) {
+                            Mekanism.proxy.addHitEffects(hitCoord, mop);
+                        }
+                    }
+                }
+            }
+        } else {
+            if (getEnergy() >= usage.laserUsage) {
+                setActive(true);
 
-				if(hitCoord != null)
-				{
-					Block blockHit = hitCoord.getBlock(worldObj);
-					TileEntity tileHit = hitCoord.getTileEntity(worldObj);
-					float hardness = blockHit.getBlockHardness(worldObj, hitCoord.xCoord, hitCoord.yCoord, hitCoord.zCoord);
-					
-					if(!(hardness < 0 || (tileHit instanceof ILaserReceptor && !((ILaserReceptor)tileHit).canLasersDig())))
-					{
-						diggingProgress += usage.laserUsage;
+                LaserInfo info = LaserManager.fireLaser(
+                    this,
+                    ForgeDirection.getOrientation(facing),
+                    usage.laserUsage,
+                    worldObj
+                );
+                Coord4D hitCoord = info.movingPos == null
+                    ? null
+                    : new Coord4D(
+                        info.movingPos.blockX,
+                        info.movingPos.blockY,
+                        info.movingPos.blockZ,
+                        worldObj.provider.dimensionId
+                    );
 
-						if(diggingProgress >= hardness*general.laserEnergyNeededPerHardness)
-						{
-							LaserManager.breakBlock(hitCoord, true, worldObj);
-							diggingProgress = 0;
-						}
-					}
-				}
+                if (hitCoord == null || !hitCoord.equals(digging)) {
+                    digging = hitCoord;
+                    diggingProgress = 0;
+                }
 
-				setEnergy(getEnergy() - usage.laserUsage);
-			}
-			else {
-				setActive(false);
-				diggingProgress = 0;
-			}
-		}
-	}
-	
-	@Override
-	public EnumSet<ForgeDirection> getConsumingSides()
-	{
-		return EnumSet.of(ForgeDirection.getOrientation(facing).getOpposite());
-	}
-	
-	@Override
-	public void setActive(boolean active)
-	{
-		isActive = active;
+                if (hitCoord != null) {
+                    Block blockHit = hitCoord.getBlock(worldObj);
+                    TileEntity tileHit = hitCoord.getTileEntity(worldObj);
+                    float hardness = blockHit.getBlockHardness(
+                        worldObj, hitCoord.xCoord, hitCoord.yCoord, hitCoord.zCoord
+                    );
 
-		if(clientActive != active)
-		{
-			Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-			clientActive = active;
-		}
-	}
+                    if (!(hardness < 0
+                          || (tileHit instanceof ILaserReceptor
+                              && !((ILaserReceptor) tileHit).canLasersDig()))) {
+                        diggingProgress += usage.laserUsage;
 
-	@Override
-	public boolean getActive()
-	{
-		return isActive;
-	}
+                        if (diggingProgress
+                            >= hardness * general.laserEnergyNeededPerHardness) {
+                            LaserManager.breakBlock(hitCoord, true, worldObj);
+                            diggingProgress = 0;
+                        }
+                    }
+                }
 
-	@Override
-	public boolean renderUpdate()
-	{
-		return false;
-	}
+                setEnergy(getEnergy() - usage.laserUsage);
+            } else {
+                setActive(false);
+                diggingProgress = 0;
+            }
+        }
+    }
 
-	@Override
-	public boolean lightUpdate()
-	{
-		return false;
-	}
+    @Override
+    public EnumSet<ForgeDirection> getConsumingSides() {
+        return EnumSet.of(ForgeDirection.getOrientation(facing).getOpposite());
+    }
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
+    @Override
+    public void setActive(boolean active) {
+        isActive = active;
 
-		data.add(isActive);
+        if (clientActive != active) {
+            Mekanism.packetHandler.sendToReceivers(
+                new TileEntityMessage(
+                    Coord4D.get(this), getNetworkedData(new ArrayList())
+                ),
+                new Range4D(Coord4D.get(this))
+            );
+            clientActive = active;
+        }
+    }
 
-		return data;
-	}
+    @Override
+    public boolean getActive() {
+        return isActive;
+    }
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		super.handlePacketData(dataStream);
+    @Override
+    public boolean renderUpdate() {
+        return false;
+    }
 
-		if(worldObj.isRemote)
-		{
-			isActive = dataStream.readBoolean();
-			
-			MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-		}
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+    @Override
+    public boolean lightUpdate() {
+        return false;
+    }
 
-		isActive = nbtTags.getBoolean("isActive");
-	}
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+        data.add(isActive);
 
-		nbtTags.setBoolean("isActive", isActive);
-	}
+        return data;
+    }
+
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        super.handlePacketData(dataStream);
+
+        if (worldObj.isRemote) {
+            isActive = dataStream.readBoolean();
+
+            MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+        }
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
+
+        isActive = nbtTags.getBoolean("isActive");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
+
+        nbtTags.setBoolean("isActive", isActive);
+    }
 }

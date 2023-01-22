@@ -6,18 +6,17 @@
  */
 package com.jadarstudios.developercapes.user;
 
-import com.jadarstudios.developercapes.cape.ICape;
-
 import java.util.HashMap;
 import java.util.Set;
 
+import com.jadarstudios.developercapes.cape.ICape;
+
 /**
  * This represents a group of players that share a cape
- * 
+ *
  * @author jadar
  */
 public class Group {
-
     protected HashMap<String, User> users;
     protected ICape cape;
     public final String name;

@@ -1,5 +1,8 @@
 package mekanism.client.render.block;
 
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.client.ClientProxy;
 import mekanism.client.model.ModelSecurityDesk;
 import mekanism.client.render.MekanismRenderer;
@@ -11,82 +14,77 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
-
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 @SideOnly(Side.CLIENT)
-public class BasicRenderingHandler implements ISimpleBlockRenderingHandler
-{
-	private Minecraft mc = Minecraft.getMinecraft();
-	
-	public ModelSecurityDesk securityDesk = new ModelSecurityDesk();
-	
-	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer)
-	{
-		GL11.glPushMatrix();
-		GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);
+public class BasicRenderingHandler implements ISimpleBlockRenderingHandler {
+    private Minecraft mc = Minecraft.getMinecraft();
 
-		BasicType type = BasicType.get(block, metadata);
-		
-		if(type != null)
-		{
-			if(type == BasicType.STRUCTURAL_GLASS)
-			{
-				MekanismRenderer.blendOn();
-			}
-			
-			if(type != BasicType.SECURITY_DESK)
-			{
-				GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
-				MekanismRenderer.renderItem(renderer, metadata, block);
-			}
-			else {
-				GL11.glRotatef(180, 1.0F, 0.0F, 0.0F);
-				GL11.glScalef(0.8F, 0.8F, 0.8F);
-				GL11.glTranslatef(0.0F, -0.8F, 0.0F);
-				mc.renderEngine.bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "SecurityDesk.png"));
-				securityDesk.render(0.0625F, mc.renderEngine);
-			}
-			
-			if(type == BasicType.STRUCTURAL_GLASS)
-			{
-				MekanismRenderer.blendOff();
-			}
-		}
+    public ModelSecurityDesk securityDesk = new ModelSecurityDesk();
 
-		GL11.glPopMatrix();
-	}
+    @Override
+    public void
+    renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {
+        GL11.glPushMatrix();
+        GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);
 
-	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer)
-	{
-		if(block == MekanismBlocks.BasicBlock || block == MekanismBlocks.BasicBlock2)
-		{
-			int metadata = world.getBlockMetadata(x, y, z);
+        BasicType type = BasicType.get(block, metadata);
 
-			renderer.renderStandardBlock(block, x, y, z);
-			renderer.setRenderBoundsFromBlock(block);
+        if (type != null) {
+            if (type == BasicType.STRUCTURAL_GLASS) {
+                MekanismRenderer.blendOn();
+            }
 
-			return true;
-		}
+            if (type != BasicType.SECURITY_DESK) {
+                GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
+                MekanismRenderer.renderItem(renderer, metadata, block);
+            } else {
+                GL11.glRotatef(180, 1.0F, 0.0F, 0.0F);
+                GL11.glScalef(0.8F, 0.8F, 0.8F);
+                GL11.glTranslatef(0.0F, -0.8F, 0.0F);
+                mc.renderEngine.bindTexture(
+                    MekanismUtils.getResource(ResourceType.RENDER, "SecurityDesk.png")
+                );
+                securityDesk.render(0.0625F, mc.renderEngine);
+            }
 
-		return false;
-	}
+            if (type == BasicType.STRUCTURAL_GLASS) {
+                MekanismRenderer.blendOff();
+            }
+        }
 
-	@Override
-	public int getRenderId()
-	{
-		return ClientProxy.BASIC_RENDER_ID;
-	}
+        GL11.glPopMatrix();
+    }
 
-	@Override
-	public boolean shouldRender3DInInventory(int modelId)
-	{
-		return true;
-	}
+    @Override
+    public boolean renderWorldBlock(
+        IBlockAccess world,
+        int x,
+        int y,
+        int z,
+        Block block,
+        int modelId,
+        RenderBlocks renderer
+    ) {
+        if (block == MekanismBlocks.BasicBlock || block == MekanismBlocks.BasicBlock2) {
+            int metadata = world.getBlockMetadata(x, y, z);
+
+            renderer.renderStandardBlock(block, x, y, z);
+            renderer.setRenderBoundsFromBlock(block);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int getRenderId() {
+        return ClientProxy.BASIC_RENDER_ID;
+    }
+
+    @Override
+    public boolean shouldRender3DInInventory(int modelId) {
+        return true;
+    }
 }

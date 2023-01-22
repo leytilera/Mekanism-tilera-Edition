@@ -1,10 +1,11 @@
 package mekanism.generators.common.tile;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.Range4D;
@@ -23,217 +24,203 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityGenerator extends TileEntityNoisyElectricBlock implements IComputerIntegration, IActiveState, IHasSound, ISoundSource, IRedstoneControl, ISecurityTile
-{
-	/** Output per tick this generator can transfer. */
-	public double output;
+public abstract class TileEntityGenerator extends TileEntityNoisyElectricBlock
+    implements IComputerIntegration, IActiveState, IHasSound, ISoundSource,
+               IRedstoneControl, ISecurityTile {
+    /** Output per tick this generator can transfer. */
+    public double output;
 
-	/** Whether or not this block is in it's active state. */
-	public boolean isActive;
+    /** Whether or not this block is in it's active state. */
+    public boolean isActive;
 
-	/** The client's current active state. */
-	public boolean clientActive;
+    /** The client's current active state. */
+    public boolean clientActive;
 
-	/** How many ticks must pass until this block's active state can sync with the client. */
-	public int updateDelay;
+    /**
+     * How many ticks must pass until this block's active state can sync with the client.
+     */
+    public int updateDelay;
 
-	/** This machine's current RedstoneControl type. */
-	public RedstoneControl controlType;
-	
-	public TileComponentSecurity securityComponent = new TileComponentSecurity(this);
+    /** This machine's current RedstoneControl type. */
+    public RedstoneControl controlType;
 
-	/**
-	 * Generator -- a block that produces energy. It has a certain amount of fuel it can store as well as an output rate.
-	 * @param name - full name of this generator
-	 * @param maxEnergy - how much energy this generator can store
-	 */
-	public TileEntityGenerator(String soundPath, String name, double maxEnergy, double out)
-	{
-		super("gen." + soundPath, name, maxEnergy);
+    public TileComponentSecurity securityComponent = new TileComponentSecurity(this);
 
-		output = out;
-		isActive = false;
-		controlType = RedstoneControl.DISABLED;
-	}
+    /**
+     * Generator -- a block that produces energy. It has a certain amount of fuel it can
+     * store as well as an output rate.
+     * @param name - full name of this generator
+     * @param maxEnergy - how much energy this generator can store
+     */
+    public TileEntityGenerator(
+        String soundPath, String name, double maxEnergy, double out
+    ) {
+        super("gen." + soundPath, name, maxEnergy);
 
-	@Override
-	public void onUpdate()
-	{
-		super.onUpdate();
+        output = out;
+        isActive = false;
+        controlType = RedstoneControl.DISABLED;
+    }
 
-		if(worldObj.isRemote && updateDelay > 0)
-		{
-			updateDelay--;
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
 
-			if(updateDelay == 0 && clientActive != isActive)
-			{
-				isActive = clientActive;
-				MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-			}
-		}
+        if (worldObj.isRemote && updateDelay > 0) {
+            updateDelay--;
 
-		if(!worldObj.isRemote)
-		{
-			if(updateDelay > 0)
-			{
-				updateDelay--;
+            if (updateDelay == 0 && clientActive != isActive) {
+                isActive = clientActive;
+                MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+            }
+        }
 
-				if(updateDelay == 0 && clientActive != isActive)
-				{
-					clientActive = isActive;
-					Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
-				}
-			}
+        if (!worldObj.isRemote) {
+            if (updateDelay > 0) {
+                updateDelay--;
 
-			if(MekanismUtils.canFunction(this))
-			{
-				CableUtils.emit(this);
-			}
-		}
-	}
+                if (updateDelay == 0 && clientActive != isActive) {
+                    clientActive = isActive;
+                    Mekanism.packetHandler.sendToReceivers(
+                        new TileEntityMessage(
+                            Coord4D.get(this), getNetworkedData(new ArrayList())
+                        ),
+                        new Range4D(Coord4D.get(this))
+                    );
+                }
+            }
 
-	@Override
-	public double getMaxOutput()
-	{
-		return output;
-	}
+            if (MekanismUtils.canFunction(this)) {
+                CableUtils.emit(this);
+            }
+        }
+    }
 
-	@Override
-	public EnumSet<ForgeDirection> getConsumingSides()
-	{
-		return EnumSet.noneOf(ForgeDirection.class);
-	}
+    @Override
+    public double getMaxOutput() {
+        return output;
+    }
 
-	@Override
-	public EnumSet<ForgeDirection> getOutputtingSides()
-	{
-		return EnumSet.of(ForgeDirection.getOrientation(facing));
-	}
+    @Override
+    public EnumSet<ForgeDirection> getConsumingSides() {
+        return EnumSet.noneOf(ForgeDirection.class);
+    }
 
-	/**
-	 * Whether or not this generator can operate.
-	 * @return if the generator can operate
-	 */
-	public abstract boolean canOperate();
+    @Override
+    public EnumSet<ForgeDirection> getOutputtingSides() {
+        return EnumSet.of(ForgeDirection.getOrientation(facing));
+    }
 
-	@Override
-	public boolean getActive()
-	{
-		return isActive;
-	}
+    /**
+     * Whether or not this generator can operate.
+     * @return if the generator can operate
+     */
+    public abstract boolean canOperate();
 
-	@Override
-	public void setActive(boolean active)
-	{
-		isActive = active;
+    @Override
+    public boolean getActive() {
+        return isActive;
+    }
 
-		if(clientActive != active && updateDelay == 0)
-		{
-			Mekanism.packetHandler.sendToReceivers(new TileEntityMessage(Coord4D.get(this), getNetworkedData(new ArrayList())), new Range4D(Coord4D.get(this)));
+    @Override
+    public void setActive(boolean active) {
+        isActive = active;
 
-			updateDelay = general.UPDATE_DELAY;
-			clientActive = active;
-		}
-	}
+        if (clientActive != active && updateDelay == 0) {
+            Mekanism.packetHandler.sendToReceivers(
+                new TileEntityMessage(
+                    Coord4D.get(this), getNetworkedData(new ArrayList())
+                ),
+                new Range4D(Coord4D.get(this))
+            );
 
-	@Override
-	public boolean canSetFacing(int side)
-	{
-		return side != 0 && side != 1;
-	}
+            updateDelay = general.UPDATE_DELAY;
+            clientActive = active;
+        }
+    }
 
-	@Override
-	public void handlePacketData(ByteBuf dataStream)
-	{
-		super.handlePacketData(dataStream);
+    @Override
+    public boolean canSetFacing(int side) {
+        return side != 0 && side != 1;
+    }
 
-		if(worldObj.isRemote)
-		{
-			clientActive = dataStream.readBoolean();
-			controlType = RedstoneControl.values()[dataStream.readInt()];
-	
-			if(updateDelay == 0 && clientActive != isActive)
-			{
-				updateDelay = general.UPDATE_DELAY;
-				isActive = clientActive;
-				MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
-			}
-		}
-	}
+    @Override
+    public void handlePacketData(ByteBuf dataStream) {
+        super.handlePacketData(dataStream);
 
-	@Override
-	public ArrayList getNetworkedData(ArrayList data)
-	{
-		super.getNetworkedData(data);
+        if (worldObj.isRemote) {
+            clientActive = dataStream.readBoolean();
+            controlType = RedstoneControl.values()[dataStream.readInt()];
 
-		data.add(isActive);
-		data.add(controlType.ordinal());
+            if (updateDelay == 0 && clientActive != isActive) {
+                updateDelay = general.UPDATE_DELAY;
+                isActive = clientActive;
+                MekanismUtils.updateBlock(worldObj, xCoord, yCoord, zCoord);
+            }
+        }
+    }
 
-		return data;
-	}
+    @Override
+    public ArrayList getNetworkedData(ArrayList data) {
+        super.getNetworkedData(data);
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbtTags)
-	{
-		super.readFromNBT(nbtTags);
+        data.add(isActive);
+        data.add(controlType.ordinal());
 
-		isActive = nbtTags.getBoolean("isActive");
-		controlType = RedstoneControl.values()[nbtTags.getInteger("controlType")];
-	}
+        return data;
+    }
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTags)
-	{
-		super.writeToNBT(nbtTags);
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTags) {
+        super.readFromNBT(nbtTags);
 
-		nbtTags.setBoolean("isActive", isActive);
-		nbtTags.setInteger("controlType", controlType.ordinal());
-	}
+        isActive = nbtTags.getBoolean("isActive");
+        controlType = RedstoneControl.values()[nbtTags.getInteger("controlType")];
+    }
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public AxisAlignedBB getRenderBoundingBox()
-	{
-		return INFINITE_EXTENT_AABB;
-	}
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTags) {
+        super.writeToNBT(nbtTags);
 
-	@Override
-	public boolean renderUpdate()
-	{
-		return true;
-	}
+        nbtTags.setBoolean("isActive", isActive);
+        nbtTags.setInteger("controlType", controlType.ordinal());
+    }
 
-	@Override
-	public boolean lightUpdate()
-	{
-		return true;
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
 
-	@Override
-	public RedstoneControl getControlType()
-	{
-		return controlType;
-	}
+    @Override
+    public boolean renderUpdate() {
+        return true;
+    }
 
-	@Override
-	public void setControlType(RedstoneControl type)
-	{
-		controlType = type;
-		MekanismUtils.saveChunk(this);
-	}
+    @Override
+    public boolean lightUpdate() {
+        return true;
+    }
 
-	@Override
-	public boolean canPulse()
-	{
-		return false;
-	}
-	
-	@Override
-	public TileComponentSecurity getSecurity()
-	{
-		return securityComponent;
-	}
+    @Override
+    public RedstoneControl getControlType() {
+        return controlType;
+    }
+
+    @Override
+    public void setControlType(RedstoneControl type) {
+        controlType = type;
+        MekanismUtils.saveChunk(this);
+    }
+
+    @Override
+    public boolean canPulse() {
+        return false;
+    }
+
+    @Override
+    public TileComponentSecurity getSecurity() {
+        return securityComponent;
+    }
 }

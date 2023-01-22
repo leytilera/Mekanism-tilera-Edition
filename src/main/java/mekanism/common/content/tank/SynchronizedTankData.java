@@ -10,69 +10,62 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-public class SynchronizedTankData extends SynchronizedData<SynchronizedTankData>
-{
-	public FluidStack fluidStored;
-	
-	/** For use by rendering segment */
-	public FluidStack prevFluid;
-	
-	public ContainerEditMode editMode = ContainerEditMode.BOTH;
+public class SynchronizedTankData extends SynchronizedData<SynchronizedTankData> {
+    public FluidStack fluidStored;
 
-	public ItemStack[] inventory = new ItemStack[2];
+    /** For use by rendering segment */
+    public FluidStack prevFluid;
 
-	public Set<ValveData> valves = new HashSet<ValveData>();
-	
-	public boolean needsRenderUpdate()
-	{
-		if((fluidStored == null && prevFluid != null) || (fluidStored != null && prevFluid == null))
-		{
-			return true;
-		}
-		
-		if(fluidStored != null && prevFluid != null)
-		{
-			if((fluidStored.getFluid() != prevFluid.getFluid()) || (fluidStored.amount != prevFluid.amount))
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	@Override
-	public ItemStack[] getInventory()
-	{
-		return inventory;
-	}
+    public ContainerEditMode editMode = ContainerEditMode.BOTH;
 
-	public static class ValveData
-	{
-		public ForgeDirection side;
-		public Coord4D location;
-		
-		public boolean prevActive;
-		public int activeTicks;
-		
-		public void onTransfer()
-		{
-			activeTicks = 30;
-		}
+    public ItemStack[] inventory = new ItemStack[2];
 
-		@Override
-		public int hashCode()
-		{
-			int code = 1;
-			code = 31 * code + side.ordinal();
-			code = 31 * code + location.hashCode();
-			return code;
-		}
+    public Set<ValveData> valves = new HashSet<ValveData>();
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			return obj instanceof ValveData && ((ValveData)obj).side == side && ((ValveData)obj).location.equals(location);
-		}
-	}
+    public boolean needsRenderUpdate() {
+        if ((fluidStored == null && prevFluid != null)
+            || (fluidStored != null && prevFluid == null)) {
+            return true;
+        }
+
+        if (fluidStored != null && prevFluid != null) {
+            if ((fluidStored.getFluid() != prevFluid.getFluid())
+                || (fluidStored.amount != prevFluid.amount)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public ItemStack[] getInventory() {
+        return inventory;
+    }
+
+    public static class ValveData {
+        public ForgeDirection side;
+        public Coord4D location;
+
+        public boolean prevActive;
+        public int activeTicks;
+
+        public void onTransfer() {
+            activeTicks = 30;
+        }
+
+        @Override
+        public int hashCode() {
+            int code = 1;
+            code = 31 * code + side.ordinal();
+            code = 31 * code + location.hashCode();
+            return code;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ValveData && ((ValveData) obj).side == side
+                && ((ValveData) obj).location.equals(location);
+        }
+    }
 }

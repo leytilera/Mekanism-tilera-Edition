@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import mekanism.api.MekanismConfig.tools;
 import mekanism.common.Mekanism;
-import mekanism.common.Version;
 import mekanism.common.base.IModule;
 import mekanism.common.recipe.ShapedMekanismRecipe;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -39,7 +38,7 @@ public class MekanismTools implements IModule
 	public static MekanismTools instance;
 	
 	/** MekanismTools version number */
-	public static Version versionNumber = new Version(GRADLE_VERSIONMOD);
+	public static String versionNumber = "GRADLE_MODVERSION";
 
 	//Enums: Tools
 	public static ToolMaterial toolOBSIDIAN;
@@ -528,7 +527,7 @@ public class MekanismTools implements IModule
 	}
 
 	@Override
-	public Version getVersion()
+	public String getVersion()
 	{
 		return versionNumber;
 	}

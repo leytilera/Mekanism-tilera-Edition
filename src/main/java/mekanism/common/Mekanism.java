@@ -137,8 +137,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
  * @author AidanBrady
  *
  */
-@Mod(modid = "Mekanism", name = "Mekanism", version = "GRADLE_MODVERSION", guiFactory = "mekanism.client.gui.ConfigGuiFactory",
-		dependencies = "after:universalelectricity;after:ForgeMultipart;after:BuildCraft;after:BuildCraftAPI;after:IC2;after:CoFHCore;" +
+@Mod(modid = "Mekanism", name = "Mekanism tilera Edition", version = "GRADLE_MODVERSION", guiFactory = "mekanism.client.gui.ConfigGuiFactory",
+		dependencies = "required-after:universalelectricity;required-after:ForgeMultipart;after:BuildCraft;after:BuildCraftAPI;after:IC2;after:CoFHCore;" +
 				"after:ComputerCraft;after:Galacticraft;after:MineTweaker3")
 public class Mekanism
 {
@@ -163,7 +163,8 @@ public class Mekanism
     public static Configuration configuration;
 
 	/** Mekanism version number */
-	public static Version versionNumber = new Version(GRADLE_VERSIONMOD);
+	//public static Version versionNumber = new Version(GRADLE_VERSIONMOD);
+	public static String versionNumber = "GRADLE_MODVERSION";
 
 	/** MultiblockManagers for various structrures */
 	public static MultiblockManager<SynchronizedTankData> tankManager = new MultiblockManager<SynchronizedTankData>("dynamicTank");
@@ -186,9 +187,6 @@ public class Mekanism
 
 	/** List of Mekanism modules loaded */
 	public static List<IModule> modulesLoaded = new ArrayList<IModule>();
-
-	/** The latest version number which is received from the Mekanism server */
-	public static String latestVersionNumber;
 
 	/** The recent news which is received from the Mekanism server */
 	public static String recentNews;
@@ -1188,10 +1186,8 @@ public class Mekanism
 			OreGas clean = (OreGas)GasRegistry.register(new OreGas("clean" + name, "oregas." + name.toLowerCase()).setVisible(false));
 			GasRegistry.register(new OreGas(name.toLowerCase(), "oregas." + name.toLowerCase()).setCleanGas(clean).setVisible(false));
 		}
-
-		if (Loader.isModLoaded("universalelectricity")) {
-			CompatibilityModule.register(new UECompatModule());
-		}
+		
+		CompatibilityModule.register(new UECompatModule());
 
 		Mekanism.proxy.preInit();
 

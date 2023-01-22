@@ -5,14 +5,11 @@ import java.util.List;
 
 import mekanism.api.EnumColor;
 import mekanism.api.MekanismAPI;
-import mekanism.api.MekanismConfig.general;
 import mekanism.common.frequency.Frequency;
 import mekanism.common.frequency.FrequencyManager;
 import mekanism.common.tile.TileEntityTeleporter;
-import mekanism.common.util.MekanismUtils;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 
@@ -49,7 +46,6 @@ public class CommandMekanism extends CommandBase
 		{
 			sender.addChatMessage(new ChatComponentText(EnumColor.GREY + "------------- " + EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " -------------"));
 			sender.addChatMessage(new ChatComponentText(EnumColor.GREY + " *Version: " + EnumColor.DARK_GREY + Mekanism.versionNumber));
-			sender.addChatMessage(new ChatComponentText(EnumColor.GREY + " *Latest Version: " + EnumColor.DARK_GREY + Mekanism.latestVersionNumber));
 			sender.addChatMessage(new ChatComponentText(EnumColor.GREY + " *Code, textures, and ideas by aidancbrady"));
 			sender.addChatMessage(new ChatComponentText(EnumColor.GREY + " *Recent News: " + EnumColor.INDIGO + Mekanism.recentNews));
 			sender.addChatMessage(new ChatComponentText(EnumColor.GREY + "------------- " + EnumColor.DARK_BLUE + "[=======]" + EnumColor.GREY + " -------------"));
@@ -88,10 +84,6 @@ public class CommandMekanism extends CommandBase
 			else if(params[0].equalsIgnoreCase("news"))
 			{
 				sender.addChatMessage(new ChatComponentText(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " Most recent news: " + EnumColor.INDIGO + Mekanism.recentNews));
-			}
-			else if(params[0].equalsIgnoreCase("latest"))
-			{
-				sender.addChatMessage(new ChatComponentText(EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY + " The latest version for mekanism is " + EnumColor.DARK_GREY + Mekanism.latestVersionNumber + EnumColor.GREY + "."));
 			}
 			else if(params[0].equalsIgnoreCase("teleporter"))
 			{

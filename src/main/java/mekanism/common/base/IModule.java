@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 
-import mekanism.common.Version;
 
 /**
  * Implement in your main class if your mod happens to be completely reliant on Mekanism, or in other words, is a Mekanism module.
@@ -17,7 +16,7 @@ public interface IModule
 	 * Gets the version of the module.
 	 * @return the module's version
 	 */
-	public Version getVersion();
+	public String getVersion();
 
 	/**
 	 * Gets the name of the module.  Note that this doesn't include "Mekanism" like the actual module's name does, just the

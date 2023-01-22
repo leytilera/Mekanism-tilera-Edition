@@ -15,7 +15,6 @@ import mekanism.common.MekanismBlocks;
 import mekanism.common.MekanismItems;
 import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.GasTankTier;
-import mekanism.common.Version;
 import mekanism.common.base.IModule;
 import mekanism.common.multiblock.MultiblockManager;
 import mekanism.common.network.PacketSimpleGui;
@@ -54,7 +53,7 @@ public class MekanismGenerators implements IModule
 	public static MekanismGenerators instance;
 	
 	/** MekanismGenerators version number */
-	public static Version versionNumber = new Version(GRADLE_VERSIONMOD);
+	public static String versionNumber = "GRADLE_MODVERSION";
 	
 	public static MultiblockManager<SynchronizedTurbineData> turbineManager = new MultiblockManager<SynchronizedTurbineData>("industrialTurbine");
 
@@ -185,7 +184,7 @@ public class MekanismGenerators implements IModule
 	}
 
 	@Override
-	public Version getVersion() 
+	public String getVersion() 
 	{
 		return versionNumber;
 	}

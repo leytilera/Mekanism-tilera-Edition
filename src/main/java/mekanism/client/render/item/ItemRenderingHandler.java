@@ -10,6 +10,7 @@ import mekanism.client.ClientProxy;
 import mekanism.client.MekanismClient;
 import mekanism.client.ModelMekanismBase;
 import mekanism.client.model.IModelEnergyCube;
+import mekanism.client.model.IModelTier;
 import mekanism.client.model.LegacyModelEnergyCube;
 import mekanism.client.model.LegacyModelGasTank;
 import mekanism.client.model.ModelArmoredJetpack;
@@ -88,7 +89,7 @@ public class ItemRenderingHandler implements IItemRenderer {
     public ModelMekanismBase energyCore = MekanismConfig.client.modelType.createModel(
         ModelEnergyCore::new, LegacyModelEnergyCube.LegacyModelEnergyCore::new
     );
-    public ModelMekanismBase gasTank = MekanismConfig.client.modelType.createModel(
+    public IModelTier gasTank = MekanismConfig.client.modelType.createModel(
         ModelGasTank::new, LegacyModelGasTank::new
     );
     public ModelObsidianTNT obsidianTNT = new ModelObsidianTNT();
@@ -356,7 +357,7 @@ public class ItemRenderingHandler implements IItemRenderer {
 
             BaseTier tier = ((ItemBlockGasTank) item.getItem()).getBaseTier(item);
             mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                ResourceType.RENDER, "GasTank" + tier.getName() + ".png"
+                ResourceType.RENDER, gasTank.getTextureNameForTier(tier)
             ));
             GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);

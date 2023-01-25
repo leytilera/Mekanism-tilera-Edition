@@ -2,11 +2,11 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelChemicalWasher extends ModelBase {
+public class ModelChemicalWasher extends ModelMekanismBase {
     ModelRenderer tankBack;
     ModelRenderer base;
     ModelRenderer portTop;
@@ -175,6 +175,7 @@ public class ModelChemicalWasher extends ModelBase {
         setRotation(tubeLeft3, 0F, 0F, -0.8203047F);
     }
 
+    @Override
     public void render(float size) {
         tankBack.render(size);
         base.render(size);
@@ -205,5 +206,10 @@ public class ModelChemicalWasher extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "ChemicalWasher.png";
     }
 }

@@ -1,8 +1,11 @@
 package mekanism.generators.client.render;
 
+import mekanism.api.MekanismConfig;
 import mekanism.common.Mekanism;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.IModelWindGenerator;
+import mekanism.generators.client.model.LegacyModelWindGenerator;
 import mekanism.generators.client.model.ModelWindGenerator;
 import mekanism.generators.common.tile.TileEntityWindGenerator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -10,7 +13,9 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 public class RenderWindGenerator extends TileEntitySpecialRenderer {
-    private ModelWindGenerator model = new ModelWindGenerator();
+    private IModelWindGenerator model = MekanismConfig.client.modelType.createModel(
+        ModelWindGenerator::new, LegacyModelWindGenerator::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -28,7 +33,9 @@ public class RenderWindGenerator extends TileEntitySpecialRenderer {
     ) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "WindGenerator.png"));
+        bindTexture(
+            MekanismUtils.getResource(ResourceType.RENDER, this.model.getTextureName())
+        );
 
         switch (tileEntity.facing) {
             case 2:

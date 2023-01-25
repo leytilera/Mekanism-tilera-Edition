@@ -2,11 +2,12 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
+import mekanism.common.Tier.BaseTier;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelGasTank extends ModelBase {
+public class ModelGasTank extends ModelMekanismBase implements IModelTier {
     ModelRenderer rim4;
     ModelRenderer rim5;
     ModelRenderer rim2;
@@ -85,6 +86,7 @@ public class ModelGasTank extends ModelBase {
         setRotation(rim1, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         rim4.render(size);
         rim5.render(size);
@@ -102,5 +104,15 @@ public class ModelGasTank extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return this.getTextureNameForTier(BaseTier.BASIC);
+    }
+
+    @Override
+    public String getTextureNameForTier(BaseTier tier) {
+        return "GasTank" + tier.getName() + ".png";
     }
 }

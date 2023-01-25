@@ -2,12 +2,14 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
-import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 
 @SideOnly(Side.CLIENT)
-public class ModelLogisticalSorter extends ModelBase {
+public class ModelLogisticalSorter extends ModelMekanismBase implements IModelOnOff {
     ModelRenderer portBack;
     ModelRenderer portBackLarge;
     ModelRenderer connectorBack;
@@ -197,7 +199,8 @@ public class ModelLogisticalSorter extends ModelBase {
         setRotation(panel1, 0F, 0F, 0F);
     }
 
-    public void render(float size, boolean active) {
+    @Override
+    public void render(float size, boolean active, TextureManager renderer) {
         portBack.render(size);
         portBackLarge.render(size);
         connectorBack.render(size);
@@ -240,5 +243,20 @@ public class ModelLogisticalSorter extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "LogisticalSorter.png";
+    }
+
+    @Override
+    public String getTextureNameForState(boolean on) {
+        return on ? "LogisticalSorterOn.png" : this.getTextureName();
+    }
+
+    @Override
+    public void render(float size) {
+        this.render(size, false, Minecraft.getMinecraft().renderEngine);
     }
 }

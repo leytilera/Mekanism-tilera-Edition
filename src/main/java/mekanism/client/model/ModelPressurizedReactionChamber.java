@@ -2,11 +2,11 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelPressurizedReactionChamber extends ModelBase {
+public class ModelPressurizedReactionChamber extends ModelMekanismBase {
     ModelRenderer frontDivider1;
     ModelRenderer base;
     ModelRenderer front;
@@ -84,6 +84,7 @@ public class ModelPressurizedReactionChamber extends ModelBase {
         setRotation(frontDivider2, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         frontDivider1.render(size);
         base.render(size);
@@ -101,5 +102,10 @@ public class ModelPressurizedReactionChamber extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "PressurizedReactionChamber.png";
     }
 }

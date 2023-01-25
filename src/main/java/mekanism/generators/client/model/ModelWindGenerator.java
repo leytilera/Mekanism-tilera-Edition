@@ -1,9 +1,9 @@
 package mekanism.generators.client.model;
 
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
-public class ModelWindGenerator extends ModelBase {
+public class ModelWindGenerator extends ModelMekanismBase implements IModelWindGenerator {
     ModelRenderer head;
     ModelRenderer plateConnector2;
     ModelRenderer plateConnector;
@@ -158,6 +158,7 @@ public class ModelWindGenerator extends ModelBase {
         setRotation(post1d, -0.0347321F, 0F, -0.0347321F);
     }
 
+    @Override
     public void render(float size, double angle) {
         head.render(size);
         plateConnector2.render(size);
@@ -212,5 +213,15 @@ public class ModelWindGenerator extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public void render(float size) {
+        this.render(size, 0.0);
+    }
+
+    @Override
+    public String getTextureName() {
+        return "WindGenerator.png";
     }
 }

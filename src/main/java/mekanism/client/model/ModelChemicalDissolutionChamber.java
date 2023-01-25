@@ -2,12 +2,12 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelChemicalDissolutionChamber extends ModelBase {
+public class ModelChemicalDissolutionChamber extends ModelMekanismBase {
     ModelRenderer support2;
     ModelRenderer vat5;
     ModelRenderer top2;
@@ -225,6 +225,7 @@ public class ModelChemicalDissolutionChamber extends ModelBase {
         setRotation(portToggle2, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         MekanismRenderer.blendOn();
 
@@ -266,5 +267,10 @@ public class ModelChemicalDissolutionChamber extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "ChamicalDissolutionChamber.png";
     }
 }

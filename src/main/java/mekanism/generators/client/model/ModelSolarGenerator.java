@@ -1,9 +1,9 @@
 package mekanism.generators.client.model;
 
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
-public class ModelSolarGenerator extends ModelBase {
+public class ModelSolarGenerator extends ModelMekanismBase {
     ModelRenderer solarPanel;
     ModelRenderer solarPanelBottom;
     ModelRenderer solarPanelConnector;
@@ -67,6 +67,7 @@ public class ModelSolarGenerator extends ModelBase {
         setRotation(solarPanelPipeBase, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         solarPanel.render(size);
         solarPanelBottom.render(size);
@@ -82,5 +83,10 @@ public class ModelSolarGenerator extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "SolarGenerator.png";
     }
 }

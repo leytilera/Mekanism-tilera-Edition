@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.model.IModelTier;
+import mekanism.client.model.LegacyModelGasTank;
 import mekanism.client.model.ModelGasTank;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.tile.TileEntityGasTank;
@@ -13,7 +16,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderGasTank extends TileEntitySpecialRenderer {
-    private ModelGasTank model = new ModelGasTank();
+    private IModelTier model = MekanismConfig.client.modelType.createModel(
+        ModelGasTank::new, LegacyModelGasTank::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -29,7 +34,7 @@ public class RenderGasTank extends TileEntitySpecialRenderer {
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         bindTexture(MekanismUtils.getResource(
             ResourceType.RENDER,
-            "GasTank" + tileEntity.tier.getBaseTier().getName() + ".png"
+            model.getTextureNameForTier(tileEntity.tier.getBaseTier())
         ));
 
         switch (tileEntity.facing) {

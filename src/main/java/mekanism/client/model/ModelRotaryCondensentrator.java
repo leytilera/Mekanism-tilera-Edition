@@ -2,11 +2,11 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelRotaryCondensentrator extends ModelBase {
+public class ModelRotaryCondensentrator extends ModelMekanismBase {
     ModelRenderer portRight;
     ModelRenderer tankRight;
     ModelRenderer base;
@@ -168,6 +168,7 @@ public class ModelRotaryCondensentrator extends ModelBase {
         setRotation(support1, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         portRight.render(size);
         tankRight.render(size);
@@ -197,5 +198,10 @@ public class ModelRotaryCondensentrator extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "RotaryCondensentrator.png";
     }
 }

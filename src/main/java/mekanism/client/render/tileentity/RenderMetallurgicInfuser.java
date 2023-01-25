@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelMetallurgicInfuser;
 import mekanism.client.model.ModelMetallurgicInfuser;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.tile.TileEntityMetallurgicInfuser;
@@ -13,7 +16,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderMetallurgicInfuser extends TileEntitySpecialRenderer {
-    private ModelMetallurgicInfuser model = new ModelMetallurgicInfuser();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelMetallurgicInfuser::new, LegacyModelMetallurgicInfuser::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -32,11 +37,10 @@ public class RenderMetallurgicInfuser extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(
-            MekanismUtils.getResource(ResourceType.RENDER, "MetallurgicInfuser.png")
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
         );
 
-        switch (tileEntity.facing) {
+        switch (MekanismConfig.client.modelType.mapFacing(tileEntity.facing)) {
             case 2:
                 GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
                 break;

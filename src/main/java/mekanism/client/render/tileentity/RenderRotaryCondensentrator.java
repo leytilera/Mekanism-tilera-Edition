@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelRotaryCondensentrator;
 import mekanism.client.model.ModelRotaryCondensentrator;
 import mekanism.common.tile.TileEntityRotaryCondensentrator;
 import mekanism.common.util.MekanismUtils;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderRotaryCondensentrator extends TileEntitySpecialRenderer {
-    private ModelRotaryCondensentrator model = new ModelRotaryCondensentrator();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelRotaryCondensentrator::new, LegacyModelRotaryCondensentrator::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -33,23 +38,39 @@ public class RenderRotaryCondensentrator extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(
-            MekanismUtils.getResource(ResourceType.RENDER, "RotaryCondensentrator.png")
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
         );
 
-        switch (tileEntity.facing) {
-            case 2:
-                GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
-                break;
-            case 3:
-                GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
-                break;
-            case 4:
-                GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
-                break;
-            case 5:
-                GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
-                break;
+        if (MekanismConfig.client.modelType.isOld()) {
+            switch (tileEntity.facing) {
+                case 2:
+                    GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 3:
+                    GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 4:
+                    GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 5:
+                    GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
+                    break;
+            }
+        } else {
+            switch (tileEntity.facing) {
+                case 2:
+                    GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 3:
+                    GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 4:
+                    GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 5:
+                    GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
+                    break;
+            }
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);

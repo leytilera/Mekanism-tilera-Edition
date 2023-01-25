@@ -2,11 +2,11 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelElectrolyticSeparator extends ModelBase {
+public class ModelElectrolyticSeparator extends ModelMekanismBase {
     ModelRenderer tank2;
     ModelRenderer tank1;
     ModelRenderer tank3;
@@ -133,6 +133,7 @@ public class ModelElectrolyticSeparator extends ModelBase {
         setRotation(portToggle4b, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         tank2.render(size);
         tank1.render(size);
@@ -157,5 +158,10 @@ public class ModelElectrolyticSeparator extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "ElectrolyticSeparator.png";
     }
 }

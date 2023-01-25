@@ -88,6 +88,7 @@ public class MekanismConfig {
         public static boolean opaqueTransmitters = false;
         public static boolean doMultiblockSparkle = true;
         public static int multiblockSparkleIntensity = 6;
+        public static ModelType modelType = ModelType.LEGACY;
     }
 
     public static class machines {

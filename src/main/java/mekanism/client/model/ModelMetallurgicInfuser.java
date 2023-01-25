@@ -2,11 +2,11 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelMetallurgicInfuser extends ModelBase {
+public class ModelMetallurgicInfuser extends ModelMekanismBase {
     ModelRenderer base;
     ModelRenderer back;
     ModelRenderer connector1;
@@ -133,6 +133,7 @@ public class ModelMetallurgicInfuser extends ModelBase {
         setRotation(bar2, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         base.render(size);
         back.render(size);
@@ -157,5 +158,10 @@ public class ModelMetallurgicInfuser extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "MetallurgicInfuser.png";
     }
 }

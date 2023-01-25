@@ -5,11 +5,14 @@ import java.util.Map;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.MekanismRenderer.DisplayInteger;
 import mekanism.client.render.MekanismRenderer.Model3D;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.LegacyModelBioGenerator;
 import mekanism.generators.client.model.ModelBioGenerator;
 import mekanism.generators.common.tile.TileEntityBioGenerator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -20,7 +23,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderBioGenerator extends TileEntitySpecialRenderer {
-    private ModelBioGenerator model = new ModelBioGenerator();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelBioGenerator::new, LegacyModelBioGenerator::new
+    );
 
     private Map<ForgeDirection, DisplayInteger[]> energyDisplays
         = new HashMap<ForgeDirection, DisplayInteger[]>();
@@ -53,7 +58,9 @@ public class RenderBioGenerator extends TileEntitySpecialRenderer {
 
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "BioGenerator.png"));
+        bindTexture(
+            MekanismUtils.getResource(ResourceType.RENDER, this.model.getTextureName())
+        );
 
         switch (tileEntity.facing) {
             case 2:
@@ -90,51 +97,96 @@ public class RenderBioGenerator extends TileEntitySpecialRenderer {
         for (int i = 0; i < stages; i++) {
             displays[i] = DisplayInteger.createAndStart();
 
-            switch (side) {
-                case NORTH: {
-                    model3D.minZ = 0.5;
-                    model3D.maxZ = 0.875;
+            if (MekanismConfig.client.modelType.isOld()) {
+                switch (side) {
+                    case NORTH: {
+                        model3D.minZ = 0.5625;
+                        model3D.maxZ = 0.8125;
 
-                    model3D.minX = 0.1875;
-                    model3D.maxX = 0.8215;
-                    model3D.minY = 0.4375;
-                    model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
-                    break;
+                        model3D.minX = 0.375;
+                        model3D.maxX = 0.625;
+                        model3D.minY = 0.125;
+                        model3D.maxY = 0.125 + ((float) i / stages) * .34375;
+                        break;
+                    }
+                    case SOUTH: {
+                        model3D.minZ = 0.1875;
+                        model3D.maxZ = 0.4375;
+
+                        model3D.minX = 0.375;
+                        model3D.maxX = 0.625;
+                        model3D.minY = 0.125;
+                        model3D.maxY = 0.125 + ((float) i / stages) * .34375;
+                        break;
+                    }
+                    case WEST: {
+                        model3D.minX = 0.5625;
+                        model3D.maxX = 0.8125;
+
+                        model3D.minZ = 0.375;
+                        model3D.maxZ = 0.625;
+                        model3D.minY = 0.125;
+                        model3D.maxY = 0.125 + ((float) i / stages) * .34375;
+                        break;
+                    }
+                    case EAST: {
+                        model3D.minX = 0.1875;
+                        model3D.maxX = 0.4375;
+
+                        model3D.minZ = 0.375;
+                        model3D.maxZ = 0.625;
+                        model3D.minY = 0.125;
+                        model3D.maxY = 0.125 + ((float) i / stages) * .34375;
+                        break;
+                    }
                 }
-                case SOUTH: {
-                    model3D.minZ = 0.125;
-                    model3D.maxZ = 0.5;
+            } else {
+                switch (side) {
+                    case NORTH: {
+                        model3D.minZ = 0.5;
+                        model3D.maxZ = 0.875;
 
-                    model3D.minX = 0.1875;
-                    model3D.maxX = 0.8215;
-                    model3D.minY = 0.4375;
-                    model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
-                    break;
-                }
-                case WEST: {
-                    model3D.minX = 0.5;
-                    model3D.maxX = 0.875;
+                        model3D.minX = 0.1875;
+                        model3D.maxX = 0.8215;
+                        model3D.minY = 0.4375;
+                        model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
+                        break;
+                    }
+                    case SOUTH: {
+                        model3D.minZ = 0.125;
+                        model3D.maxZ = 0.5;
 
-                    model3D.minZ = 0.1875;
-                    model3D.maxZ = 0.8215;
-                    model3D.minY = 0.4375;
-                    model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
-                    break;
-                }
-                case EAST: {
-                    model3D.minX = 0.125;
-                    model3D.maxX = 0.5;
+                        model3D.minX = 0.1875;
+                        model3D.maxX = 0.8215;
+                        model3D.minY = 0.4375;
+                        model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
+                        break;
+                    }
+                    case WEST: {
+                        model3D.minX = 0.5;
+                        model3D.maxX = 0.875;
 
-                    model3D.minZ = 0.1875;
-                    model3D.maxZ = 0.8215;
-                    model3D.minY = 0.4375;
-                    model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
-                    break;
+                        model3D.minZ = 0.1875;
+                        model3D.maxZ = 0.8215;
+                        model3D.minY = 0.4375;
+                        model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
+                        break;
+                    }
+                    case EAST: {
+                        model3D.minX = 0.125;
+                        model3D.maxX = 0.5;
+
+                        model3D.minZ = 0.1875;
+                        model3D.maxZ = 0.8215;
+                        model3D.minY = 0.4375;
+                        model3D.maxY = 0.4375 + ((float) i / stages) * 0.4375;
+                        break;
+                    }
                 }
             }
 
             MekanismRenderer.renderObject(model3D);
-            displays[i].endList();
+            DisplayInteger.endList();
         }
 
         energyDisplays.put(side, displays);

@@ -2,11 +2,11 @@ package mekanism.generators.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelAdvancedSolarGenerator extends ModelBase {
+public class ModelAdvancedSolarGenerator extends ModelMekanismBase {
     ModelRenderer Shape1;
     ModelRenderer Shape2;
     ModelRenderer Shape3;
@@ -126,6 +126,7 @@ public class ModelAdvancedSolarGenerator extends ModelBase {
         setRotation(Shape16, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         Shape1.render(size);
         Shape2.render(size);
@@ -149,5 +150,10 @@ public class ModelAdvancedSolarGenerator extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "AdvancedSolarGenerator.png";
     }
 }

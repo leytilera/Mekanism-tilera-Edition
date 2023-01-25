@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.model.IModelOnOff;
+import mekanism.client.model.LegacyModelDigitalMiner;
 import mekanism.client.model.ModelDigitalMiner;
 import mekanism.client.render.MinerVisualRenderer;
 import mekanism.common.tile.TileEntityDigitalMiner;
@@ -13,7 +16,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderDigitalMiner extends TileEntitySpecialRenderer {
-    private ModelDigitalMiner model = new ModelDigitalMiner();
+    private IModelOnOff model = MekanismConfig.client.modelType.createModel(
+        ModelDigitalMiner::new, LegacyModelDigitalMiner::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -28,32 +33,51 @@ public class RenderDigitalMiner extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "DigitalMiner.png"));
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        );
 
-        switch (tileEntity.facing) {
-            case 2:
-                GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
-                GL11.glTranslatef(0.0F, 0.0F, -1.0F);
-                break;
-            case 3:
-                GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
-                GL11.glTranslatef(0.0F, 0.0F, -1.0F);
-                break;
-            case 4:
-                GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
-                GL11.glTranslatef(0.0F, 0.0F, -1.0F);
-                break;
-            case 5:
-                GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
-                GL11.glTranslatef(0.0F, 0.0F, -1.0F);
-                break;
+        // Not using mapFacing here, as this is different.
+        if (MekanismConfig.client.modelType.isOld()) {
+            switch (tileEntity.facing) {
+                case 2:
+                    GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 3:
+                    GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 4:
+                    GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
+                    break;
+                case 5:
+                    GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
+                    break;
+            }
+        } else {
+            switch (tileEntity.facing) {
+                case 2:
+                    GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
+                    GL11.glTranslatef(0.0F, 0.0F, -1.0F);
+                    break;
+                case 3:
+                    GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
+                    GL11.glTranslatef(0.0F, 0.0F, -1.0F);
+                    break;
+                case 4:
+                    GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
+                    GL11.glTranslatef(0.0F, 0.0F, -1.0F);
+                    break;
+                case 5:
+                    GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
+                    GL11.glTranslatef(0.0F, 0.0F, -1.0F);
+                    break;
+            }
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
         model.render(0.0625F, tileEntity.isActive, field_147501_a.field_147553_e);
         GL11.glPopMatrix();
 
-        if (tileEntity.clientRendering) {
+        if (!MekanismConfig.client.modelType.isOld() && tileEntity.clientRendering) {
             MinerVisualRenderer.render(tileEntity);
         }
     }

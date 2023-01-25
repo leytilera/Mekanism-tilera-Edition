@@ -2,13 +2,14 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
-import mekanism.client.render.tileentity.RenderEnergyCube;
 import mekanism.common.SideData.IOState;
+import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.EnergyCubeTier;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
-import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class ModelEnergyCube extends ModelBase {
+public class ModelEnergyCube extends ModelMekanismBase implements IModelEnergyCube {
     public static ResourceLocation OVERLAY_ON
         = MekanismUtils.getResource(ResourceType.RENDER, "EnergyCube_OverlayOn.png");
     public static ResourceLocation OVERLAY_OFF
@@ -354,6 +355,11 @@ public class ModelEnergyCube extends ModelBase {
                                            connectorLeftToggle,   connectorRightToggle };
     }
 
+    @Override
+    public void render(float size, BaseTier tier, TextureManager manager) {
+        this.render(size, BaseTier.values()[tier.ordinal()], manager);
+    }
+
     public void render(float size, EnergyCubeTier tier, TextureManager manager) {
         frame12.render(size);
         frame11.render(size);
@@ -380,7 +386,9 @@ public class ModelEnergyCube extends ModelBase {
         GL11.glPushMatrix();
         GL11.glScalef(1.0001F, 1.0001F, 1.0001F);
         GL11.glTranslatef(0, -0.00011F, 0);
-        manager.bindTexture(RenderEnergyCube.resources.get(tier));
+        manager.bindTexture(MekanismUtils.getResource(
+            ResourceType.RENDER, this.getTextureNameForTier(tier.getBaseTier())
+        ));
         MekanismRenderer.glowOn();
 
         corner8.render(size);
@@ -396,6 +404,7 @@ public class ModelEnergyCube extends ModelBase {
         GL11.glPopMatrix();
     }
 
+    @Override
     public void renderSide(
         float size,
         ForgeDirection side,
@@ -409,7 +418,9 @@ public class ModelEnergyCube extends ModelBase {
 
             if (state == IOState.OUTPUT) {
                 MekanismRenderer.glowOn();
-                renderer.bindTexture(RenderEnergyCube.resources.get(tier));
+                renderer.bindTexture(MekanismUtils.getResource(
+                    ResourceType.RENDER, this.getTextureNameForTier(tier.getBaseTier())
+                ));
 
                 ports[side.ordinal()].render(size);
 
@@ -437,7 +448,22 @@ public class ModelEnergyCube extends ModelBase {
         model.rotateAngleZ = z;
     }
 
-    public static class ModelEnergyCore extends ModelBase {
+    @Override
+    public String getTextureName() {
+        return "EnergyCube.png";
+    }
+
+    @Override
+    public String getTextureNameForTier(BaseTier tier) {
+        return this.getTextureName();
+    }
+
+    @Override
+    public void render(float size) {
+        this.render(size, EnergyCubeTier.BASIC, Minecraft.getMinecraft().renderEngine);
+    }
+
+    public static class ModelEnergyCore extends ModelMekanismBase {
         private ModelRenderer cube;
 
         public ModelEnergyCore() {
@@ -450,8 +476,14 @@ public class ModelEnergyCube extends ModelBase {
             cube.mirror = true;
         }
 
+        @Override
         public void render(float size) {
             cube.render(0.0625F);
+        }
+
+        @Override
+        public String getTextureName() {
+            return "EnergyCore.png";
         }
     }
 }

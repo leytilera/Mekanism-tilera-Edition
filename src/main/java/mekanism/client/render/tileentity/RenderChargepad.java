@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelChargepad;
 import mekanism.client.model.ModelChargepad;
 import mekanism.common.tile.TileEntityChargepad;
 import mekanism.common.util.MekanismUtils;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderChargepad extends TileEntitySpecialRenderer {
-    private ModelChargepad model = new ModelChargepad();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelChargepad::new, LegacyModelChargepad::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -26,7 +31,8 @@ public class RenderChargepad extends TileEntitySpecialRenderer {
     ) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "Chargepad.png"));
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        );
 
         switch (tileEntity.facing) {
             case 2:
@@ -44,7 +50,7 @@ public class RenderChargepad extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        model.render(0.0625F, field_147501_a.field_147553_e);
+        model.render(0.0625F);
         GL11.glPopMatrix();
     }
 }

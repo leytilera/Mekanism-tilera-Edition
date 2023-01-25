@@ -2,8 +2,11 @@ package mekanism.generators.client.render;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.LegacyModelAdvancedSolarGenerator;
 import mekanism.generators.client.model.ModelAdvancedSolarGenerator;
 import mekanism.generators.common.tile.TileEntityAdvancedSolarGenerator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderAdvancedSolarGenerator extends TileEntitySpecialRenderer {
-    private ModelAdvancedSolarGenerator model = new ModelAdvancedSolarGenerator();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelAdvancedSolarGenerator::new, LegacyModelAdvancedSolarGenerator::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -33,10 +38,10 @@ public class RenderAdvancedSolarGenerator extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         bindTexture(
-            MekanismUtils.getResource(ResourceType.RENDER, "AdvancedSolarGenerator.png")
+            MekanismUtils.getResource(ResourceType.RENDER, this.model.getTextureName())
         );
 
-        switch (tileEntity.facing) {
+        switch (MekanismConfig.client.modelType.mapFacing(tileEntity.facing)) {
             case 2:
                 GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
                 break;

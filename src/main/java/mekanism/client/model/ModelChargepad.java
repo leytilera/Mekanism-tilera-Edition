@@ -2,17 +2,17 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
-import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class ModelChargepad extends ModelBase {
+public class ModelChargepad extends ModelMekanismBase {
     public static ResourceLocation OVERLAY
         = MekanismUtils.getResource(ResourceType.RENDER, "Chargepad_Overlay.png");
 
@@ -72,13 +72,14 @@ public class ModelChargepad extends ModelBase {
         setRotation(pillar1, 0F, 0F, 0F);
     }
 
-    public void render(float size, TextureManager manager) {
+    @Override
+    public void render(float size) {
         GL11.glPushMatrix();
         MekanismRenderer.blendOn();
 
         doRender(size);
 
-        manager.bindTexture(OVERLAY);
+        Minecraft.getMinecraft().renderEngine.bindTexture(OVERLAY);
         GL11.glScalef(1.001F, 1.001F, 1.001F);
         GL11.glTranslatef(0, -0.0011F, 0);
         MekanismRenderer.glowOn();
@@ -104,5 +105,10 @@ public class ModelChargepad extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "Chargepad.png";
     }
 }

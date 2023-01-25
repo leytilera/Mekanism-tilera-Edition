@@ -1,5 +1,8 @@
 package mekanism.client.render.tileentity;
 
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelChemicalWasher;
 import mekanism.client.model.ModelChemicalWasher;
 import mekanism.common.tile.TileEntityChemicalWasher;
 import mekanism.common.util.MekanismUtils;
@@ -9,7 +12,9 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 public class RenderChemicalWasher extends TileEntitySpecialRenderer {
-    private ModelChemicalWasher model = new ModelChemicalWasher();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelChemicalWasher::new, LegacyModelChemicalWasher::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -27,9 +32,10 @@ public class RenderChemicalWasher extends TileEntitySpecialRenderer {
     ) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "ChemicalWasher.png"));
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        );
 
-        switch (tileEntity.facing) {
+        switch (MekanismConfig.client.modelType.mapFacing(tileEntity.facing)) {
             case 2:
                 GL11.glRotatef(0, 0.0F, 1.0F, 0.0F);
                 break;

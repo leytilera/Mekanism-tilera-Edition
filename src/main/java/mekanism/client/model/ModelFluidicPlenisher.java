@@ -2,11 +2,11 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelFluidicPlenisher extends ModelBase {
+public class ModelFluidicPlenisher extends ModelMekanismBase {
     ModelRenderer bearingRight;
     ModelRenderer ringTank;
     ModelRenderer portTop;
@@ -119,6 +119,7 @@ public class ModelFluidicPlenisher extends ModelBase {
         setRotation(rod1, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         bearingRight.render(size);
         ringTank.render(size);
@@ -141,5 +142,10 @@ public class ModelFluidicPlenisher extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "FluidicPlenisher.png";
     }
 }

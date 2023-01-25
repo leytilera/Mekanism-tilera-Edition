@@ -2,12 +2,12 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelChemicalCrystallizer extends ModelBase {
+public class ModelChemicalCrystallizer extends ModelMekanismBase {
     ModelRenderer tray;
     ModelRenderer support4;
     ModelRenderer rimBack;
@@ -134,6 +134,7 @@ public class ModelChemicalCrystallizer extends ModelBase {
         setRotation(Shape1, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         MekanismRenderer.blendOn();
 
@@ -162,5 +163,10 @@ public class ModelChemicalCrystallizer extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "ChemicalCrystallizer.png";
     }
 }

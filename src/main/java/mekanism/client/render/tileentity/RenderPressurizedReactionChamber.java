@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelPressurizedReactionChamber;
 import mekanism.client.model.ModelPressurizedReactionChamber;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.tile.TileEntityPRC;
@@ -13,7 +16,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderPressurizedReactionChamber extends TileEntitySpecialRenderer {
-    private ModelPressurizedReactionChamber model = new ModelPressurizedReactionChamber();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelPressurizedReactionChamber::new, LegacyModelPressurizedReactionChamber::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -28,9 +33,8 @@ public class RenderPressurizedReactionChamber extends TileEntitySpecialRenderer 
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(MekanismUtils.getResource(
-            ResourceType.RENDER, "PressurizedReactionChamber.png"
-        ));
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        );
 
         switch (tileEntity.facing) {
             case 2:

@@ -1,22 +1,21 @@
 package mekanism.client.render.tileentity;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
 import mekanism.api.transmitters.TransmissionType;
 import mekanism.client.MekanismClient;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.IModelEnergyCube;
+import mekanism.client.model.LegacyModelEnergyCube;
 import mekanism.client.model.ModelEnergyCube;
 import mekanism.client.model.ModelEnergyCube.ModelEnergyCore;
 import mekanism.client.render.MekanismRenderer;
-import mekanism.common.Tier.EnergyCubeTier;
 import mekanism.common.tile.TileEntityEnergyCube;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
@@ -28,29 +27,12 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
                                                  new int[] { 154, 120, 200 },
                                                  new int[] { 0, 0, 0 } };
 
-    private ModelEnergyCube model = new ModelEnergyCube();
-    private ModelEnergyCore core = new ModelEnergyCore();
-
-    public static Map<EnergyCubeTier, ResourceLocation> resources
-        = new HashMap<EnergyCubeTier, ResourceLocation>();
-    public static ResourceLocation baseTexture
-        = MekanismUtils.getResource(ResourceType.RENDER, "EnergyCube.png");
-    public static ResourceLocation coreTexture
-        = MekanismUtils.getResource(ResourceType.RENDER, "EnergyCore.png");
-
-    static {
-        if (resources.isEmpty()) {
-            for (EnergyCubeTier tier : EnergyCubeTier.values()) {
-                resources.put(
-                    tier,
-                    MekanismUtils.getResource(
-                        ResourceType.RENDER,
-                        "EnergyCube" + tier.getBaseTier().getName() + ".png"
-                    )
-                );
-            }
-        }
-    }
+    private IModelEnergyCube model = MekanismConfig.client.modelType.createModel(
+        ModelEnergyCube::new, LegacyModelEnergyCube::new
+    );
+    private ModelMekanismBase core = MekanismConfig.client.modelType.createModel(
+        ModelEnergyCore::new, LegacyModelEnergyCube.LegacyModelEnergyCore::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -65,7 +47,10 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(baseTexture);
+        bindTexture(MekanismUtils.getResource(
+            ResourceType.RENDER,
+            model.getTextureNameForTier(tileEntity.tier.getBaseTier())
+        ));
 
         switch (tileEntity.facing) {
             case 0: {
@@ -93,19 +78,26 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        model.render(0.0625F, tileEntity.tier, field_147501_a.field_147553_e);
+        model.render(
+            0.0625F, tileEntity.tier.getBaseTier(), field_147501_a.field_147553_e
+        );
 
-        for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-            bindTexture(baseTexture);
-            model.renderSide(
-                0.0625F,
-                side,
-                tileEntity.configComponent
-                    .getOutput(TransmissionType.ENERGY, side.ordinal())
-                    .ioState,
-                tileEntity.tier,
-                field_147501_a.field_147553_e
-            );
+        if (!MekanismConfig.client.modelType.isOld()) {
+            for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                bindTexture(MekanismUtils.getResource(
+                    ResourceType.RENDER,
+                    model.getTextureNameForTier(tileEntity.tier.getBaseTier())
+                ));
+                model.renderSide(
+                    0.0625F,
+                    side,
+                    tileEntity.configComponent
+                        .getOutput(TransmissionType.ENERGY, side.ordinal())
+                        .ioState,
+                    tileEntity.tier,
+                    field_147501_a.field_147553_e
+                );
+            }
         }
 
         GL11.glPopMatrix();
@@ -113,7 +105,9 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
         if (tileEntity.getEnergy() / tileEntity.getMaxEnergy() > 0.1) {
             GL11.glPushMatrix();
             GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
-            bindTexture(coreTexture);
+            bindTexture(
+                MekanismUtils.getResource(ResourceType.RENDER, core.getTextureName())
+            );
 
             MekanismRenderer.blendOn();
             MekanismRenderer.glowOn();

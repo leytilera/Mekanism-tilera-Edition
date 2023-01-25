@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelFluidicPlenisher;
 import mekanism.client.model.ModelFluidicPlenisher;
 import mekanism.common.tile.TileEntityFluidicPlenisher;
 import mekanism.common.util.MekanismUtils;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderFluidicPlenisher extends TileEntitySpecialRenderer {
-    private ModelFluidicPlenisher model = new ModelFluidicPlenisher();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelFluidicPlenisher::new, LegacyModelFluidicPlenisher::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -31,7 +36,7 @@ public class RenderFluidicPlenisher extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "FluidicPlenisher.png")
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
         );
 
         switch (tileEntity.facing) {

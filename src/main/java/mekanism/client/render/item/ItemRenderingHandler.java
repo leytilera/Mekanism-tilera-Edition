@@ -4,9 +4,14 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.EnumColor;
+import mekanism.api.MekanismConfig;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.client.ClientProxy;
 import mekanism.client.MekanismClient;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.IModelEnergyCube;
+import mekanism.client.model.LegacyModelEnergyCube;
+import mekanism.client.model.LegacyModelGasTank;
 import mekanism.client.model.ModelArmoredJetpack;
 import mekanism.client.model.ModelAtomicDisassembler;
 import mekanism.client.model.ModelEnergyCube;
@@ -24,7 +29,6 @@ import mekanism.client.render.RenderGlowPanel;
 import mekanism.client.render.RenderPartTransmitter;
 import mekanism.client.render.entity.RenderBalloon;
 import mekanism.client.render.tileentity.RenderBin;
-import mekanism.client.render.tileentity.RenderEnergyCube;
 import mekanism.client.render.tileentity.RenderFluidTank;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.MekanismItems;
@@ -78,9 +82,15 @@ public class ItemRenderingHandler implements IItemRenderer {
 
     public ModelRobit robit = new ModelRobit();
     public ModelChest personalChest = new ModelChest();
-    public ModelEnergyCube energyCube = new ModelEnergyCube();
-    public ModelEnergyCore energyCore = new ModelEnergyCore();
-    public ModelGasTank gasTank = new ModelGasTank();
+    public IModelEnergyCube energyCube = MekanismConfig.client.modelType.createModel(
+        ModelEnergyCube::new, LegacyModelEnergyCube::new
+    );
+    public ModelMekanismBase energyCore = MekanismConfig.client.modelType.createModel(
+        ModelEnergyCore::new, LegacyModelEnergyCube.LegacyModelEnergyCore::new
+    );
+    public ModelMekanismBase gasTank = MekanismConfig.client.modelType.createModel(
+        ModelGasTank::new, LegacyModelGasTank::new
+    );
     public ModelObsidianTNT obsidianTNT = new ModelObsidianTNT();
     public ModelJetpack jetpack = new ModelJetpack();
     public ModelArmoredJetpack armoredJetpack = new ModelArmoredJetpack();
@@ -117,8 +127,6 @@ public class ItemRenderingHandler implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-        RenderBlocks renderBlocks = (RenderBlocks) data[0];
-
         if (type == ItemRenderType.EQUIPPED
             || type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
             GL11.glTranslatef(0.5F, 0.5F, 0.5F);
@@ -127,7 +135,9 @@ public class ItemRenderingHandler implements IItemRenderer {
         if (item.getItem() instanceof IEnergyCube) {
             EnergyCubeTier tier = ((IEnergyCube) item.getItem()).getEnergyCubeTier(item);
             IEnergizedItem energized = (IEnergizedItem) item.getItem();
-            mc.renderEngine.bindTexture(RenderEnergyCube.baseTexture);
+            mc.renderEngine.bindTexture(MekanismUtils.getResource(
+                ResourceType.RENDER, energyCube.getTextureNameForTier(tier.getBaseTier())
+            ));
 
             GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(270F, 0.0F, -1.0F, 0.0F);
@@ -135,10 +145,13 @@ public class ItemRenderingHandler implements IItemRenderer {
 
             MekanismRenderer.blendOn();
 
-            energyCube.render(0.0625F, tier, mc.renderEngine);
+            energyCube.render(0.0625F, tier.getBaseTier(), mc.renderEngine);
 
             for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-                mc.renderEngine.bindTexture(RenderEnergyCube.baseTexture);
+                mc.renderEngine.bindTexture(MekanismUtils.getResource(
+                    ResourceType.RENDER,
+                    energyCube.getTextureNameForTier(tier.getBaseTier())
+                ));
                 energyCube.renderSide(
                     0.0625F,
                     side,
@@ -152,7 +165,9 @@ public class ItemRenderingHandler implements IItemRenderer {
 
             GL11.glPushMatrix();
             GL11.glTranslated(0.0, 1.0, 0.0);
-            mc.renderEngine.bindTexture(RenderEnergyCube.coreTexture);
+            mc.renderEngine.bindTexture(MekanismUtils.getResource(
+                ResourceType.RENDER, energyCore.getTextureName()
+            ));
 
             GL11.glShadeModel(GL11.GL_SMOOTH);
             GL11.glEnable(GL11.GL_BLEND);

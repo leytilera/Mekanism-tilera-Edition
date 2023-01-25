@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.model.IModelSeismicVibrator;
+import mekanism.client.model.LegacyModelSeismicVibrator;
 import mekanism.client.model.ModelSeismicVibrator;
 import mekanism.common.tile.TileEntitySeismicVibrator;
 import mekanism.common.util.MekanismUtils;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderSeismicVibrator extends TileEntitySpecialRenderer {
-    private ModelSeismicVibrator model = new ModelSeismicVibrator();
+    private IModelSeismicVibrator model = MekanismConfig.client.modelType.createModel(
+        ModelSeismicVibrator::new, LegacyModelSeismicVibrator::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -32,8 +37,7 @@ public class RenderSeismicVibrator extends TileEntitySpecialRenderer {
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
         bindTexture(MekanismUtils.getResource(
-            ResourceType.RENDER,
-            "SeismicVibrator" /*+ (tileEntity.isActive ? "On" : "")*/ + ".png"
+            ResourceType.RENDER, model.getTextureNameForState(tileEntity.isActive)
         ));
 
         switch (tileEntity.facing) {

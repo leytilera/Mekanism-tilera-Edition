@@ -2,8 +2,11 @@ package mekanism.generators.client.render;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.model.IModelOnOff;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.LegacyModelHeatGenerator;
 import mekanism.generators.client.model.ModelHeatGenerator;
 import mekanism.generators.common.tile.TileEntityHeatGenerator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderHeatGenerator extends TileEntitySpecialRenderer {
-    private ModelHeatGenerator model = new ModelHeatGenerator();
+    private IModelOnOff model = MekanismConfig.client.modelType.createModel(
+        ModelHeatGenerator::new, LegacyModelHeatGenerator::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -30,9 +35,11 @@ public class RenderHeatGenerator extends TileEntitySpecialRenderer {
     ) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "HeatGenerator.png"));
+        bindTexture(MekanismUtils.getResource(
+            ResourceType.RENDER, this.model.getTextureNameForState(tileEntity.isActive)
+        ));
 
-        switch (tileEntity.facing) {
+        switch (MekanismConfig.client.modelType.mapFacing(tileEntity.facing)) {
             case 2:
                 GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
                 break;

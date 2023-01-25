@@ -15,6 +15,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.client;
 import mekanism.api.MekanismConfig.general;
+import mekanism.api.ModelType;
 import mekanism.api.Pos3D;
 import mekanism.client.SparkleAnimation.INodeChecker;
 import mekanism.client.entity.EntityLaser;
@@ -263,6 +264,14 @@ public class ClientProxy extends CommonProxy {
         client.multiblockSparkleIntensity
             = Mekanism.configuration.get("client", "MultiblockSparkleIntesity", 6)
                   .getInt();
+
+        ModelType modelType = ModelType.fromString(
+            Mekanism.configuration.get("client", "ModelType", "LEGACY").getString()
+        );
+
+        if (modelType != null) {
+            client.modelType = modelType;
+        }
 
         if (Mekanism.configuration.hasChanged()) {
             Mekanism.configuration.save();

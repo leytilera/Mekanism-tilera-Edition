@@ -2,11 +2,12 @@ package mekanism.client.model;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelBase;
+import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelSeismicVibrator extends ModelBase {
+public class ModelSeismicVibrator
+    extends ModelMekanismBase implements IModelSeismicVibrator {
     ModelRenderer plate3;
     ModelRenderer baseBack;
     ModelRenderer motor;
@@ -329,6 +330,7 @@ public class ModelSeismicVibrator extends ModelBase {
         setRotation(rivet9, 0F, 0F, 0F);
     }
 
+    @Override
     public void render(float size) {
         plate3.render(size);
         baseBack.render(size);
@@ -377,6 +379,7 @@ public class ModelSeismicVibrator extends ModelBase {
         rivet9.render(size);
     }
 
+    @Override
     public void renderWithPiston(float piston, float size) {
         shaft1.rotationPointY = 6 - (piston * 12);
         plate2.rotationPointY = 21 - (piston * 12);
@@ -389,5 +392,18 @@ public class ModelSeismicVibrator extends ModelBase {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
+    }
+
+    @Override
+    public String getTextureName() {
+        return "SeismicVibrator.png";
+    }
+
+    @Override
+    public String getTextureNameForState(boolean on) {
+        // The on texture is unfinished, the mod files still have the legacy texture.
+        //return on ? "SeismicVibratorOn.png" : this.getTextureName();
+
+        return this.getTextureName();
     }
 }

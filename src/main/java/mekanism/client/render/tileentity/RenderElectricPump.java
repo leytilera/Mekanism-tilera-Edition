@@ -2,6 +2,9 @@ package mekanism.client.render.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.LegacyModelElectricPump;
 import mekanism.client.model.ModelElectricPump;
 import mekanism.common.tile.TileEntityElectricPump;
 import mekanism.common.util.MekanismUtils;
@@ -12,7 +15,9 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderElectricPump extends TileEntitySpecialRenderer {
-    private ModelElectricPump model = new ModelElectricPump();
+    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
+        ModelElectricPump::new, LegacyModelElectricPump::new
+    );
 
     @Override
     public void renderTileEntityAt(
@@ -27,9 +32,10 @@ public class RenderElectricPump extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, "ElectricPump.png"));
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        );
 
-        switch (tileEntity.facing) {
+        switch (MekanismConfig.client.modelType.mapFacing(tileEntity.facing)) {
             case 2:
                 GL11.glRotatef(180, 0.0F, 1.0F, 0.0F);
                 break;

@@ -6,6 +6,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
 import mekanism.client.ClientProxy;
 import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.ClassicModelElectricPump;
+import mekanism.client.model.ClassicModelMetallurgicInfuser;
 import mekanism.client.model.IModelOnOff;
 import mekanism.client.model.LegacyModelChargepad;
 import mekanism.client.model.LegacyModelChemicalCrystallizer;
@@ -58,12 +60,16 @@ public class MachineRenderingHandler implements ISimpleBlockRenderingHandler {
     private Minecraft mc = Minecraft.getMinecraft();
 
     public ModelMekanismBase electricPump = MekanismConfig.client.modelType.createModel(
-        ModelElectricPump::new, LegacyModelElectricPump::new
+        ModelElectricPump::new,
+        LegacyModelElectricPump::new,
+        ClassicModelElectricPump::new
     );
 
     public ModelMekanismBase metallurgicInfuser
         = MekanismConfig.client.modelType.createModel(
-            ModelMetallurgicInfuser::new, LegacyModelMetallurgicInfuser::new
+            ModelMetallurgicInfuser::new,
+            LegacyModelMetallurgicInfuser::new,
+            ClassicModelMetallurgicInfuser::new
         );
 
     public ModelMekanismBase chargepad = MekanismConfig.client.modelType.createModel(

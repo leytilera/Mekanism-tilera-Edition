@@ -3,7 +3,8 @@ package mekanism.generators.client.model;
 import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
-public class LegacyModelBioGenerator extends ModelMekanismBase {
+public class LegacyModelBioGenerator
+    extends ModelMekanismBase implements IModelBioGenerator {
     ModelRenderer Base;
     ModelRenderer Pipe1;
     ModelRenderer Pipe2;

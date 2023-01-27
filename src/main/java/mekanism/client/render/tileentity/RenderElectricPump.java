@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
 import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.ClassicModelElectricPump;
 import mekanism.client.model.LegacyModelElectricPump;
 import mekanism.client.model.ModelElectricPump;
 import mekanism.common.tile.TileEntityElectricPump;
@@ -16,7 +17,9 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderElectricPump extends TileEntitySpecialRenderer {
     private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
-        ModelElectricPump::new, LegacyModelElectricPump::new
+        ModelElectricPump::new,
+        LegacyModelElectricPump::new,
+        ClassicModelElectricPump::new
     );
 
     @Override

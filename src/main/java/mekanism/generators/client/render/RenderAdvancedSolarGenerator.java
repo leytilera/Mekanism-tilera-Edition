@@ -6,6 +6,7 @@ import mekanism.api.MekanismConfig;
 import mekanism.client.ModelMekanismBase;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.ClassicModelAdvancedSolarGenerator;
 import mekanism.generators.client.model.LegacyModelAdvancedSolarGenerator;
 import mekanism.generators.client.model.ModelAdvancedSolarGenerator;
 import mekanism.generators.common.tile.TileEntityAdvancedSolarGenerator;
@@ -16,7 +17,9 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderAdvancedSolarGenerator extends TileEntitySpecialRenderer {
     private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
-        ModelAdvancedSolarGenerator::new, LegacyModelAdvancedSolarGenerator::new
+        ModelAdvancedSolarGenerator::new,
+        LegacyModelAdvancedSolarGenerator::new,
+        ClassicModelAdvancedSolarGenerator::new
     );
 
     @Override

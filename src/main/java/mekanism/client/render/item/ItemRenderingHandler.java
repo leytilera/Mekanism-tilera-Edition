@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.EnumColor;
 import mekanism.api.MekanismConfig;
+import mekanism.api.ModelType;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.client.ClientProxy;
 import mekanism.client.MekanismClient;
@@ -134,90 +135,97 @@ public class ItemRenderingHandler implements IItemRenderer {
         }
 
         if (item.getItem() instanceof IEnergyCube) {
-            EnergyCubeTier tier = ((IEnergyCube) item.getItem()).getEnergyCubeTier(item);
-            IEnergizedItem energized = (IEnergizedItem) item.getItem();
-            mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                ResourceType.RENDER, energyCube.getTextureNameForTier(tier.getBaseTier())
-            ));
-
-            GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-            GL11.glRotatef(270F, 0.0F, -1.0F, 0.0F);
-            GL11.glTranslatef(0.0F, -1.0F, 0.0F);
-
-            MekanismRenderer.blendOn();
-
-            energyCube.render(0.0625F, tier.getBaseTier(), mc.renderEngine);
-
-            for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+            if (MekanismConfig.client.modelType == ModelType.CLASSIC) {
+                MekanismRenderer.renderCustomItem((RenderBlocks) data[0], item);
+            } else {
+                EnergyCubeTier tier
+                    = ((IEnergyCube) item.getItem()).getEnergyCubeTier(item);
+                IEnergizedItem energized = (IEnergizedItem) item.getItem();
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
                     ResourceType.RENDER,
                     energyCube.getTextureNameForTier(tier.getBaseTier())
                 ));
-                energyCube.renderSide(
-                    0.0625F,
-                    side,
-                    side == ForgeDirection.NORTH ? IOState.OUTPUT : IOState.INPUT,
-                    tier,
-                    mc.renderEngine
+
+                GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+                GL11.glRotatef(270F, 0.0F, -1.0F, 0.0F);
+                GL11.glTranslatef(0.0F, -1.0F, 0.0F);
+
+                MekanismRenderer.blendOn();
+
+                energyCube.render(0.0625F, tier.getBaseTier(), mc.renderEngine);
+
+                for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+                    mc.renderEngine.bindTexture(MekanismUtils.getResource(
+                        ResourceType.RENDER,
+                        energyCube.getTextureNameForTier(tier.getBaseTier())
+                    ));
+                    energyCube.renderSide(
+                        0.0625F,
+                        side,
+                        side == ForgeDirection.NORTH ? IOState.OUTPUT : IOState.INPUT,
+                        tier,
+                        mc.renderEngine
+                    );
+                }
+
+                MekanismRenderer.blendOff();
+
+                GL11.glPushMatrix();
+                GL11.glTranslated(0.0, 1.0, 0.0);
+                mc.renderEngine.bindTexture(MekanismUtils.getResource(
+                    ResourceType.RENDER, energyCore.getTextureName()
+                ));
+
+                GL11.glShadeModel(GL11.GL_SMOOTH);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+                MekanismRenderer.glowOn();
+
+                EnumColor c = tier.getBaseTier().getColor();
+
+                GL11.glPushMatrix();
+                GL11.glScalef(0.4F, 0.4F, 0.4F);
+                GL11.glColor4f(
+                    c.getColor(0),
+                    c.getColor(1),
+                    c.getColor(2),
+                    (float) (energized.getEnergy(item) / energized.getMaxEnergy(item))
                 );
+                GL11.glTranslatef(
+                    0,
+                    (float) Math.sin(Math.toRadians(
+                        (MekanismClient.ticksPassed + MekanismRenderer.getPartialTick())
+                        * 3
+                    )) / 7,
+                    0
+                );
+                GL11.glRotatef(
+                    (MekanismClient.ticksPassed + MekanismRenderer.getPartialTick()) * 4,
+                    0,
+                    1,
+                    0
+                );
+                GL11.glRotatef(
+                    36F
+                        + (MekanismClient.ticksPassed + MekanismRenderer.getPartialTick())
+                            * 4,
+                    0,
+                    1,
+                    1
+                );
+                energyCore.render(0.0625F);
+                GL11.glPopMatrix();
+
+                MekanismRenderer.glowOff();
+
+                GL11.glShadeModel(GL11.GL_FLAT);
+                GL11.glDisable(GL11.GL_LINE_SMOOTH);
+                GL11.glDisable(GL11.GL_POLYGON_SMOOTH);
+                GL11.glDisable(GL11.GL_BLEND);
+
+                GL11.glPopMatrix();
             }
-
-            MekanismRenderer.blendOff();
-
-            GL11.glPushMatrix();
-            GL11.glTranslated(0.0, 1.0, 0.0);
-            mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                ResourceType.RENDER, energyCore.getTextureName()
-            ));
-
-            GL11.glShadeModel(GL11.GL_SMOOTH);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-            MekanismRenderer.glowOn();
-
-            EnumColor c = tier.getBaseTier().getColor();
-
-            GL11.glPushMatrix();
-            GL11.glScalef(0.4F, 0.4F, 0.4F);
-            GL11.glColor4f(
-                c.getColor(0),
-                c.getColor(1),
-                c.getColor(2),
-                (float) (energized.getEnergy(item) / energized.getMaxEnergy(item))
-            );
-            GL11.glTranslatef(
-                0,
-                (float) Math.sin(Math.toRadians(
-                    (MekanismClient.ticksPassed + MekanismRenderer.getPartialTick()) * 3
-                )) / 7,
-                0
-            );
-            GL11.glRotatef(
-                (MekanismClient.ticksPassed + MekanismRenderer.getPartialTick()) * 4,
-                0,
-                1,
-                0
-            );
-            GL11.glRotatef(
-                36F
-                    + (MekanismClient.ticksPassed + MekanismRenderer.getPartialTick())
-                        * 4,
-                0,
-                1,
-                1
-            );
-            energyCore.render(0.0625F);
-            GL11.glPopMatrix();
-
-            MekanismRenderer.glowOff();
-
-            GL11.glShadeModel(GL11.GL_FLAT);
-            GL11.glDisable(GL11.GL_LINE_SMOOTH);
-            GL11.glDisable(GL11.GL_POLYGON_SMOOTH);
-            GL11.glDisable(GL11.GL_BLEND);
-
-            GL11.glPopMatrix();
         }
 		else if(BasicType.get(item) == BasicType.INDUCTION_CELL || BasicType.get(item) == BasicType.INDUCTION_PROVIDER)
 		{

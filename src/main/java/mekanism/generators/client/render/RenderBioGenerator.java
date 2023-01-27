@@ -6,12 +6,14 @@ import java.util.Map;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
-import mekanism.client.ModelMekanismBase;
+import mekanism.api.ModelType;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.render.MekanismRenderer.DisplayInteger;
 import mekanism.client.render.MekanismRenderer.Model3D;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.ClassicModelBioGenerator;
+import mekanism.generators.client.model.IModelBioGenerator;
 import mekanism.generators.client.model.LegacyModelBioGenerator;
 import mekanism.generators.client.model.ModelBioGenerator;
 import mekanism.generators.common.tile.TileEntityBioGenerator;
@@ -23,8 +25,10 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderBioGenerator extends TileEntitySpecialRenderer {
-    private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
-        ModelBioGenerator::new, LegacyModelBioGenerator::new
+    private IModelBioGenerator model = MekanismConfig.client.modelType.createModel(
+        ModelBioGenerator::new,
+        LegacyModelBioGenerator::new,
+        ClassicModelBioGenerator::new
     );
 
     private Map<ForgeDirection, DisplayInteger[]> energyDisplays
@@ -42,7 +46,8 @@ public class RenderBioGenerator extends TileEntitySpecialRenderer {
     private void renderAModelAt(
         TileEntityBioGenerator tileEntity, double x, double y, double z, float partialTick
     ) {
-        if (tileEntity.bioFuelSlot.fluidStored > 0) {
+        if (MekanismConfig.client.modelType != ModelType.CLASSIC
+            && tileEntity.bioFuelSlot.fluidStored > 0) {
             push();
 
             MekanismRenderer.glowOn();
@@ -78,7 +83,7 @@ public class RenderBioGenerator extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180, 0F, 0F, 1F);
-        model.render(0.0625F);
+        model.render(0.0625F, tileEntity.isActive ? tileEntity.getMatrix() : 0.0F);
         GL11.glPopMatrix();
     }
 

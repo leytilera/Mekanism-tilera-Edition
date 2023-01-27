@@ -9,6 +9,8 @@ import mekanism.client.model.IModelOnOff;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
+import mekanism.generators.client.model.ClassicModelAdvancedSolarGenerator;
+import mekanism.generators.client.model.ClassicModelBioGenerator;
 import mekanism.generators.client.model.LegacyModelAdvancedSolarGenerator;
 import mekanism.generators.client.model.LegacyModelBioGenerator;
 import mekanism.generators.client.model.LegacyModelGasGenerator;
@@ -35,13 +37,17 @@ public class BlockRenderingHandler implements ISimpleBlockRenderingHandler {
 
     public ModelMekanismBase advancedSolarGenerator
         = MekanismConfig.client.modelType.createModel(
-            ModelAdvancedSolarGenerator::new, LegacyModelAdvancedSolarGenerator::new
+            ModelAdvancedSolarGenerator::new,
+            LegacyModelAdvancedSolarGenerator::new,
+            ClassicModelAdvancedSolarGenerator::new
         );
     public ModelMekanismBase solarGenerator = MekanismConfig.client.modelType.createModel(
         ModelSolarGenerator::new, LegacyModelSolarGenerator::new
     );
     public ModelMekanismBase bioGenerator = MekanismConfig.client.modelType.createModel(
-        ModelBioGenerator::new, LegacyModelBioGenerator::new
+        ModelBioGenerator::new,
+        LegacyModelBioGenerator::new,
+        ClassicModelBioGenerator::new
     );
     public IModelOnOff heatGenerator = MekanismConfig.client.modelType.createModel(
         ModelHeatGenerator::new, LegacyModelHeatGenerator::new

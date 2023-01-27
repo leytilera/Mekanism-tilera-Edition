@@ -13,6 +13,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.Coord4D;
+import mekanism.api.MekanismConfig;
 import mekanism.api.MekanismConfig.client;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.ModelType;
@@ -266,7 +267,7 @@ public class ClientProxy extends CommonProxy {
                   .getInt();
 
         ModelType modelType = ModelType.fromString(
-            Mekanism.configuration.get("client", "ModelType", "LEGACY").getString()
+            Mekanism.configuration.get("client", "ModelType", "CLASSIC").getString()
         );
 
         if (modelType != null) {
@@ -370,9 +371,13 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.registerTileEntity(
             TileEntityGasTank.class, "GasTank", new RenderGasTank()
         );
-        ClientRegistry.registerTileEntity(
-            TileEntityEnergyCube.class, "EnergyCube", new RenderEnergyCube()
-        );
+        if (MekanismConfig.client.modelType == ModelType.CLASSIC) {
+            GameRegistry.registerTileEntity(TileEntityEnergyCube.class, "EnergyCube");
+        } else {
+            ClientRegistry.registerTileEntity(
+                TileEntityEnergyCube.class, "EnergyCube", new RenderEnergyCube()
+            );
+        }
         ClientRegistry.registerTileEntity(
             TileEntityElectricPump.class, "ElectricPump", new RenderElectricPump()
         );

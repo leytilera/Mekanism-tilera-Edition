@@ -4,7 +4,7 @@ import mekanism.client.ModelMekanismBase;
 import mekanism.client.render.MekanismRenderer;
 import net.minecraft.client.model.ModelRenderer;
 
-public class ModelBioGenerator extends ModelMekanismBase{
+public class ModelBioGenerator extends ModelMekanismBase implements IModelBioGenerator {
     ModelRenderer base;
     ModelRenderer sideRight;
     ModelRenderer back;

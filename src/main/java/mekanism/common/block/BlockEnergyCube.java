@@ -1,12 +1,16 @@
 package mekanism.common.block;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Random;
 
 import buildcraft.api.tools.IToolWrench;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
+import mekanism.api.ModelType;
 import mekanism.api.energy.IEnergizedItem;
+import mekanism.client.render.MekanismRenderer.ICustomBlockIcon;
 import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.Tier.EnergyCubeTier;
@@ -31,6 +35,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
@@ -47,7 +52,9 @@ import net.minecraftforge.common.util.ForgeDirection;
  * @author AidanBrady
  *
  */
-public class BlockEnergyCube extends BlockContainer {
+public class BlockEnergyCube extends BlockContainer implements ICustomBlockIcon {
+    EnumMap<EnergyCubeTier, IIcon[]> icons = new EnumMap<>(EnergyCubeTier.class);
+
     public BlockEnergyCube() {
         super(Material.iron);
         setHardness(2F);
@@ -59,6 +66,46 @@ public class BlockEnergyCube extends BlockContainer {
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister register) {
         blockIcon = register.registerIcon(BlockBasic.ICON_BASE);
+
+        if (MekanismConfig.client.modelType == ModelType.CLASSIC) {
+            for (EnergyCubeTier tier : EnergyCubeTier.values()) {
+                EnergyCubeTier textureTier = tier;
+
+                if (tier == EnergyCubeTier.CREATIVE)
+                    textureTier = EnergyCubeTier.ULTIMATE;
+
+                this.icons.put(
+                    tier,
+                    new IIcon[] { register.registerIcon(
+                                      "mekanism:ClassicEnergyCubeSide"
+                                      + textureTier.getBaseTier().getName()
+                                  ),
+                                  register.registerIcon(
+                                      "mekanism:ClassicEnergyCubeFront"
+                                      + textureTier.getBaseTier().getName()
+                                  ) }
+                );
+            }
+        }
+    }
+
+    @Override
+    public IIcon getIcon(ItemStack stack, int side) {
+        EnergyCubeTier tier = ((IEnergyCube) stack.getItem()).getEnergyCubeTier(stack);
+
+        IIcon[] icons = this.icons.get(tier);
+        return icons[side == ForgeDirection.SOUTH.ordinal() ? 1 : 0];
+    }
+
+    @Override
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+        if (MekanismConfig.client.modelType != ModelType.CLASSIC)
+            return super.getIcon(world, x, y, z, side);
+
+        TileEntityEnergyCube te = (TileEntityEnergyCube) world.getTileEntity(x, y, z);
+
+        IIcon[] icons = this.icons.get(te.tier);
+        return icons[te.facing == side ? 1 : 0];
     }
 
     @Override
@@ -252,7 +299,7 @@ public class BlockEnergyCube extends BlockContainer {
 
     @Override
     public int getRenderType() {
-        return -1;
+        return MekanismConfig.client.modelType == ModelType.CLASSIC ? 0 : -1;
     }
 
     @Override

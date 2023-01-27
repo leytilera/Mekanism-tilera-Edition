@@ -24,14 +24,28 @@ public class TileEntityBioGenerator
     /** The FluidSlot biofuel instance for this generator. */
     public FluidSlot bioFuelSlot = new FluidSlot(24000, -1);
 
+    public float crushMatrix = 0.0F;
+
     public TileEntityBioGenerator() {
         super("bio", "BioGenerator", 160000, generators.bioGeneration * 2);
         inventory = new ItemStack[2];
     }
 
+    public float getMatrix() {
+        return this.crushMatrix <= 2.0F ? this.crushMatrix
+                                        : 2.0F - (this.crushMatrix - 2.0F);
+    }
+
     @Override
     public void onUpdate() {
         super.onUpdate();
+        if (this.worldObj.isRemote) {
+            if (this.crushMatrix < 4.0F) {
+                this.crushMatrix += 0.2F;
+            } else {
+                this.crushMatrix = 0.0F;
+            }
+        }
 
         if (inventory[0] != null) {
             ChargeUtils.charge(1, this);

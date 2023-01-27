@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
 import mekanism.client.ModelMekanismBase;
+import mekanism.client.model.ClassicModelMetallurgicInfuser;
 import mekanism.client.model.LegacyModelMetallurgicInfuser;
 import mekanism.client.model.ModelMetallurgicInfuser;
 import mekanism.client.render.MekanismRenderer;
@@ -17,7 +18,9 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderMetallurgicInfuser extends TileEntitySpecialRenderer {
     private ModelMekanismBase model = MekanismConfig.client.modelType.createModel(
-        ModelMetallurgicInfuser::new, LegacyModelMetallurgicInfuser::new
+        ModelMetallurgicInfuser::new,
+        LegacyModelMetallurgicInfuser::new,
+        ClassicModelMetallurgicInfuser::new
     );
 
     @Override

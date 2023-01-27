@@ -7,8 +7,10 @@ import java.util.Random;
 import buildcraft.api.tools.IToolWrench;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mekanism.api.MekanismConfig;
 import mekanism.api.MekanismConfig.client;
 import mekanism.api.MekanismConfig.general;
+import mekanism.api.ModelType;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.common.CTMData;
 import mekanism.common.Mekanism;
@@ -115,6 +117,12 @@ public class BlockGenerator extends BlockContainer implements ISpecialBounds, IB
         ctms[13] = new CTMData("ctm/SaturatingCondenser", this, Arrays.asList(13))
                        .registerIcons(register);
 
+        if (MekanismConfig.client.modelType == ModelType.CLASSIC) {
+            icons[1][0] = register.registerIcon("mekanism:ClassicSolarGeneratorSide");
+            icons[1][1] = register.registerIcon("mekanism:ClassicSolarGeneratorTop");
+            icons[1][2] = register.registerIcon("mekanism:ClassicSolarGeneratorBottom");
+        }
+
         icons[7][0] = register.registerIcon("mekanism:TurbineRod");
         icons[8][0] = register.registerIcon("mekanism:RotationalComplexSide");
         icons[8][1] = register.registerIcon("mekanism:RotationalComplexTop");
@@ -133,6 +141,10 @@ public class BlockGenerator extends BlockContainer implements ISpecialBounds, IB
 
     @Override
     public boolean shouldRenderBlock(IBlockAccess world, int x, int y, int z, int meta) {
+        if (MekanismConfig.client.modelType == ModelType.CLASSIC
+            && meta == GeneratorType.SOLAR_GENERATOR.meta)
+            return true;
+
         return !GeneratorType.getFromMetadata(meta).hasModel;
     }
 
@@ -154,6 +166,15 @@ public class BlockGenerator extends BlockContainer implements ISpecialBounds, IB
                 return icons[meta][0];
             } else {
                 return icons[meta][1];
+            }
+        } else if (type == GeneratorType.SOLAR_GENERATOR) {
+            switch (side) {
+                case 0:
+                    return icons[meta][2];
+                case 1:
+                    return icons[meta][1];
+                default:
+                    return icons[meta][0];
             }
         } else if (!type.hasModel) {
             return icons[meta][0];
@@ -663,7 +684,7 @@ public class BlockGenerator extends BlockContainer implements ISpecialBounds, IB
         int metadata = world.getBlockMetadata(x, y, z);
 
         if (metadata == GeneratorType.SOLAR_GENERATOR.meta) {
-            setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.7F, 1.0F);
+            setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.4F, 1.0F);
         } else if (metadata == GeneratorType.TURBINE_ROTOR.meta) {
             setBlockBounds(0.375F, 0.0F, 0.375F, 0.625F, 1.0F, 0.625F);
         } else {
@@ -908,7 +929,7 @@ public class BlockGenerator extends BlockContainer implements ISpecialBounds, IB
     @Override
     public void setRenderBounds(Block block, int metadata) {
         if (metadata == GeneratorType.SOLAR_GENERATOR.meta) {
-            block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.7F, 1.0F);
+            block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.4F, 1.0F);
         } else if (metadata == GeneratorType.TURBINE_ROTOR.meta) {
             block.setBlockBounds(0.375F, 0.0F, 0.375F, 0.625F, 1.0F, 0.625F);
         } else {

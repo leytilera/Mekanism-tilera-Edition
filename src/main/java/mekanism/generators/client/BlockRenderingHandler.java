@@ -4,6 +4,7 @@ import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
+import mekanism.api.ModelType;
 import mekanism.client.ModelMekanismBase;
 import mekanism.client.model.IModelOnOff;
 import mekanism.client.render.MekanismRenderer;
@@ -81,7 +82,7 @@ public class BlockRenderingHandler implements ISimpleBlockRenderingHandler {
                     ResourceType.RENDER, advancedSolarGenerator.getTextureName()
                 ));
                 advancedSolarGenerator.render(0.022F);
-            } else if (metadata == GeneratorType.SOLAR_GENERATOR.meta) {
+            } else if (MekanismConfig.client.modelType != ModelType.CLASSIC && metadata == GeneratorType.SOLAR_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef(90F, 0.0F, -1.0F, 0.0F);
                 GL11.glTranslated(0.0F, -1.0F, 0.0F);

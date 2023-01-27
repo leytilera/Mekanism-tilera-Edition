@@ -64,7 +64,7 @@ dependencies {
 
 version = "${config.minecraft_version}-${config.mod_version}"
 group= "mekanism"
-archivesBaseName = "Mekanism-1.7.10-Community-Edition"
+archivesBaseName = "Mekanism"
 libsDirName = "../output"
 distsDirName = "../output"
 sourceCompatibility = '1.8'

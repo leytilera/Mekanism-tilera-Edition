@@ -1,7 +1,7 @@
 [
 {
   "modid": "Mekanism",
-  "name": "Mekanism Community Edition",
+  "name": "Mekanism tilera Edition",
   "description": "Energy, Armor, Tools, Weapons, Machines, Magic.",
   "version": "${version}",
   "mcversion": "${mc_version}",
@@ -14,7 +14,7 @@
 },
 {
   "modid": "MekanismGenerators",
-  "name": "MekanismGenerators Community Edition",
+  "name": "MekanismGenerators tilera Edition",
   "description": "Generators module of Mekanism.",
   "version": "${version}",
   "mcversion": "${mc_version}",
@@ -27,7 +27,7 @@
 },
 {
   "modid": "MekanismTools",
-  "name": "MekanismTools Community Edition",
+  "name": "MekanismTools tilera Edition",
   "description": "Tools module for Mekanism.",
   "version": "${version}",
   "mcversion": "${mc_version}",

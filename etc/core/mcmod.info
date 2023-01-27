@@ -1,7 +1,7 @@
 [
 {
   "modid": "Mekanism",
-  "name": "Mekanism Community Edition",
+  "name": "Mekanism tilera Edition",
   "description": "Energy, Armor, Tools, Weapons, Machines, Magic.",
   "version": "${version}",
   "mcversion": "${mc_version}",

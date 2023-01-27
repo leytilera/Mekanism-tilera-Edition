@@ -1,7 +1,7 @@
 [
 {
   "modid": "MekanismTools",
-  "name": "MekanismTools Community Edition",
+  "name": "MekanismTools tilera Edition",
   "description": "Tools module for Mekanism.",
   "version": "${version}",
   "mcversion": "${mc_version}",

@@ -357,7 +357,7 @@ public class ModelEnergyCube extends ModelMekanismBase implements IModelEnergyCu
 
     @Override
     public void render(float size, BaseTier tier, TextureManager manager) {
-        this.render(size, BaseTier.values()[tier.ordinal()], manager);
+        this.render(size, EnergyCubeTier.values()[tier.ordinal()], manager);
     }
 
     public void render(float size, EnergyCubeTier tier, TextureManager manager) {

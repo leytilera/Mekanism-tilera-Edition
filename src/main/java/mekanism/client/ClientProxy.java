@@ -267,7 +267,7 @@ public class ClientProxy extends CommonProxy {
                   .getInt();
 
         ModelType modelType = ModelType.fromString(
-            Mekanism.configuration.get("client", "ModelType", "CLASSIC").getString()
+            Mekanism.configuration.get("client", "ModelType", "MODERN").getString()
         );
 
         if (modelType != null) {
@@ -371,13 +371,9 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.registerTileEntity(
             TileEntityGasTank.class, "GasTank", new RenderGasTank()
         );
-        if (MekanismConfig.client.modelType == ModelType.CLASSIC) {
-            GameRegistry.registerTileEntity(TileEntityEnergyCube.class, "EnergyCube");
-        } else {
-            ClientRegistry.registerTileEntity(
-                TileEntityEnergyCube.class, "EnergyCube", new RenderEnergyCube()
-            );
-        }
+        ClientRegistry.registerTileEntity(
+            TileEntityEnergyCube.class, "EnergyCube", new RenderEnergyCube()
+        );
         ClientRegistry.registerTileEntity(
             TileEntityElectricPump.class, "ElectricPump", new RenderElectricPump()
         );

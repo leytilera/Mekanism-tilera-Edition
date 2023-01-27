@@ -3,6 +3,7 @@ package mekanism.client.render.tileentity;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
+import mekanism.api.ModelType;
 import mekanism.api.transmitters.TransmissionType;
 import mekanism.client.MekanismClient;
 import mekanism.client.ModelMekanismBase;
@@ -38,6 +39,7 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
     public void renderTileEntityAt(
         TileEntity tileEntity, double x, double y, double z, float partialTick
     ) {
+        if (MekanismConfig.client.modelType == ModelType.CLASSIC) return;
         renderAModelAt((TileEntityEnergyCube) tileEntity, x, y, z, partialTick);
     }
 

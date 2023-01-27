@@ -271,6 +271,6 @@ public class ModelChemicalDissolutionChamber extends ModelMekanismBase {
 
     @Override
     public String getTextureName() {
-        return "ChamicalDissolutionChamber.png";
+        return "ChemicalDissolutionChamber.png";
     }
 }

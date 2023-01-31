@@ -10,9 +10,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
 import mekanism.api.ModelType;
 import mekanism.api.energy.IEnergizedItem;
+import mekanism.api.transmitters.TransmissionType;
 import mekanism.client.render.MekanismRenderer.ICustomBlockIcon;
 import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
+import mekanism.common.SideData.IOState;
 import mekanism.common.Tier.EnergyCubeTier;
 import mekanism.common.base.IEnergyCube;
 import mekanism.common.base.ISustainedInventory;
@@ -102,10 +104,59 @@ public class BlockEnergyCube extends BlockContainer implements ICustomBlockIcon 
         if (MekanismConfig.client.modelType != ModelType.CLASSIC)
             return super.getIcon(world, x, y, z, side);
 
+        ForgeDirection dir = ForgeDirection.getOrientation(side);
         TileEntityEnergyCube te = (TileEntityEnergyCube) world.getTileEntity(x, y, z);
+        ForgeDirection front = ForgeDirection.getOrientation(te.facing);
 
         IIcon[] icons = this.icons.get(te.tier);
-        return icons[te.facing == side ? 1 : 0];
+        return icons[te.configComponent.getOutput(TransmissionType.ENERGY, mapRotation(front, dir).ordinal()).ioState == IOState.OUTPUT ? 1 : 0];
+    }
+
+    public ForgeDirection mapRotation(final ForgeDirection forward, final ForgeDirection dir) {
+
+        ForgeDirection up = ForgeDirection.UNKNOWN;
+
+        if (forward == ForgeDirection.UP) {
+            up = ForgeDirection.SOUTH;
+        } else if (forward == ForgeDirection.DOWN) {
+            up = ForgeDirection.NORTH;
+        } else {
+            up = ForgeDirection.UP;
+        }
+
+        final int west_x = forward.offsetY * up.offsetZ - forward.offsetZ * up.offsetY;
+        final int west_y = forward.offsetZ * up.offsetX - forward.offsetX * up.offsetZ;
+        final int west_z = forward.offsetX * up.offsetY - forward.offsetY * up.offsetX;
+
+        ForgeDirection west = ForgeDirection.UNKNOWN;
+        for (final ForgeDirection dx : ForgeDirection.VALID_DIRECTIONS) {
+            if (dx.offsetX == west_x && dx.offsetY == west_y && dx.offsetZ == west_z) {
+                west = dx;
+            }
+        }
+
+        if (dir == forward.getOpposite()) {
+            return ForgeDirection.SOUTH;
+        }
+        if (dir == forward) {
+            return ForgeDirection.NORTH;
+        }
+
+        if (dir == up) {
+            return ForgeDirection.UP;
+        }
+        if (dir == up.getOpposite()) {
+            return ForgeDirection.DOWN;
+        }
+
+        if (dir == west) {
+            return ForgeDirection.WEST;
+        }
+        if (dir == west.getOpposite()) {
+            return ForgeDirection.EAST;
+        }
+
+        return ForgeDirection.UNKNOWN;
     }
 
     @Override

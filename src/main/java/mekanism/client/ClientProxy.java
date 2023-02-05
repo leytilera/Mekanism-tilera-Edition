@@ -12,6 +12,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dev.tilera.capes.Capes;
 import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig;
 import mekanism.api.MekanismConfig.client;
@@ -210,6 +211,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
@@ -219,7 +221,6 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
-    public static boolean isThorfusionLoaded;
 
     @Override
     public void loadConfiguration() {
@@ -903,20 +904,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit() {
         MekanismRenderer.init();
-        isThorfusionLoaded = Loader.isModLoaded("thorfusion");
     }
 
     @Override
     public void Cape() {
-        if (!isThorfusionLoaded) {
-            try {
-                DevCapes.getInstance().registerConfig(
-                    "https://raw.githubusercontent.com/maggi373/files/main/capes/cape.json"
-                );
-            } catch (Exception e) {
-                System.out.print("Cant load capes\n" + e);
-            }
-        }
+        Capes.initCapes();
     }
 
     @Override

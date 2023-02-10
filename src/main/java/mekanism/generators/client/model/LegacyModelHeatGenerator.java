@@ -1,5 +1,7 @@
 package mekanism.generators.client.model;
 
+import org.lwjgl.opengl.GL11;
+
 import mekanism.client.ModelMekanismBase;
 import mekanism.client.model.IModelOnOff;
 import net.minecraft.client.model.ModelRenderer;
@@ -121,6 +123,8 @@ public class LegacyModelHeatGenerator
 
     @Override
     public void render(float size) {
+        GL11.glPushMatrix();
+        GL11.glRotatef(90, 0.0F, 1.0F, 0.0F);
         A.render(size);
         B.render(size);
         C.render(size);
@@ -136,6 +140,7 @@ public class LegacyModelHeatGenerator
         M.render(size);
         N.render(size);
         O.render(size);
+        GL11.glPopMatrix();
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {

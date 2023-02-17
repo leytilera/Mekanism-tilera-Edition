@@ -19,6 +19,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.Coord4D;
 import mekanism.api.EnumColor;
+import mekanism.api.MekanismConfig;
 import mekanism.client.model.ModelTransporterBox;
 import mekanism.client.render.MekanismRenderer.DisplayInteger;
 import mekanism.client.render.MekanismRenderer.Model3D;
@@ -64,7 +65,7 @@ public class RenderPartTransmitter implements IIconSelfRegister {
     public static Map<String, CCModel> contents_models;
 
     private static final int stages = 100;
-    private static final double height = 0.45;
+    private static final double height = 0.35;
     private static final double offset = 0.015;
 
     private ModelTransporterBox modelBox = new ModelTransporterBox();
@@ -435,13 +436,13 @@ public class RenderPartTransmitter implements IIconSelfRegister {
 
             switch (side) {
                 case UNKNOWN: {
-                    toReturn.minX = 0.25 + offset;
-                    toReturn.minY = 0.25 + offset;
-                    toReturn.minZ = 0.25 + offset;
+                    toReturn.minX = getFluidValue1() + offset;
+                    toReturn.minY = getFluidValue1() + offset;
+                    toReturn.minZ = getFluidValue1() + offset;
 
-                    toReturn.maxX = 0.75 - offset;
-                    toReturn.maxY = 0.25 + offset + ((float) i / (float) stages) * height;
-                    toReturn.maxZ = 0.75 - offset;
+                    toReturn.maxX = getFluidValue2() - offset;
+                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxZ = getFluidValue2() - offset;
                     break;
                 }
                 case DOWN: {
@@ -450,13 +451,13 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     toReturn.minZ = 0.5 - (((float) i / (float) stages) * height) / 2;
 
                     toReturn.maxX = 0.5 + (((float) i / (float) stages) * height) / 2;
-                    toReturn.maxY = 0.25 + offset;
+                    toReturn.maxY = getFluidValue1() + offset;
                     toReturn.maxZ = 0.5 + (((float) i / (float) stages) * height) / 2;
                     break;
                 }
                 case UP: {
                     toReturn.minX = 0.5 - (((float) i / (float) stages) * height) / 2;
-                    toReturn.minY = 0.25 - offset + ((float) i / (float) stages) * height;
+                    toReturn.minY = getFluidValue1() - offset + ((float) i / (float) stages) * height;
                     toReturn.minZ = 0.5 - (((float) i / (float) stages) * height) / 2;
 
                     toReturn.maxX = 0.5 + (((float) i / (float) stages) * height) / 2;
@@ -465,43 +466,43 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     break;
                 }
                 case NORTH: {
-                    toReturn.minX = 0.25 + offset;
-                    toReturn.minY = 0.25 + offset;
+                    toReturn.minX = getFluidValue1() + offset;
+                    toReturn.minY = getFluidValue1() + offset;
                     toReturn.minZ = 0.0;
 
-                    toReturn.maxX = 0.75 - offset;
-                    toReturn.maxY = 0.25 + offset + ((float) i / (float) stages) * height;
-                    toReturn.maxZ = 0.25 + offset;
+                    toReturn.maxX = getFluidValue2() - offset;
+                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxZ = getFluidValue1() + offset;
                     break;
                 }
                 case SOUTH: {
-                    toReturn.minX = 0.25 + offset;
-                    toReturn.minY = 0.25 + offset;
-                    toReturn.minZ = 0.75 - offset;
+                    toReturn.minX = getFluidValue1() + offset;
+                    toReturn.minY = getFluidValue1() + offset;
+                    toReturn.minZ = getFluidValue2() - offset;
 
-                    toReturn.maxX = 0.75 - offset;
-                    toReturn.maxY = 0.25 + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxX = getFluidValue2() - offset;
+                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
                     toReturn.maxZ = 1.0;
                     break;
                 }
                 case WEST: {
                     toReturn.minX = 0.0;
-                    toReturn.minY = 0.25 + offset;
-                    toReturn.minZ = 0.25 + offset;
+                    toReturn.minY = getFluidValue1() + offset;
+                    toReturn.minZ = getFluidValue1() + offset;
 
-                    toReturn.maxX = 0.25 + offset;
-                    toReturn.maxY = 0.25 + offset + ((float) i / (float) stages) * height;
-                    toReturn.maxZ = 0.75 - offset;
+                    toReturn.maxX = getFluidValue1() + offset;
+                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxZ = getFluidValue2() - offset;
                     break;
                 }
                 case EAST: {
-                    toReturn.minX = 0.75 - offset;
-                    toReturn.minY = 0.25 + offset;
-                    toReturn.minZ = 0.25 + offset;
+                    toReturn.minX = getFluidValue2() - offset;
+                    toReturn.minY = getFluidValue1() + offset;
+                    toReturn.minZ = getFluidValue1() + offset;
 
                     toReturn.maxX = 1.0;
-                    toReturn.maxY = 0.25 + offset + ((float) i / (float) stages) * height;
-                    toReturn.maxZ = 0.75 - offset;
+                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxZ = getFluidValue2() - offset;
                     break;
                 }
             }
@@ -820,5 +821,13 @@ public class RenderPartTransmitter implements IIconSelfRegister {
     public void resetDisplayInts() {
         cachedLiquids.clear();
         cachedOverlays.clear();
+    }
+
+    public double getFluidValue1() {
+        return MekanismConfig.client.smallPipeFluid ? 0.315 : 0.25;
+    }
+
+    public double getFluidValue2() {
+        return MekanismConfig.client.smallPipeFluid ? 0.685 : 0.75;
     }
 }

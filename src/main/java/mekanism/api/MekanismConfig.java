@@ -89,6 +89,7 @@ public class MekanismConfig {
         public static boolean doMultiblockSparkle = true;
         public static int multiblockSparkleIntensity = 6;
         public static ModelType modelType = ModelType.MODERN;
+        public static boolean smallPipeFluid = false;
     }
 
     public static class machines {

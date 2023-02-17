@@ -275,6 +275,8 @@ public class ClientProxy extends CommonProxy {
             client.modelType = modelType;
         }
 
+        client.smallPipeFluid = Mekanism.configuration.get("client", "SmallPipeFluid", false).getBoolean();
+
         if (Mekanism.configuration.hasChanged()) {
             Mekanism.configuration.save();
         }

@@ -128,6 +128,10 @@ public class TileComponentConfig implements ITileComponent {
     }
 
     public SideData getOutput(TransmissionType type, int side) {
+        if (side < 0 || side >= 6) {
+            return EMPTY;
+        }
+
         int index = getConfig(type)[side];
 
         if (index == -1) {

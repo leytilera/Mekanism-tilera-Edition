@@ -31,7 +31,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import universalelectricity.core.electricity.ElectricityPack;
 
 @InterfaceList({
     @Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2")
@@ -41,6 +40,7 @@ import universalelectricity.core.electricity.ElectricityPack;
 public class TileEntityInductionPort extends TileEntityInductionCasing
     implements IEnergyWrapper, IConfigurable, IActiveState {
     public boolean ic2Registered = false;
+    public boolean isLoaded = false;
 
     /** false = input, true = output */
     public boolean mode;
@@ -56,6 +56,10 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         if (!ic2Registered && MekanismUtils.useIC2()) {
             register();
         }
+        if (MekanismUtils.useHBM()) {
+            receiveHe();
+        }
+        isLoaded = true;
 
         if (!worldObj.isRemote) {
             if (structure != null && mode == true) {
@@ -169,14 +173,14 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         if (MekanismUtils.useIC2()) {
             deregister();
         }
-
+        isLoaded = false;
         super.onChunkUnload();
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-
+        isLoaded = false;
         if (MekanismUtils.useIC2()) {
             deregister();
         }
@@ -427,5 +431,49 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
     @Override
     public boolean lightUpdate() {
         return false;
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getPower() {
+        return Math.round(getEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+	public void setPower(long power) {
+        setEnergy(power * general.FROM_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+	public long getMaxPower() {
+        return Math.round(getMaxEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getProviderSpeed() {
+        return Math.round(getMaxOutput() * general.TO_IC2);
+    }
+
+    @Method(modid = "hbm")
+    public void receiveHe() {
+        if (!worldObj.isRemote) {
+            for (ForgeDirection dir : getConsumingSides())
+                this.trySubscribe(
+                    worldObj,
+                    xCoord + dir.offsetX,
+                    yCoord + dir.offsetY,
+                    zCoord + dir.offsetZ,
+                    dir
+                );
+        }
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public boolean isLoaded() {
+        return isLoaded;
     }
 }

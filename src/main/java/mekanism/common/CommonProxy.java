@@ -545,6 +545,10 @@ public class CommonProxy implements IGuiProvider {
             = Mekanism.configuration
                   .get(Configuration.CATEGORY_GENERAL, "BlacklistRFPower", false)
                   .getBoolean();
+        general.blacklistHBM
+            = Mekanism.configuration
+                  .get(Configuration.CATEGORY_GENERAL, "BlacklistHBMPower", false)
+                  .getBoolean();
 
         general.EnableQuartzCompat
             = Mekanism.configuration

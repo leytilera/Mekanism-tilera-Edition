@@ -2,6 +2,8 @@ package mekanism.common.base;
 
 import java.util.EnumSet;
 
+import api.hbm.energymk2.IEnergyProviderMK2;
+import api.hbm.energymk2.IEnergyReceiverMK2;
 import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
@@ -17,11 +19,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 @InterfaceList({
     @Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2")
     , @Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2"),
-        @Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "IC2")
+        @Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "IC2"),
+        @Interface(iface = "api.hbm.energymk2.IEnergyProviderMK2", modid = "hbm"),
+        @Interface(iface = "api.hbm.energymk2.IEnergyReceiverMK2", modid = "hbm")
 })
 public interface IEnergyWrapper
     extends IStrictEnergyStorage, IEnergyHandler, IEnergySink, IEnergySource,
-            IEnergyStorage, IStrictEnergyAcceptor, ICableOutputter, IInventory {
+            IEnergyStorage, IStrictEnergyAcceptor, ICableOutputter, IInventory, IEnergyReceiverMK2, IEnergyProviderMK2 {
     public EnumSet<ForgeDirection> getOutputtingSides();
 
     public EnumSet<ForgeDirection> getConsumingSides();

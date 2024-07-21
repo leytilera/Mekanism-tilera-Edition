@@ -25,11 +25,19 @@ defaultTasks 'fullBuild'
 
 repositories {
     maven {
-        name 'central'
-        url 'https://maven.thorfusion.com/artifactory/central/'
+        url 'https://maven.tilera.xyz'
     }
     maven {
-        url 'https://maven.tilera.xyz'
+        url = "https://s3.tilera.xyz/cdn/minecraft/libs/"
+        metadataSources { artifact() }
+    }
+    maven {
+        name "central"
+        url "https://nexus.covers1624.net/repository/maven-hosted/"
+    }
+    maven {
+        url = "https://gregtech.overminddl1.com/"
+        metadataSources { artifact() }
     }
 }
 
@@ -55,11 +63,12 @@ dependencies {
     compile "codechicken:ForgeMultipart:${config.minecraft_version}-${config.FMP_version}:dev"
     compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
     compile "codechicken:CodeChickenCore:${config.minecraft_version}-${config.CCC_version}:dev"
-    compile "inventorytweaks:inventory-tweaks:1.7.10-1.60.0:api"
-    compile "net.industrial-craft:industrialcraft-2:2.2.828-experimental:api"
+    compile "inventorytweaks:InventoryTweaks:1.59-dev:api"
+    compile "net.industrial-craft:industrialcraft-2:2.2.827-experimental:dev"
     compile "mcp.mobius.waila:Waila:1.5.10_1.7.10:dev"
     compile "universalelectricity:basiccomponents:2.0.0:deobf"
     compile "universalelectricity:universalelectricity:5.1.0:deobf"
+    compile "com.hbm:HBM-NTM:1.0.27_X5000:deobf"
 }
 
 version = "${config.minecraft_version}-${config.mod_version}"

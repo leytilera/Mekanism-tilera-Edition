@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import api.hbm.energymk2.IEnergyConnectorMK2;
+import api.hbm.energymk2.IEnergyProviderMK2;
+import api.hbm.energymk2.IEnergyReceiverMK2;
 import cofh.api.energy.IEnergyConnection;
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
@@ -27,6 +30,7 @@ public final class CableUtils {
             tileEntity instanceof IStrictEnergyAcceptor
             || (MekanismUtils.useIC2() && getIC2Tile(tileEntity) instanceof IEnergySink)
             || (MekanismUtils.useRF() && tileEntity instanceof IEnergyReceiver)
+            || (MekanismUtils.useHBM() && tileEntity instanceof IEnergyReceiverMK2)
         );
     }
 
@@ -112,7 +116,9 @@ public final class CableUtils {
                 && ((IEnergySource) getIC2Tile(tileEntity))
                        .emitsEnergyTo(null, side.getOpposite()))
             || (MekanismUtils.useRF() && tileEntity instanceof IEnergyProvider
-                && ((IEnergyConnection) tileEntity).canConnectEnergy(side.getOpposite()));
+                && ((IEnergyConnection) tileEntity).canConnectEnergy(side.getOpposite()))
+            || (MekanismUtils.useHBM() && tileEntity instanceof IEnergyProviderMK2
+                && ((IEnergyConnectorMK2) tileEntity).canConnect(side.getOpposite()));
     }
 
     public static boolean
@@ -139,6 +145,10 @@ public final class CableUtils {
             if (((IEnergyConnection) tileEntity).canConnectEnergy(side.getOpposite())) {
                 return true;
             }
+        } else if (MekanismUtils.useHBM() && tileEntity instanceof IEnergyConnectorMK2) {
+            if (((IEnergyConnectorMK2) tileEntity).canConnect(side.getOpposite())) {
+                return true;
+            }
         }
 
         return false;
@@ -157,6 +167,15 @@ public final class CableUtils {
                 for (ForgeDirection side : emitter.getOutputtingSides()) {
                     if (connectable[side.ordinal()]) {
                         outputtingSides.add(side);
+                    }
+                    if (MekanismUtils.useHBM()) {
+                        emitter.tryProvide(
+                            ((TileEntity)emitter).getWorldObj(), 
+                            ((TileEntity)emitter).xCoord + side.offsetX,
+                            ((TileEntity)emitter).yCoord + side.offsetY,
+                            ((TileEntity)emitter).zCoord + side.offsetZ,
+                            side
+                        );
                     }
                 }
 

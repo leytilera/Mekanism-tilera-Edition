@@ -34,6 +34,8 @@ public abstract class TileEntityElectricBlock
     /** Is this registered with IC2 */
     public boolean ic2Registered = false;
 
+    public boolean isLoaded = false;
+
     /**
      * The base of all blocks that deal with electricity. It has a facing state,
      * initialized state, and a current amount of stored energy.
@@ -82,6 +84,10 @@ public abstract class TileEntityElectricBlock
         if (!ic2Registered && MekanismUtils.useIC2()) {
             register();
         }
+        if (MekanismUtils.useHBM()) {
+            receiveHe();
+        }
+        isLoaded = true;
     }
 
     @Override
@@ -147,12 +153,14 @@ public abstract class TileEntityElectricBlock
         if (MekanismUtils.useIC2()) {
             deregister();
         }
+        isLoaded = false;
         super.onChunkUnload();
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
+        isLoaded = false;
         if (MekanismUtils.useIC2()) {
             deregister();
         }
@@ -349,4 +357,55 @@ public abstract class TileEntityElectricBlock
 
         return toUse;
     }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getPower() {
+        return Math.round(getEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+	public void setPower(long power) {
+        setEnergy(power * general.FROM_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+	public long getMaxPower() {
+        return Math.round(getMaxEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getProviderSpeed() {
+        return Math.round(getMaxOutput() * general.TO_IC2);
+    }
+
+    @Method(modid = "hbm")
+    public void receiveHe() {
+        if (!worldObj.isRemote) {
+            for (ForgeDirection dir : getConsumingSides())
+                this.trySubscribe(
+                    worldObj,
+                    xCoord + dir.offsetX,
+                    yCoord + dir.offsetY,
+                    zCoord + dir.offsetZ,
+                    dir
+                );
+        }
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public boolean canConnect(ForgeDirection from) {
+        return getConsumingSides().contains(from) || getOutputtingSides().contains(from);
+    }
+    
 }

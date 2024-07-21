@@ -1,5 +1,6 @@
 package mekanism.common.base;
 
+import api.hbm.energymk2.IEnergyReceiverMK2;
 import cofh.api.energy.IEnergyReceiver;
 import ic2.api.energy.tile.IEnergySink;
 import mekanism.api.Coord4D;
@@ -26,6 +27,8 @@ public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
             wrapper = new RFAcceptor((IEnergyReceiver) tileEntity);
         } else if (MekanismUtils.useIC2() && CableUtils.getIC2Tile(tileEntity) instanceof IEnergySink) {
             wrapper = new IC2Acceptor((IEnergySink) CableUtils.getIC2Tile(tileEntity));
+        } else if (MekanismUtils.useHBM() && tileEntity instanceof IEnergyReceiverMK2) {
+            wrapper = new HBMAcceptor((IEnergyReceiverMK2) tileEntity);
         }
 
         if (wrapper != null) {
@@ -181,5 +184,55 @@ public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
         public double fromEU(double eu) {
             return eu * general.FROM_IC2;
         }
+    }
+
+    public static class HBMAcceptor extends EnergyAcceptorWrapper {
+        private IEnergyReceiverMK2 acceptor;        
+
+        public HBMAcceptor(IEnergyReceiverMK2 acceptor) {
+            this.acceptor = acceptor;
+        }
+
+        @Override
+        public double transferEnergyToAcceptor(ForgeDirection side, double amount) {
+            if (!canReceiveEnergy(side)) return amount;
+            long toTransfer = Math.min(Math.min(toHE(amount), acceptor.getReceiverSpeed()), acceptor.getMaxPower() - acceptor.getPower());
+            long leftover = acceptor.transferPower(toTransfer);
+            return fromHE(toTransfer - leftover);
+        }
+
+        @Override
+        public boolean canReceiveEnergy(ForgeDirection side) {
+            return acceptor.canConnect(side);
+        }
+
+        @Override
+        public double getEnergy() {
+            return fromHE(acceptor.getPower());
+        }
+
+        @Override
+        public void setEnergy(double energy) {
+            acceptor.setPower(toHE(energy));
+        }
+
+        @Override
+        public double getMaxEnergy() {
+            return fromHE(acceptor.getMaxPower());
+        }
+
+        @Override
+        public boolean needsEnergy(ForgeDirection side) {
+            return canReceiveEnergy(side) && acceptor.getPower() < acceptor.getMaxPower();
+        }
+        
+        public long toHE(double joules) {
+            return (long)Math.floor(joules * general.TO_IC2);
+        }
+
+        public double fromHE(long he) {
+            return he * general.FROM_IC2;
+        }
+
     }
 }

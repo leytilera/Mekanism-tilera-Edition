@@ -1208,6 +1208,10 @@ public final class MekanismUtils {
         return !general.blacklistRF;
     }
 
+    public static boolean useHBM() {
+        return Mekanism.hooks.HBMLoaded && !general.blacklistHBM;
+    }
+
     /**
      * Gets a clean view of a coordinate value without the dimension ID.
      * @param obj - coordinate to check

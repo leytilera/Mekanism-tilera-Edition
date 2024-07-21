@@ -3,11 +3,16 @@ package mekanism.common.multipart;
 import java.util.Collection;
 import java.util.List;
 
+import api.hbm.energymk2.IEnergyProviderMK2;
+import api.hbm.energymk2.IEnergyReceiverMK2;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Vector3;
 import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyProvider;
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.InterfaceList;
+import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import ic2.api.energy.tile.IEnergySource;
@@ -32,9 +37,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.common.util.ForgeDirection;
 
+@InterfaceList({
+    @Interface(iface = "api.hbm.energymk2.IEnergyReceiverMK2", modid = "hbm")
+})
 public class PartUniversalCable
     extends PartTransmitter<EnergyAcceptorWrapper, EnergyNetwork>
-    implements IStrictEnergyAcceptor, IEnergyHandler {
+    implements IStrictEnergyAcceptor, IEnergyHandler, IEnergyReceiverMK2 {
     public Tier.CableTier tier;
 
     public static TransmitterIcons cableIcons = new TransmitterIcons(4, 8);
@@ -43,6 +51,8 @@ public class PartUniversalCable
     public double lastWrite = 0;
 
     public EnergyStack buffer = new EnergyStack(0);
+
+    public boolean isLoaded = false;
 
     public PartUniversalCable(Tier.CableTier cableTier) {
         super();
@@ -61,6 +71,10 @@ public class PartUniversalCable
             }
         } else {
             updateShare();
+            isLoaded = true;
+            if (MekanismUtils.useHBM()) {
+                receiveHe();
+            }
 
             List<ForgeDirection> sides = getConnections(ConnectionType.PULL);
 
@@ -72,7 +86,6 @@ public class PartUniversalCable
                 for (ForgeDirection side : sides) {
                     if (connectedOutputters[side.ordinal()] != null) {
                         TileEntity outputter = connectedOutputters[side.ordinal()];
-
                         if (outputter instanceof ICableOutputter
                             && outputter instanceof IStrictEnergyStorage) {
                             if (((ICableOutputter) outputter)
@@ -128,6 +141,14 @@ public class PartUniversalCable
 
                             ((IEnergySource) CableUtils.getIC2Tile(outputter))
                                 .drawEnergy(toDraw * general.TO_IC2);
+                        } else if (MekanismUtils.useHBM() && outputter instanceof IEnergyProviderMK2) {
+                            IEnergyProviderMK2 tile = (IEnergyProviderMK2) outputter;
+                            double received = Math.min(Math.min(tile.getPower(), tile.getProviderSpeed()) * general.FROM_IC2, canDraw);
+                            double toDraw = received;
+                            if (received > 0) {
+                                toDraw -= takeEnergy(received, true);
+                            }
+                            tile.usePower((long)(toDraw * general.TO_IC2));
                         }
                     }
                 }
@@ -256,7 +277,14 @@ public class PartUniversalCable
     @Override
     public void onChunkUnload() {
         takeShare();
+        isLoaded = false;
         super.onChunkUnload();
+    }
+
+    @Override
+    public void onRemoved() {
+        isLoaded = false;
+        super.onRemoved();
     }
 
     @Override
@@ -408,4 +436,41 @@ public class PartUniversalCable
 
         super.writeDesc(packet);
     }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getPower() {
+        return Math.round(getEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public void setPower(long power) {
+        setEnergy(power * general.FROM_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getMaxPower() {
+        return Math.round(getMaxEnergy() * general.TO_IC2);
+    }
+
+    @Method(modid = "hbm")
+    public void receiveHe() {
+        for (ForgeDirection dir : getConnections(ConnectionType.NORMAL))
+            this.trySubscribe(
+                world(),
+                x() + dir.offsetX,
+                y() + dir.offsetY,
+                z() + dir.offsetZ,
+                dir
+            );
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
 }

@@ -36,6 +36,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 public class TileEntityTurbineValve
     extends TileEntityTurbineCasing implements IFluidHandler, IEnergyWrapper {
     public boolean ic2Registered = false;
+    public boolean isLoaded = false;
 
     public TurbineFluidTank fluidTank;
 
@@ -51,6 +52,10 @@ public class TileEntityTurbineValve
         if (!ic2Registered && MekanismUtils.useIC2()) {
             register();
         }
+        if (MekanismUtils.useHBM()) {
+            receiveHe();
+        }
+        isLoaded = true;
 
         if (!worldObj.isRemote) {
             if (structure != null) {
@@ -138,14 +143,14 @@ public class TileEntityTurbineValve
         if (MekanismUtils.useIC2()) {
             deregister();
         }
-
+        isLoaded = false;
         super.onChunkUnload();
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-
+        isLoaded = false;
         if (MekanismUtils.useIC2()) {
             deregister();
         }
@@ -355,5 +360,49 @@ public class TileEntityTurbineValve
     @Override
     public String getInventoryName() {
         return LangUtils.localize("gui.industrialTurbine");
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getPower() {
+        return Math.round(getEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+	public void setPower(long power) {
+        setEnergy(power * general.FROM_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+	public long getMaxPower() {
+        return Math.round(getMaxEnergy() * general.TO_IC2);
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public long getProviderSpeed() {
+        return Math.round(getMaxOutput() * general.TO_IC2);
+    }
+
+    @Method(modid = "hbm")
+    public void receiveHe() {
+        if (!worldObj.isRemote) {
+            for (ForgeDirection dir : getConsumingSides())
+                this.trySubscribe(
+                    worldObj,
+                    xCoord + dir.offsetX,
+                    yCoord + dir.offsetY,
+                    zCoord + dir.offsetZ,
+                    dir
+                );
+        }
+    }
+
+    @Override
+    @Method(modid = "hbm")
+    public boolean isLoaded() {
+        return isLoaded;
     }
 }

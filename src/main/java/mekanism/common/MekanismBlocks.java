@@ -13,6 +13,7 @@ import mekanism.common.block.BlockBounding;
 import mekanism.common.block.BlockCardboardBox;
 import mekanism.common.block.BlockEnergyCube;
 import mekanism.common.block.BlockGasTank;
+import mekanism.common.block.BlockHeatConductor;
 import mekanism.common.block.BlockMachine;
 import mekanism.common.block.BlockObsidianTNT;
 import mekanism.common.block.BlockOre;
@@ -40,6 +41,9 @@ public class MekanismBlocks {
         = new BlockMachine(MACHINE_BLOCK_2).setBlockName("MachineBlock2");
     public static final Block MachineBlock3
         = new BlockMachine(MACHINE_BLOCK_3).setBlockName("MachineBlock3");
+    public static final Block HeatConductor = new BlockHeatConductor()
+                                                  .setBlockName("HeatConductor")
+                                                  .setCreativeTab(Mekanism.tabMekanism);
     public static final Block OreBlock = new BlockOre().setBlockName("OreBlock");
     public static final Block ObsidianTNT = new BlockObsidianTNT()
                                                 .setBlockName("ObsidianTNT")
@@ -78,6 +82,7 @@ public class MekanismBlocks {
         GameRegistry.registerBlock(
             MachineBlock3, ItemBlockMachine.class, "MachineBlock3"
         );
+        GameRegistry.registerBlock(HeatConductor, "HeatConductor");
         GameRegistry.registerBlock(OreBlock, ItemBlockOre.class, "OreBlock");
         GameRegistry.registerBlock(EnergyCube, ItemBlockEnergyCube.class, "EnergyCube");
         GameRegistry.registerBlock(ObsidianTNT, "ObsidianTNT");

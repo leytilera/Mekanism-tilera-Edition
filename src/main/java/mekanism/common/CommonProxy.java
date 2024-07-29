@@ -98,6 +98,7 @@ import mekanism.common.tile.TileEntityFluidicPlenisher;
 import mekanism.common.tile.TileEntityFormulaicAssemblicator;
 import mekanism.common.tile.TileEntityFuelwoodHeater;
 import mekanism.common.tile.TileEntityGasTank;
+import mekanism.common.tile.TileEntityHeatConductor;
 import mekanism.common.tile.TileEntityInductionCasing;
 import mekanism.common.tile.TileEntityInductionCell;
 import mekanism.common.tile.TileEntityInductionPort;
@@ -159,6 +160,7 @@ public class CommonProxy implements IGuiProvider {
      * TESRs.
      */
     public void registerSpecialTileEntities() {
+        GameRegistry.registerTileEntity(TileEntityHeatConductor.class, "HeatConductor");
         GameRegistry.registerTileEntity(
             TileEntityEnrichmentChamber.class, "EnrichmentChamber"
         );

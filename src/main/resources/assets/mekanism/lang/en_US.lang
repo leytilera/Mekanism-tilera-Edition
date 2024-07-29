@@ -79,6 +79,8 @@ tile.BoundingBlock.name=Bounding Block
 //Salt
 tile.SaltBlock.name=Salt Block
 
+tile.HeatConductor.name=Heat Conductor
+
 //Basic Block
 tile.BasicBlock.OsmiumBlock.name=Osmium Block
 tile.BasicBlock.BronzeBlock.name=Bronze Block

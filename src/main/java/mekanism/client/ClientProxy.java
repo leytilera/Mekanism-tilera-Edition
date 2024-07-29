@@ -2,19 +2,16 @@ package mekanism.client;
 
 import java.io.File;
 
-import com.jadarstudios.developercapes.DevCapes;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dev.tilera.capes.Capes;
 import mekanism.api.Coord4D;
-import mekanism.api.MekanismConfig;
 import mekanism.api.MekanismConfig.client;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.ModelType;
@@ -173,6 +170,7 @@ import mekanism.common.tile.TileEntityFluidicPlenisher;
 import mekanism.common.tile.TileEntityFormulaicAssemblicator;
 import mekanism.common.tile.TileEntityFuelwoodHeater;
 import mekanism.common.tile.TileEntityGasTank;
+import mekanism.common.tile.TileEntityHeatConductor;
 import mekanism.common.tile.TileEntityInductionCasing;
 import mekanism.common.tile.TileEntityInductionCell;
 import mekanism.common.tile.TileEntityInductionPort;
@@ -211,7 +209,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
@@ -486,6 +483,7 @@ public class ClientProxy extends CommonProxy {
             "SolarNeutronActivator",
             new RenderSolarNeutronActivator()
         );
+        GameRegistry.registerTileEntity(TileEntityHeatConductor.class, "HeatConductor");
         GameRegistry.registerTileEntity(
             TileEntityAmbientAccumulator.class, "AmbientAccumulator"
         );

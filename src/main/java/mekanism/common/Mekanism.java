@@ -77,6 +77,7 @@ import mekanism.common.integration.OreDictManager;
 import mekanism.common.integration.UECompatModule;
 import mekanism.common.multiblock.MultiblockManager;
 import mekanism.common.multipart.MultipartMekanism;
+import mekanism.common.multipart.TransmitterType;
 import mekanism.common.network.PacketDataRequest.DataRequestMessage;
 import mekanism.common.network.PacketSimpleGui;
 import mekanism.common.network.PacketTransmitterUpdate.PacketType;
@@ -1187,6 +1188,24 @@ public class Mekanism {
                            "ingotCopper",
                            Character.valueOf('A'),
                            "alloyBasic" }
+        ));
+        CraftingManager.getInstance().getRecipeList().add(new ShapedMekanismRecipe(
+            new ItemStack(MekanismBlocks.HeatConductor),
+            new Object[] {
+                "CTC",
+                "TMT",
+                "CTC",
+                Character.valueOf('C'),
+                "ingotCopper",
+                Character.valueOf('T'),
+                new ItemStack(
+                    MekanismItems.PartTransmitter,
+                    1,
+                    TransmitterType.THERMODYNAMIC_CONDUCTOR_ULTIMATE.ordinal()
+                ),
+                Character.valueOf('M'),
+                new ItemStack(MekanismBlocks.BasicBlock, 1, 8),
+            }
         ));
         MachineType.RESISTIVE_HEATER.addRecipe(new ShapedMekanismRecipe(
             new ItemStack(MekanismBlocks.MachineBlock3, 1, 4),

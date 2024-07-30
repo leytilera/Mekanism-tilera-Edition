@@ -1,28 +1,42 @@
 package mekanism.common.tile;
 
-import api.hbm.tile.IHeatSource;
 import cpw.mods.fml.common.Optional;
 import mekanism.api.Coord4D;
 import mekanism.api.IHeatTransfer;
 import mekanism.common.Mekanism;
 import mekanism.common.Tier.ConductorTier;
+import mekanism.common.tile.heatconductor.IHeatConductorModAdapter;
+import mekanism.common.tile.heatconductor.ModAdapterHBM;
+import mekanism.common.tile.heatconductor.ModAdapterIC2;
 import mekanism.common.util.HeatUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
-@Optional.Interface(iface = "api.hbm.tile.IHeatSource", modid = "hbm")
-public class TileEntityHeatConductor
-    extends TileEntity implements IHeatSource, IHeatTransfer {
-    private double temperature;
-    private double heatToAbsorb;
+@Optional.InterfaceList({
+    @Optional.Interface(iface = "api.hbm.tile.IHeatSource", modid = "hbm")
+    , @Optional.Interface(iface = "ic2.api.energy.tile.IHeatSource", modid = "IC2")
+})
+public class TileEntityHeatConductor extends TileEntity
+    implements api.hbm.tile.IHeatSource, ic2.api.energy.tile.IHeatSource, IHeatTransfer {
+    public static IHeatConductorModAdapter<Integer> ADAPTER_HBM
+        = Mekanism.hooks.HBMLoaded ? new ModAdapterHBM() : null;
+
+    public static IHeatConductorModAdapter<Integer> ADAPTER_IC2
+        = Mekanism.hooks.IC2Loaded ? new ModAdapterIC2() : null;
+
+    public double temperature;
+    public double heatToAbsorb;
 
     @Override
     public void updateEntity() {
         if (this.worldObj.isRemote)
             return;
 
-        if (Mekanism.hooks.HBMLoaded)
-            this.transferFromHBMHeatSource();
+        if (ADAPTER_HBM != null)
+          ADAPTER_HBM.onTick(this);
+
+        if (ADAPTER_IC2 != null)
+          ADAPTER_IC2.onTick(this);
 
         this.simulateHeat();
         this.applyTemperatureChange();
@@ -31,13 +45,13 @@ public class TileEntityHeatConductor
     @Override
     @Optional.Method(modid = "hbm")
     public int getHeatStored() {
-        return temperatureToTU(this.temperature);
+        return ADAPTER_HBM.fromTemperature(this.temperature);
     }
 
     @Override
     @Optional.Method(modid = "hbm")
     public void useUpHeat(int heat) {
-        this.temperature -= tuToTemperature(heat);
+        this.temperature -= ADAPTER_HBM.toTemperature(heat);
     }
 
     @Override
@@ -87,30 +101,17 @@ public class TileEntityHeatConductor
         return null;
     }
 
-    public static double tuToTemperature(int tu) {
-        return ((double) tu) / 50D;
+    @Override
+    @Optional.Method(modid = "IC2")
+    public int maxrequestHeatTick(ForgeDirection directionFrom) {
+        return ADAPTER_IC2.fromTemperature(this.temperature);
     }
 
-    public static int temperatureToTU(double temp) {
-        return (int) (temp * 50D);
-    }
-
-    @Optional.Method(modid = "hbm")
-    public void transferFromHBMHeatSource() {
-        TileEntity otherTE = Coord4D.get(this)
-                                 .getFromSide(ForgeDirection.DOWN)
-                                 .getTileEntity(this.worldObj);
-        if (!(otherTE instanceof IHeatSource))
-            return;
-
-        IHeatSource other = (IHeatSource) otherTE;
-
-        int thisTU = temperatureToTU(this.temperature);
-        int diff = other.getHeatStored() - thisTU;
-        if (diff <= 0)
-            return;
-
-        this.transferHeatTo(tuToTemperature(diff));
-        other.useUpHeat(diff);
+    @Override
+    @Optional.Method(modid = "IC2")
+    public int requestHeat(ForgeDirection directionFrom, int requestheat) {
+        int toTransfer = Math.min(requestheat, ADAPTER_IC2.fromTemperature(this.temperature));
+        this.heatToAbsorb -= ADAPTER_IC2.toTemperature(toTransfer);
+        return toTransfer;
     }
 }

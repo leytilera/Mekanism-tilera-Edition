@@ -8,11 +8,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import api.hbm.fluid.IFluidConnector;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event;
 import mekanism.api.Coord4D;
 import mekanism.api.transmitters.DynamicNetwork;
 import mekanism.api.transmitters.IGridTransmitter;
+import mekanism.common.util.HBMTileFluidHandler;
 import mekanism.common.util.LangUtils;
 import mekanism.common.util.PipeUtils;
 import net.minecraft.tileentity.TileEntity;
@@ -129,8 +131,11 @@ public class FluidNetwork extends DynamicNetwork<IFluidHandler, FluidNetwork> {
 
             for (IFluidHandler acceptor : availableAcceptors) {
                 int currentSending = sending;
-                EnumSet<ForgeDirection> sides
-                    = acceptorDirections.get(Coord4D.get((TileEntity) acceptor));
+                EnumSet<ForgeDirection> sides = acceptorDirections.get(
+                    acceptor instanceof HBMTileFluidHandler
+                        ? ((HBMTileFluidHandler) acceptor).pos
+                        : Coord4D.get((TileEntity) acceptor)
+                );
 
                 if (remaining > 0) {
                     currentSending++;
@@ -255,11 +260,17 @@ public class FluidNetwork extends DynamicNetwork<IFluidHandler, FluidNetwork> {
             EnumSet<ForgeDirection> sides = acceptorDirections.get(coord);
             TileEntity tile = coord.getTileEntity(getWorld());
 
-            if (sides == null || sides.isEmpty() || !(tile instanceof IFluidHandler)) {
+            if (sides == null || sides.isEmpty()
+                || !(
+                    tile instanceof IFluidHandler
+                    || (Mekanism.hooks.HBMLoaded && tile instanceof IFluidConnector)
+                )) {
                 continue;
             }
 
-            IFluidHandler acceptor = (IFluidHandler) tile;
+            IFluidHandler acceptor = tile instanceof IFluidHandler
+                ? (IFluidHandler) tile
+                : new HBMTileFluidHandler((IFluidConnector) tile);
 
             for (ForgeDirection side : sides) {
                 if (acceptor != null && acceptor.canFill(side, fluidToSend.getFluid())) {

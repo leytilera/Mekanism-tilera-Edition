@@ -14,7 +14,6 @@ import cpw.mods.fml.common.event.FMLInterModComms;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.Tier;
 import mekanism.common.block.BlockMachine.MachineType;
-import mekanism.common.util.MekanismUtils;
 import net.minecraft.item.ItemStack;
 
 public class MultipartMekanism implements IPartFactory {
@@ -76,6 +75,7 @@ public class MultipartMekanism implements IPartFactory {
         MultipartGenerator.registerPassThroughInterface("cofh.api.energy.IEnergyHandler");
         if (Loader.isModLoaded("hbm")) {
             MultipartGenerator.registerPassThroughInterface("api.hbm.energymk2.IEnergyReceiverMK2");
+            MultipartGenerator.registerPassThroughInterface("api.hbm.fluid.IFluidConnector");
         }
 
         registerMicroMaterials();

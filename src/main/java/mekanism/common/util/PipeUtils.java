@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import api.hbm.fluid.IFluidConnector;
 import mekanism.api.Coord4D;
 import mekanism.api.transmitters.ITransmitterTile;
+import mekanism.common.Mekanism;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -18,24 +20,32 @@ public final class PipeUtils {
     public static final FluidTankInfo[] EMPTY = new FluidTankInfo[] {};
 
     public static boolean isValidAcceptorOnSide(TileEntity tile, ForgeDirection side) {
-        if (tile instanceof ITransmitterTile || !(tile instanceof IFluidHandler))
+        if (tile instanceof ITransmitterTile
+            || !(
+                tile instanceof IFluidHandler
+                || (Mekanism.hooks.HBMLoaded && tile instanceof IFluidConnector)
+            ))
             return false;
 
-        IFluidHandler container = (IFluidHandler) tile;
-        FluidTankInfo[] infoArray = container.getTankInfo(side.getOpposite());
+        if (tile instanceof IFluidHandler) {
+            IFluidHandler container = (IFluidHandler) tile;
+            FluidTankInfo[] infoArray = container.getTankInfo(side.getOpposite());
 
-        if (container.canDrain(side.getOpposite(), FluidRegistry.WATER)
-            || container.canFill(
-                side.getOpposite(), FluidRegistry.WATER
-            )) //I hesitate to pass null to these.
-        {
-            return true;
-        } else if (infoArray != null && infoArray.length > 0) {
-            for (FluidTankInfo info : infoArray) {
-                if (info != null) {
-                    return true;
+            if (container.canDrain(side.getOpposite(), FluidRegistry.WATER)
+                || container.canFill(
+                    side.getOpposite(), FluidRegistry.WATER
+                )) //I hesitate to pass null to these.
+            {
+                return true;
+            } else if (infoArray != null && infoArray.length > 0) {
+                for (FluidTankInfo info : infoArray) {
+                    if (info != null) {
+                        return true;
+                    }
                 }
             }
+        } else if (tile instanceof IFluidConnector) {
+            return true;
         }
         return false;
     }
@@ -46,8 +56,7 @@ public final class PipeUtils {
      * @return array of IFluidHandlers
      */
     public static IFluidHandler[] getConnectedAcceptors(TileEntity tileEntity) {
-        IFluidHandler[] acceptors
-            = new IFluidHandler[] { null, null, null, null, null, null };
+        IFluidHandler[] acceptors = new IFluidHandler[6];
 
         for (ForgeDirection orientation : ForgeDirection.VALID_DIRECTIONS) {
             TileEntity acceptor = Coord4D.get(tileEntity)
@@ -56,6 +65,9 @@ public final class PipeUtils {
 
             if (acceptor instanceof IFluidHandler) {
                 acceptors[orientation.ordinal()] = (IFluidHandler) acceptor;
+            } else if (Mekanism.hooks.HBMLoaded && acceptor instanceof IFluidConnector) {
+                acceptors[orientation.ordinal()]
+                    = new HBMTileFluidHandler((IFluidConnector) acceptor);
             }
         }
 

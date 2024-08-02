@@ -1,0 +1,60 @@
+package mekanism.common.integration;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.HashBiMap;
+import com.hbm.inventory.fluid.FluidType;
+import com.hbm.inventory.fluid.Fluids;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+
+public class HBMIntegration {
+    public static final HBMIntegration INSTANCE = new HBMIntegration();
+    static {
+        MinecraftForge.EVENT_BUS.register(HBMIntegration.INSTANCE);
+    }
+
+    public final HashBiMap<Fluid, FluidType> fluidMap = HashBiMap.create();
+
+    public void registerHBMFluids() {
+        for (FluidType fluid : Fluids.getAll()) {
+            if (fluid == Fluids.NONE)
+                continue;
+
+            Fluid forgeFluid = FluidRegistry.getFluid(fluid.getName().toLowerCase());
+            if (forgeFluid == null) {
+                FluidRegistry.registerFluid(forgeFluid = new HBMFluid(fluid));
+            }
+
+            fluidMap.put(forgeFluid, fluid);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onStitch(TextureStitchEvent.Pre ev) {
+        if (ev.map.getTextureType() != 0) return;
+
+        for (Fluid fl : this.fluidMap.keySet()) {
+            if (!(fl instanceof HBMFluid)) continue;
+            HBMFluid hbmfl = (HBMFluid) fl;
+            long nslash = ev.map.basePath.chars().filter(c -> c == '/').count() + 1;
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(hbmfl.hbm.getTexture().getResourceDomain());
+            sb.append(':');
+            for (int i = 0; i < nslash; i++) {
+                sb.append("../");
+            }
+            sb.append(StringUtils.removeEnd(hbmfl.hbm.getTexture().getResourcePath(), ".png"));
+
+            hbmfl.setIcons(ev.map.registerIcon(sb.toString()));
+        }
+    }
+}

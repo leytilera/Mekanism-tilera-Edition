@@ -2,9 +2,12 @@ package mekanism.common.multipart;
 
 import java.util.Collection;
 
+import api.hbm.fluid.IFluidConnector;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Vector3;
+import com.hbm.inventory.fluid.FluidType;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig.client;
@@ -14,6 +17,7 @@ import mekanism.common.FluidNetwork;
 import mekanism.common.Tier;
 import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.PipeTier;
+import mekanism.common.integration.HBMIntegration;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.PipeUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -28,8 +32,9 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-public class PartMechanicalPipe
-    extends PartTransmitter<IFluidHandler, FluidNetwork> implements IFluidHandler {
+@Optional.Interface(iface = "api.hbm.fluid.IFluidConnector", modid = "hbm")
+public class PartMechanicalPipe extends PartTransmitter<IFluidHandler, FluidNetwork>
+    implements IFluidHandler, IFluidConnector {
     public static TransmitterIcons pipeIcons = new TransmitterIcons(4, 8);
 
     public float currentScale;
@@ -333,5 +338,32 @@ public class PartMechanicalPipe
         packet.writeInt(tier.ordinal());
 
         super.writeDesc(packet);
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return true;
+    }
+
+    @Override
+    public long transferFluid(FluidType type, int pressure, long fluid) {
+        if (pressure != 0)
+            return fluid;
+        Fluid forgeFluid = HBMIntegration.INSTANCE.fluidMap.inverse().get(type);
+        if (forgeFluid == null)
+            return fluid;
+
+        return fluid - this.takeFluid(new FluidStack(forgeFluid, (int) fluid), true);
+    }
+
+    @Override
+    public long getDemand(FluidType type, int pressure) {
+        if (pressure != 0)
+            return 0;
+        Fluid forgeFluid = HBMIntegration.INSTANCE.fluidMap.inverse().get(type);
+        if (forgeFluid == null)
+            return 0;
+
+        return this.takeFluid(new FluidStack(forgeFluid, Integer.MAX_VALUE), false);
     }
 }

@@ -72,7 +72,7 @@ dependencies {
 }
 
 version = "${config.minecraft_version}-${config.mod_version}"
-group= "mekanism"
+group = "mekanism"
 archivesBaseName = "Mekanism"
 libsDirName = "../output"
 distsDirName = "../output"
@@ -96,11 +96,21 @@ processResources
             }
         }
 
+
+jar {
+    manifest {
+        attributes 'FMLCorePlugin': 'mekanism.common.asm.LoadingHook'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+        attributes 'FMLAT': 'mekanism_at.cfg'
+    }
+}
+
 task coreJar(type: Jar) {
     classifier = 'Core'
     manifest {
         attributes 'FMLCorePlugin': 'mekanism.common.asm.LoadingHook'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
+        attributes 'FMLAT': 'mekanism_at.cfg'
     }
 
     from('etc/core') {
@@ -118,6 +128,7 @@ task alltJar(type: Jar) {
     manifest {
         attributes 'FMLCorePlugin': 'mekanism.common.asm.LoadingHook'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
+        attributes 'FMLAT': 'mekanism_at.cfg'
     }
     from('etc/all') {
         include '*.info'

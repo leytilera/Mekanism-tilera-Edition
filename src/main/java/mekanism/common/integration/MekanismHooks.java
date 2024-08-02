@@ -1,7 +1,10 @@
 package mekanism.common.integration;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import com.hbm.inventory.fluid.Fluids;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional.Method;
@@ -24,6 +27,7 @@ import mekanism.common.util.MekanismUtils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Hooks for Mekanism. Use to grab items or blocks out of different mods.
@@ -64,6 +68,10 @@ public final class MekanismHooks {
 
         if (CCLoaded) {
             loadCCPeripheralProviders();
+        }
+
+        if (HBMLoaded) {
+            HBMIntegration.INSTANCE.registerHBMFluids();
         }
     }
 

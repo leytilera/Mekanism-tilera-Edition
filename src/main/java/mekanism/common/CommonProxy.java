@@ -586,15 +586,14 @@ public class CommonProxy implements IGuiProvider {
         if (s != null) {
             if (s.trim().equalsIgnoreCase("j") || s.trim().equalsIgnoreCase("joules")) {
                 general.energyUnit = EnergyType.J;
-            }
-			else if(s.trim().equalsIgnoreCase("rf") || s.trim().equalsIgnoreCase("te") || s.trim().equalsIgnoreCase("thermal expansion"))
-			{
+            } else if (s.trim().equalsIgnoreCase("rf") || s.trim().equalsIgnoreCase("te")
+                       || s.trim().equalsIgnoreCase("thermal expansion")) {
                 general.energyUnit = EnergyType.RF;
-            } else if (s.trim().equalsIgnoreCase("eu") || s.trim().equalsIgnoreCase("ic2")) {
+            } else if (s.trim().equalsIgnoreCase("eu")
+                       || s.trim().equalsIgnoreCase("ic2")) {
                 general.energyUnit = EnergyType.EU;
-            }
-			else if(s.trim().equalsIgnoreCase("mj") || s.trim().equalsIgnoreCase("bc") || s.trim().equalsIgnoreCase("buildcraft"))
-			{
+            } else if (s.trim().equalsIgnoreCase("mj") || s.trim().equalsIgnoreCase("bc")
+                       || s.trim().equalsIgnoreCase("buildcraft")) {
                 general.energyUnit = EnergyType.MJ;
             }
         }
@@ -612,17 +611,19 @@ public class CommonProxy implements IGuiProvider {
         if (s != null) {
             if (s.trim().equalsIgnoreCase("k") || s.trim().equalsIgnoreCase("kelvin")) {
                 general.tempUnit = TempType.K;
-            }
-			else if(s.trim().equalsIgnoreCase("c") || s.trim().equalsIgnoreCase("celsius") || s.trim().equalsIgnoreCase("centigrade"))
-			{
+            } else if (s.trim().equalsIgnoreCase("c")
+                       || s.trim().equalsIgnoreCase("celsius")
+                       || s.trim().equalsIgnoreCase("centigrade")) {
                 general.tempUnit = TempType.C;
-            } else if (s.trim().equalsIgnoreCase("r") || s.trim().equalsIgnoreCase("rankine")) {
+            } else if (s.trim().equalsIgnoreCase("r")
+                       || s.trim().equalsIgnoreCase("rankine")) {
                 general.tempUnit = TempType.R;
-            } else if (s.trim().equalsIgnoreCase("f") || s.trim().equalsIgnoreCase("fahrenheit")) {
+            } else if (s.trim().equalsIgnoreCase("f")
+                       || s.trim().equalsIgnoreCase("fahrenheit")) {
                 general.tempUnit = TempType.F;
-            }
-			else if(s.trim().equalsIgnoreCase("a") || s.trim().equalsIgnoreCase("ambient") || s.trim().equalsIgnoreCase("stp"))
-			{
+            } else if (s.trim().equalsIgnoreCase("a")
+                       || s.trim().equalsIgnoreCase("ambient")
+                       || s.trim().equalsIgnoreCase("stp")) {
                 general.tempUnit = TempType.STP;
             }
         }
@@ -638,6 +639,13 @@ public class CommonProxy implements IGuiProvider {
         general.elementizerFailChanceMultiplier
             = Mekanism.configuration.get("general", "ElementizerFailChanceMultiplier", 1)
                   .getInt();
+
+        for (String entry :
+             Mekanism.configuration
+                 .get("general", "HBMFluidBlacklist", new String[] { "AMAT", "ASCHRAB" })
+                 .getStringList()) {
+            general.hbmFluidBlacklist.add(entry);
+        };
 
         for (MachineType type : MachineType.getValidMachines()) {
             machines.setEntry(

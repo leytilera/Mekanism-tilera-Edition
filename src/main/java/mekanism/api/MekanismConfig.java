@@ -1,6 +1,7 @@
 package mekanism.api;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import mekanism.api.util.UnitDisplayUtils.EnergyType;
@@ -73,6 +74,7 @@ public class MekanismConfig {
         public static boolean OreDictOsmium;
         public static boolean OreDictPlatinum;
         public static int elementizerFailChanceMultiplier;
+        public static HashSet<String> hbmFluidBlacklist = new HashSet<>();
     }
 
     public static class client {

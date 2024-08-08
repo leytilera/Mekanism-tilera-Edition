@@ -9,6 +9,7 @@ import mekanism.common.tile.heatconductor.IHeatConductorModAdapter;
 import mekanism.common.tile.heatconductor.ModAdapterHBM;
 import mekanism.common.tile.heatconductor.ModAdapterIC2;
 import mekanism.common.util.HeatUtils;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -99,6 +100,18 @@ public class TileEntityHeatConductor extends TileEntity
             return (IHeatTransfer) adj;
 
         return null;
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbt) {
+        nbt.setDouble("temperature", this.temperature);
+        nbt.setDouble("heatToAbsorb", this.heatToAbsorb);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt) {
+        this.temperature = nbt.getDouble("temperature");
+        this.heatToAbsorb = nbt.getDouble("heatToAbsorb");
     }
 
     @Override

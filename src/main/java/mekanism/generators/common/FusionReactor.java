@@ -213,8 +213,8 @@ public class FusionReactor implements IFusionReactor {
         //Transfer from casing to water if necessary
         if (activelyCooled) {
             double caseWaterHeat = caseWaterConductivity * lastCaseTemperature;
-            int waterToVaporize = (int
-            ) (steamTransferEfficiency * caseWaterHeat / enthalpyOfVaporization);
+            int waterToVaporize = (int) (steamTransferEfficiency * caseWaterHeat
+                                         / enthalpyOfVaporization);
             waterToVaporize = min(
                 waterToVaporize,
                 min(getWaterTank().getFluidAmount(),
@@ -561,9 +561,8 @@ public class FusionReactor implements IFusionReactor {
     public int getSteamPerTick(boolean current) {
         double temperature = current ? caseTemperature : getMaxCasingTemperature(true);
 
-        return (int
-        ) (steamTransferEfficiency * caseWaterConductivity * temperature
-           / enthalpyOfVaporization);
+        return (int) (steamTransferEfficiency * caseWaterConductivity * temperature
+                      / enthalpyOfVaporization);
     }
 
     @Override

@@ -3,10 +3,10 @@ package dev.tilera.capes;
 import com.jadarstudios.developercapes.cape.ICape;
 import com.jadarstudios.developercapes.user.User;
 import com.jadarstudios.developercapes.user.UserManager;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 
 public class RenderEventHandler {
     @SubscribeEvent

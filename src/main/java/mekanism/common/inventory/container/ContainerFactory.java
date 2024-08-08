@@ -119,9 +119,8 @@ public class ContainerFactory extends Container {
                     )) {
                     return null;
                 }
-            }
-			else if(slotID != 1 && slotID != 2 && isProperMachine(slotStack) && !slotStack.isItemEqual(tileEntity.getMachineStack()))
-			{
+            } else if (slotID != 1 && slotID != 2 && isProperMachine(slotStack)
+                       && !slotStack.isItemEqual(tileEntity.getMachineStack())) {
                 if (!mergeItemStack(slotStack, 1, 2, false)) {
                     return null;
                 }
@@ -134,9 +133,12 @@ public class ContainerFactory extends Container {
                     )) {
                     return null;
                 }
-            }
-			else if(tileEntity.recipeType.getAnyRecipe(slotStack, tileEntity.gasTank.getGasType(), tileEntity.infuseStored) != null)
-			{
+            } else if (tileEntity.recipeType.getAnyRecipe(
+                           slotStack,
+                           tileEntity.gasTank.getGasType(),
+                           tileEntity.infuseStored
+                       )
+                       != null) {
                 if (!isInputSlot(slotID)) {
                     if (!mergeItemStack(
                             slotStack, 4, 4 + tileEntity.tier.processes, false
@@ -183,9 +185,11 @@ public class ContainerFactory extends Container {
                         return null;
                     }
                 }
-            }
-			else if(tileEntity.recipeType == RecipeType.INFUSING && InfuseRegistry.getObject(slotStack) != null && (tileEntity.infuseStored.type == null || tileEntity.infuseStored.type == InfuseRegistry.getObject(slotStack).type))
-			{
+            } else if (tileEntity.recipeType == RecipeType.INFUSING
+                       && InfuseRegistry.getObject(slotStack) != null
+                       && (tileEntity.infuseStored.type == null
+                           || tileEntity.infuseStored.type
+                               == InfuseRegistry.getObject(slotStack).type)) {
                 if (slotID >= tileEntity.inventory.length - 1) {
                     if (!mergeItemStack(slotStack, 3, 4, false)) {
                         return null;

@@ -2,7 +2,6 @@ package mekanism.common.integration;
 
 import com.hbm.inventory.fluid.FluidType;
 import com.hbm.inventory.fluid.Fluids;
-
 import net.minecraftforge.fluids.Fluid;
 
 public class HBMFluid extends Fluid {

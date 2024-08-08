@@ -75,7 +75,8 @@ public class ChemicalPairOutput extends MachineOutput<ChemicalPairOutput> {
 
                 return true;
             }
-        } else if (leftTank.canReceive(rightGas.getGas()) && rightTank.canReceive(leftGas.getGas())) {
+        } else if (leftTank.canReceive(rightGas.getGas())
+                   && rightTank.canReceive(leftGas.getGas())) {
             if (leftTank.getNeeded() >= rightGas.amount * scale
                 && rightTank.getNeeded() >= leftGas.amount * scale) {
                 leftTank.receive(

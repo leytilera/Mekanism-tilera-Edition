@@ -48,11 +48,13 @@ public class TileEntityLaser
                     usage.laserUsage,
                     worldObj
                 );
-                Coord4D hitCoord = mop == null
-                    ? null
-                    : new Coord4D(
-                        mop.blockX, mop.blockY, mop.blockZ, worldObj.provider.dimensionId
-                    );
+                Coord4D hitCoord = mop == null ? null
+                                               : new Coord4D(
+                                                     mop.blockX,
+                                                     mop.blockY,
+                                                     mop.blockZ,
+                                                     worldObj.provider.dimensionId
+                                                 );
 
                 if (hitCoord == null || !hitCoord.equals(digging)) {
                     digging = hitCoord;
@@ -91,11 +93,11 @@ public class TileEntityLaser
                 Coord4D hitCoord = info.movingPos == null
                     ? null
                     : new Coord4D(
-                        info.movingPos.blockX,
-                        info.movingPos.blockY,
-                        info.movingPos.blockZ,
-                        worldObj.provider.dimensionId
-                    );
+                          info.movingPos.blockX,
+                          info.movingPos.blockY,
+                          info.movingPos.blockZ,
+                          worldObj.provider.dimensionId
+                      );
 
                 if (hitCoord == null || !hitCoord.equals(digging)) {
                     digging = hitCoord;

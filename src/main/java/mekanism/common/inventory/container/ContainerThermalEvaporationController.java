@@ -77,9 +77,10 @@ public class ContainerThermalEvaporationController extends Container {
                         return null;
                     }
                 }
-            }
-			else if(FluidContainerRegistry.isFilledContainer(slotStack) && FluidContainerRegistry.getFluidForFilledItem(slotStack).getFluid() == FluidRegistry.WATER)
-			{
+            } else if (FluidContainerRegistry.isFilledContainer(slotStack)
+                       && FluidContainerRegistry.getFluidForFilledItem(slotStack)
+                               .getFluid()
+                           == FluidRegistry.WATER) {
                 if (slotID != 0) {
                     if (!mergeItemStack(slotStack, 0, 1, false)) {
                         return null;

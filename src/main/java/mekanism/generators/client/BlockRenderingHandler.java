@@ -82,7 +82,8 @@ public class BlockRenderingHandler implements ISimpleBlockRenderingHandler {
                     ResourceType.RENDER, advancedSolarGenerator.getTextureName()
                 ));
                 advancedSolarGenerator.render(0.022F);
-            } else if (MekanismConfig.client.modelType != ModelType.CLASSIC && metadata == GeneratorType.SOLAR_GENERATOR.meta) {
+            } else if (MekanismConfig.client.modelType != ModelType.CLASSIC
+                       && metadata == GeneratorType.SOLAR_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef(90F, 0.0F, -1.0F, 0.0F);
                 GL11.glTranslated(0.0F, -1.0F, 0.0F);

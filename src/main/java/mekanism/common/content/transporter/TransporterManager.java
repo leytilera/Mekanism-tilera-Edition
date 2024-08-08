@@ -153,9 +153,10 @@ public class TransporterManager {
 
                         toInsert = remains;
                     }
-                }
-				else if(InventoryUtils.areItemsStackable(toInsert, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inv.getInventoryStackLimit()))
-				{
+                } else if (InventoryUtils.areItemsStackable(toInsert, inSlot)
+                           && inSlot.stackSize < Math.min(
+                                  inSlot.getMaxStackSize(), inv.getInventoryStackLimit()
+                              )) {
                     int max = Math.min(
                         inSlot.getMaxStackSize(), inv.getInventoryStackLimit()
                     );
@@ -247,9 +248,11 @@ public class TransporterManager {
 
                                 toInsert = remains;
                             }
-                        }
-						else if(InventoryUtils.areItemsStackable(toInsert, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inv.getInventoryStackLimit()))
-						{
+                        } else if (InventoryUtils.areItemsStackable(toInsert, inSlot)
+                                   && inSlot.stackSize < Math.min(
+                                          inSlot.getMaxStackSize(),
+                                          inv.getInventoryStackLimit()
+                                      )) {
                             int max = Math.min(
                                 inSlot.getMaxStackSize(), inv.getInventoryStackLimit()
                             );
@@ -356,9 +359,11 @@ public class TransporterManager {
                             toInsert = StackUtils.size(toInsert, rejects);
                         }
                     }
-                }
-				else if(InventoryUtils.areItemsStackable(toInsert, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()))
-				{
+                } else if (InventoryUtils.areItemsStackable(toInsert, inSlot)
+                           && inSlot.stackSize < Math.min(
+                                  inSlot.getMaxStackSize(),
+                                  inventory.getInventoryStackLimit()
+                              )) {
                     int max = Math.min(
                         inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()
                     );
@@ -433,9 +438,11 @@ public class TransporterManager {
                                     toInsert = StackUtils.size(toInsert, rejects);
                                 }
                             }
-                        }
-						else if(InventoryUtils.areItemsStackable(toInsert, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()))
-						{
+                        } else if (InventoryUtils.areItemsStackable(toInsert, inSlot)
+                                   && inSlot.stackSize < Math.min(
+                                          inSlot.getMaxStackSize(),
+                                          inventory.getInventoryStackLimit()
+                                      )) {
                             int max = Math.min(
                                 inSlot.getMaxStackSize(),
                                 inventory.getInventoryStackLimit()

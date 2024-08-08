@@ -122,7 +122,18 @@ public abstract class UpdateProtocol<T extends SynchronizedData<T>> {
                             if (!isViableNode(origX + x, origY + y, origZ + z)) {
                                 rightBlocks = false;
                                 break;
-                            } else if (isFrame(Coord4D.get(tile).translate(x, y, z), origX + xmin, origX + xmax, origY + ymin, origY + ymax, origZ + zmin, origZ + zmax) && !isValidFrame(origX + x, origY + y, origZ + z)) {
+                            } else if (isFrame(
+                                           Coord4D.get(tile).translate(x, y, z),
+                                           origX + xmin,
+                                           origX + xmax,
+                                           origY + ymin,
+                                           origY + ymax,
+                                           origZ + zmin,
+                                           origZ + zmax
+                                       )
+                                       && !isValidFrame(
+                                           origX + x, origY + y, origZ + z
+                                       )) {
                                 rightFrame = false;
                                 break;
                             } else {

@@ -195,9 +195,8 @@ public class GuiFormulaicAssemblicator extends GuiMekanism {
         }
 
         if (tileEntity.operatingTicks > 0) {
-            int display = (int
-            ) ((double) tileEntity.operatingTicks * 22 / (double) tileEntity.ticksRequired
-            );
+            int display = (int) ((double) tileEntity.operatingTicks * 22
+                                 / (double) tileEntity.ticksRequired);
             drawTexturedModalRect(guiWidth + 86, guiHeight + 43, 176, 48, display, 16);
         }
 

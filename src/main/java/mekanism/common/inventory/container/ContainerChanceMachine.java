@@ -78,9 +78,10 @@ public class ContainerChanceMachine extends Container {
                         return null;
                     }
                 }
-            }
-			else if(RecipeHandler.getChanceRecipe(new ItemStackInput(slotStack), tileEntity.getRecipes()) != null)
-			{
+            } else if (RecipeHandler.getChanceRecipe(
+                           new ItemStackInput(slotStack), tileEntity.getRecipes()
+                       )
+                       != null) {
                 if (slotID != 0 && slotID != 1 && slotID != 2 && slotID != 3) {
                     if (!mergeItemStack(slotStack, 0, 1, false)) {
                         return null;

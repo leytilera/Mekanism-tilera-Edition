@@ -87,9 +87,8 @@ public class RenderDynamicTank extends TileEntitySpecialRenderer {
                 } else {
                     displayList[Math.min(
                                     getStages(data.height) - 1,
-                                    (int
-                                    ) (tileEntity.prevScale
-                                       * ((float) getStages(data.height) - 1))
+                                    (int) (tileEntity.prevScale
+                                           * ((float) getStages(data.height) - 1))
                                 )]
                         .render();
                 }

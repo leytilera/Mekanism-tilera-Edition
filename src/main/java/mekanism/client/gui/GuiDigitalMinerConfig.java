@@ -109,7 +109,8 @@ public class GuiDigitalMinerConfig extends GuiMekanism {
                         || entry.getValue().stackIndex
                             == entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex = 0;
-                    } else if (entry.getValue().stackIndex < entry.getValue().iterStacks.size() - 1) {
+                    } else if (entry.getValue().stackIndex
+                               < entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex++;
                     }
 
@@ -125,7 +126,8 @@ public class GuiDigitalMinerConfig extends GuiMekanism {
                         || entry.getValue().stackIndex
                             == entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex = 0;
-                    } else if (entry.getValue().stackIndex < entry.getValue().iterStacks.size() - 1) {
+                    } else if (entry.getValue().stackIndex
+                               < entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex++;
                     }
 
@@ -158,7 +160,8 @@ public class GuiDigitalMinerConfig extends GuiMekanism {
             if (tileEntity.filters.get(getFilterIndex() + i) instanceof MOreDictFilter) {
                 oreDictFilters.add((MOreDictFilter
                 ) tileEntity.filters.get(getFilterIndex() + i));
-            } else if (tileEntity.filters.get(getFilterIndex() + i) instanceof MModIDFilter) {
+            } else if (tileEntity.filters.get(getFilterIndex() + i)
+                           instanceof MModIDFilter) {
                 modIDFilters.add((MModIDFilter
                 ) tileEntity.filters.get(getFilterIndex() + i));
             }

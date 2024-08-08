@@ -596,9 +596,8 @@ public class BlockGenerator extends BlockContainer implements ISpecialBounds, IB
                                 entityplayer.inventory.markDirty();
                             }
                         }
-                    }
-					else if(entityplayer.getCurrentEquippedItem().getItem() == GeneratorsItems.TurbineBlade)
-					{
+                    } else if (entityplayer.getCurrentEquippedItem().getItem()
+                               == GeneratorsItems.TurbineBlade) {
                         if (entityplayer.getCurrentEquippedItem().stackSize
                             < entityplayer.getCurrentEquippedItem().getMaxStackSize()) {
                             if (rod.editBlade(false)) {

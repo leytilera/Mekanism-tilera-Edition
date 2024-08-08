@@ -127,8 +127,9 @@ public class GuiGasTank extends GuiMekanism {
         drawTexturedModalRect(guiWidth + 160, guiHeight + 73, 176, displayInt, 8, 8);
 
         if (tileEntity.gasTank.getGas() != null) {
-            int scale = (int
-            ) (((double) tileEntity.gasTank.getStored() / tileEntity.tier.storage) * 72);
+            int scale = (int) (((double) tileEntity.gasTank.getStored()
+                                / tileEntity.tier.storage)
+                               * 72);
             drawTexturedModalRect(guiWidth + 65, guiHeight + 17, 176, 0, scale, 10);
         }
 

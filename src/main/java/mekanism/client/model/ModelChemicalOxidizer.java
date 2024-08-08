@@ -6,8 +6,7 @@ import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
 
 @SideOnly(Side.CLIENT)
-public class ModelChemicalOxidizer
-    extends ModelMekanismBase implements IModelGlass {
+public class ModelChemicalOxidizer extends ModelMekanismBase implements IModelGlass {
     ModelRenderer stand;
     ModelRenderer tank;
     ModelRenderer pipe2;

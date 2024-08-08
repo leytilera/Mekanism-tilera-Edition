@@ -1,9 +1,8 @@
 package mekanism.generators.client.model;
 
-import org.lwjgl.opengl.GL11;
-
 import mekanism.client.ModelMekanismBase;
 import net.minecraft.client.model.ModelRenderer;
+import org.lwjgl.opengl.GL11;
 
 public class ClassicModelAdvancedSolarGenerator extends ModelMekanismBase {
     ModelRenderer BASE;

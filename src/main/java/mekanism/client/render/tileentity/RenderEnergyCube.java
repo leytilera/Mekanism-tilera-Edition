@@ -39,7 +39,8 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
     public void renderTileEntityAt(
         TileEntity tileEntity, double x, double y, double z, float partialTick
     ) {
-        if (MekanismConfig.client.modelType == ModelType.CLASSIC) return;
+        if (MekanismConfig.client.modelType == ModelType.CLASSIC)
+            return;
         renderAModelAt((TileEntityEnergyCube) tileEntity, x, y, z, partialTick);
     }
 

@@ -82,9 +82,10 @@ public class ContainerChemicalWasher extends Container {
                     )) {
                     return null;
                 }
-            }
-			else if(FluidContainerRegistry.isFilledContainer(slotStack) && FluidContainerRegistry.getFluidForFilledItem(slotStack).getFluid() == FluidRegistry.WATER)
-			{
+            } else if (FluidContainerRegistry.isFilledContainer(slotStack)
+                       && FluidContainerRegistry.getFluidForFilledItem(slotStack)
+                               .getFluid()
+                           == FluidRegistry.WATER) {
                 if (slotID != inputSlot) {
                     if (!mergeItemStack(slotStack, inputSlot, outputSlot, false)) {
                         return null;

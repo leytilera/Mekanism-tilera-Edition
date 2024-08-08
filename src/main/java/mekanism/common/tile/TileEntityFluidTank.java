@@ -224,13 +224,13 @@ public class TileEntityFluidTank extends TileEntityContainerBlock
                         }
                     }
                 }
-            }
-			else if(FluidContainerRegistry.isEmptyContainer(inventory[0]) && (editMode == ContainerEditMode.BOTH || editMode == ContainerEditMode.FILL))
-			{
+            } else if (FluidContainerRegistry.isEmptyContainer(inventory[0])
+                       && (editMode == ContainerEditMode.BOTH
+                           || editMode == ContainerEditMode.FILL)) {
                 FluidContainerUtils.handleRegistryItemFill(this, fluidTank, 0, 1);
-            }
-			else if(FluidContainerRegistry.isFilledContainer(inventory[0]) && (editMode == ContainerEditMode.BOTH || editMode == ContainerEditMode.EMPTY))
-			{
+            } else if (FluidContainerRegistry.isFilledContainer(inventory[0])
+                       && (editMode == ContainerEditMode.BOTH
+                           || editMode == ContainerEditMode.EMPTY)) {
                 FluidStack ret = FluidContainerUtils.handleRegistryItemEmpty(
                     this, inventory, fluidTank.getFluid(), getCurrentNeeded(), 0, 1, null
                 );

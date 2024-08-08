@@ -54,7 +54,8 @@ public class CommonPlayerTickHandler {
 
             if (jetpack.getMode(player.getEquipmentInSlot(3)) == JetpackMode.NORMAL) {
                 player.motionY = Math.min(player.motionY + 0.15D, 0.5D);
-            } else if (jetpack.getMode(player.getEquipmentInSlot(3)) == JetpackMode.HOVER) {
+            } else if (jetpack.getMode(player.getEquipmentInSlot(3))
+                       == JetpackMode.HOVER) {
                 if ((!Mekanism.keyMap.has(player, KeySync.ASCEND)
                      && !Mekanism.keyMap.has(player, KeySync.DESCEND))
                     || (Mekanism.keyMap.has(player, KeySync.ASCEND)

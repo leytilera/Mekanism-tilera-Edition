@@ -123,7 +123,8 @@ public class ShapelessMekanismRecipe implements IRecipe {
     public static ShapelessMekanismRecipe create(NBTTagCompound nbtTags) {
         if (!nbtTags.hasKey("result") || !nbtTags.hasKey("input")) {
             Mekanism.logger.error(
-                "[Mekanism] Shapeless recipe parse error: missing input or result compound tag."
+                "[Mekanism] Shapeless recipe parse error: missing input or result "
+                + "compound tag."
             );
             return null;
         }
@@ -134,7 +135,8 @@ public class ShapelessMekanismRecipe implements IRecipe {
 
         if (result == null || list.tagCount() == 0) {
             Mekanism.logger.error(
-                "[Mekanism] Shapeless recipe parse error: invalid result stack or input data list."
+                "[Mekanism] Shapeless recipe parse error: invalid result stack or input "
+                + "data list."
             );
             return null;
         }

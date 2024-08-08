@@ -475,9 +475,12 @@ public final class TransporterPathfinder {
                             );
                             openSet.add(neighbor);
                         }
-                    }
-					else if(neighbor.equals(finalNode) && destChecker.isValid(transportStack, direction.ordinal(), neighbor.getTileEntity(worldObj)))
-					{
+                    } else if (neighbor.equals(finalNode)
+                               && destChecker.isValid(
+                                   transportStack,
+                                   direction.ordinal(),
+                                   neighbor.getTileEntity(worldObj)
+                               )) {
                         side = direction;
                         results = reconstructPath(navMap, currentNode);
                         return true;

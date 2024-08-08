@@ -53,9 +53,8 @@ public class TankUpdateProtocol extends UpdateProtocol<SynchronizedTankData> {
     ) {
         if (((TankCache) cache).fluid == null) {
             ((TankCache) cache).fluid = ((TankCache) merge).fluid;
-        }
-		else if(((TankCache)merge).fluid != null && ((TankCache)cache).fluid.isFluidEqual(((TankCache)merge).fluid))
-		{
+        } else if (((TankCache) merge).fluid != null
+                   && ((TankCache) cache).fluid.isFluidEqual(((TankCache) merge).fluid)) {
             ((TankCache) cache).fluid.amount += ((TankCache) merge).fluid.amount;
         }
 

@@ -240,9 +240,9 @@ public class TurbineUpdateProtocol extends UpdateProtocol<SynchronizedTurbineDat
     ) {
         if (((TurbineCache) cache).fluid == null) {
             ((TurbineCache) cache).fluid = ((TurbineCache) merge).fluid;
-        }
-		else if(((TurbineCache)merge).fluid != null && ((TurbineCache)cache).fluid.isFluidEqual(((TurbineCache)merge).fluid))
-		{
+        } else if (((TurbineCache) merge).fluid != null
+                   && ((TurbineCache) cache)
+                          .fluid.isFluidEqual(((TurbineCache) merge).fluid)) {
             ((TurbineCache) cache).fluid.amount += ((TurbineCache) merge).fluid.amount;
         }
 

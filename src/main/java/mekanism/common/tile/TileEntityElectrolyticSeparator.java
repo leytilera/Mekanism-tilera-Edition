@@ -396,9 +396,9 @@ public class TileEntityElectrolyticSeparator extends TileEntityElectricBlock
     public int[] getAccessibleSlotsFromSide(int side) {
         if (ForgeDirection.getOrientation(side) == MekanismUtils.getRight(facing)) {
             return new int[] { 3 };
-        }
-		else if(side == facing || ForgeDirection.getOrientation(side) == ForgeDirection.getOrientation(facing).getOpposite())
-		{
+        } else if (side == facing
+                   || ForgeDirection.getOrientation(side)
+                       == ForgeDirection.getOrientation(facing).getOpposite()) {
             return new int[] { 1, 2 };
         }
 

@@ -33,15 +33,15 @@ public final class ChargeUtils {
                         storer.getMaxEnergy() - storer.getEnergy()
                     )
                 );
-            } else if (MekanismUtils.useIC2() && inv.getStackInSlot(slotID).getItem() instanceof IElectricItem) {
+            } else if (MekanismUtils.useIC2()
+                       && inv.getStackInSlot(slotID).getItem() instanceof IElectricItem) {
                 IElectricItem item = (IElectricItem) inv.getStackInSlot(slotID).getItem();
 
                 if (item.canProvideEnergy(inv.getStackInSlot(slotID))) {
                     double gain = ElectricItem.manager.discharge(
                                       inv.getStackInSlot(slotID),
-                                      (int
-                                      ) ((storer.getMaxEnergy() - storer.getEnergy())
-                                         * general.TO_IC2),
+                                      (int) ((storer.getMaxEnergy() - storer.getEnergy())
+                                             * general.TO_IC2),
                                       4,
                                       true,
                                       true,
@@ -50,7 +50,9 @@ public final class ChargeUtils {
                         * general.FROM_IC2;
                     storer.setEnergy(storer.getEnergy() + gain);
                 }
-            } else if (MekanismUtils.useRF() && inv.getStackInSlot(slotID).getItem() instanceof IEnergyContainerItem) {
+            } else if (MekanismUtils.useRF()
+                       && inv.getStackInSlot(slotID).getItem()
+                               instanceof IEnergyContainerItem) {
                 ItemStack itemStack = inv.getStackInSlot(slotID);
                 IEnergyContainerItem item
                     = (IEnergyContainerItem) inv.getStackInSlot(slotID).getItem();
@@ -68,9 +70,9 @@ public final class ChargeUtils {
                     storer.getEnergy()
                     + (item.extractEnergy(itemStack, toTransfer, false) * general.FROM_TE)
                 );
-            }
-			else if(inv.getStackInSlot(slotID).getItem() == Items.redstone && storer.getEnergy()+ general.ENERGY_PER_REDSTONE <= storer.getMaxEnergy())
-			{
+            } else if (inv.getStackInSlot(slotID).getItem() == Items.redstone
+                       && storer.getEnergy() + general.ENERGY_PER_REDSTONE
+                           <= storer.getMaxEnergy()) {
                 storer.setEnergy(storer.getEnergy() + general.ENERGY_PER_REDSTONE);
                 inv.getStackInSlot(slotID).stackSize--;
 
@@ -97,7 +99,8 @@ public final class ChargeUtils {
                         inv.getStackInSlot(slotID), storer.getEnergy()
                     )
                 );
-            } else if (MekanismUtils.useIC2() && inv.getStackInSlot(slotID).getItem() instanceof IElectricItem) {
+            } else if (MekanismUtils.useIC2()
+                       && inv.getStackInSlot(slotID).getItem() instanceof IElectricItem) {
                 double sent = ElectricItem.manager.charge(
                                   inv.getStackInSlot(slotID),
                                   (int) (storer.getEnergy() * general.TO_IC2),
@@ -107,7 +110,9 @@ public final class ChargeUtils {
                               )
                     * general.FROM_IC2;
                 storer.setEnergy(storer.getEnergy() - sent);
-            } else if (MekanismUtils.useRF() && inv.getStackInSlot(slotID).getItem() instanceof IEnergyContainerItem) {
+            } else if (MekanismUtils.useRF()
+                       && inv.getStackInSlot(slotID).getItem()
+                               instanceof IEnergyContainerItem) {
                 ItemStack itemStack = inv.getStackInSlot(slotID);
                 IEnergyContainerItem item
                     = (IEnergyContainerItem) inv.getStackInSlot(slotID).getItem();

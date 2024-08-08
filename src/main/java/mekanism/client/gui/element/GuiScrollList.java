@@ -157,9 +157,8 @@ public class GuiScrollList extends GuiElement {
             return 0;
         }
 
-        return (int
-        ) ((textEntries.size() * scroll)
-           - (((float) size / (float) textEntries.size())) * scroll);
+        return (int) ((textEntries.size() * scroll)
+                      - (((float) size / (float) textEntries.size())) * scroll);
     }
 
     @Override
@@ -202,7 +201,8 @@ public class GuiScrollList extends GuiElement {
                     dragOffset = yAxis - (getScroll() + yPosition + 1);
                     isDragging = true;
                 }
-            } else if (xAxis >= xPosition && xAxis <= xPosition + xSize - 6 && yAxis >= yPosition && yAxis <= yPosition + size * 10) {
+            } else if (xAxis >= xPosition && xAxis <= xPosition + xSize - 6
+                       && yAxis >= yPosition && yAxis <= yPosition + size * 10) {
                 int index = getScrollIndex();
                 selected = -1;
 

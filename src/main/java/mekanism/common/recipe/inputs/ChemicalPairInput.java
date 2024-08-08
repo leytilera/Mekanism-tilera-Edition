@@ -47,7 +47,8 @@ public class ChemicalPairInput extends MachineInput<ChemicalPairInput> {
 
                 return true;
             }
-        } else if (leftTank.canDraw(rightGas.getGas()) && rightTank.canDraw(leftGas.getGas())) {
+        } else if (leftTank.canDraw(rightGas.getGas())
+                   && rightTank.canDraw(leftGas.getGas())) {
             if (leftTank.getStored() >= rightAmount
                 && rightTank.getStored() >= leftAmount) {
                 leftTank.draw(rightAmount, deplete);

@@ -77,14 +77,16 @@ public class ContainerElectrolyticSeparator extends Container {
                             if (!mergeItemStack(slotStack, 1, 2, false)) {
                                 return null;
                             }
-                        }
-						else if(((IGasItem)slotStack.getItem()).getGas(slotStack).getGas() == GasRegistry.getGas("oxygen"))
-						{
+                        } else if (((IGasItem) slotStack.getItem())
+                                       .getGas(slotStack)
+                                       .getGas()
+                                   == GasRegistry.getGas("oxygen")) {
                             if (!mergeItemStack(slotStack, 2, 3, false)) {
                                 return null;
                             }
                         }
-                    } else if (((IGasItem) slotStack.getItem()).getGas(slotStack) == null) {
+                    } else if (((IGasItem) slotStack.getItem()).getGas(slotStack)
+                               == null) {
                         if (!mergeItemStack(slotStack, 1, 2, false)) {
                             if (!mergeItemStack(slotStack, 2, 3, false)) {
                                 return null;

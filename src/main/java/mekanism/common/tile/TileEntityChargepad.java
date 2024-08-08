@@ -123,14 +123,16 @@ public class TileEntityChargepad extends TileEntityNoisyElectricBlock {
                 setEnergy(
                     getEnergy() - EnergizedItemManager.charge(itemstack, getEnergy())
                 );
-            } else if (MekanismUtils.useIC2() && itemstack.getItem() instanceof IElectricItem) {
+            } else if (MekanismUtils.useIC2()
+                       && itemstack.getItem() instanceof IElectricItem) {
                 double sent
                     = ElectricItem.manager.charge(
                           itemstack, (int) (getEnergy() * general.TO_IC2), 4, true, false
                       )
                     * general.FROM_IC2;
                 setEnergy(getEnergy() - sent);
-            } else if (MekanismUtils.useRF() && itemstack.getItem() instanceof IEnergyContainerItem) {
+            } else if (MekanismUtils.useRF()
+                       && itemstack.getItem() instanceof IEnergyContainerItem) {
                 IEnergyContainerItem item = (IEnergyContainerItem) itemstack.getItem();
 
                 int itemEnergy = (int) Math.round(Math.min(

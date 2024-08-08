@@ -46,9 +46,11 @@ public class VoiceConnection extends Thread {
 
                 while (username == null && retryCount <= 100) {
                     try {
-                        List l = Collections.synchronizedList((List
-                        ) ((ArrayList) server.getConfigurationManager().playerEntityList)
-                                                                  .clone());
+                        List l = Collections.synchronizedList(
+                            (List) ((ArrayList) server.getConfigurationManager()
+                                        .playerEntityList)
+                                .clone()
+                        );
 
                         for (Object obj : l) {
                             if (obj instanceof EntityPlayerMP) {

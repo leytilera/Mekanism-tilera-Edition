@@ -441,13 +441,13 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
 
     @Override
     @Method(modid = "hbm")
-	public void setPower(long power) {
+    public void setPower(long power) {
         setEnergy(power * general.FROM_IC2);
     }
 
     @Override
     @Method(modid = "hbm")
-	public long getMaxPower() {
+    public long getMaxPower() {
         return Math.round(getMaxEnergy() * general.TO_IC2);
     }
 

@@ -103,7 +103,8 @@ public class SolarNeutronRecipeHandler extends BaseRecipeHandler {
             for (SolarNeutronRecipe irecipe : getRecipes()) {
                 arecipes.add(new CachedIORecipe(irecipe));
             }
-        } else if (outputId.equals("gas") && results.length == 1 && results[0] instanceof GasStack) {
+        } else if (outputId.equals("gas") && results.length == 1
+                   && results[0] instanceof GasStack) {
             for (SolarNeutronRecipe irecipe : getRecipes()) {
                 if (((GasStack) results[0]).isGasEqual(irecipe.getOutput().output)) {
                     arecipes.add(new CachedIORecipe(irecipe));

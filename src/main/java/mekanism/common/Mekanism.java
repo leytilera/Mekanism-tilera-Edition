@@ -140,7 +140,8 @@ import universalelectricity.api.CompatibilityModule;
     version = "GRADLE_MODVERSION",
     guiFactory = "mekanism.client.gui.ConfigGuiFactory",
     dependencies
-    = "required-after:universalelectricity;required-after:ForgeMultipart;after:BuildCraft;after:BuildCraftAPI;after:IC2;after:CoFHCore;"
+    = "required-after:universalelectricity;required-after:ForgeMultipart;after:"
+      + "BuildCraft;after:BuildCraftAPI;after:IC2;after:CoFHCore;"
         + "after:ComputerCraft;after:Galacticraft;after:MineTweaker3;after:hbm"
 )
 public class Mekanism {

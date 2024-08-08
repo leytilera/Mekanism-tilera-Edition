@@ -49,9 +49,8 @@ public final class CableUtils {
      * @param sides - set of sides to check
      * @return boolean[] of adjacent connections
      */
-    public static boolean[] getConnections(
-        TileEntity tileEntity, Set<ForgeDirection> sides
-    ) {
+    public static boolean[]
+    getConnections(TileEntity tileEntity, Set<ForgeDirection> sides) {
         boolean[] connectable
             = new boolean[] { false, false, false, false, false, false };
         Coord4D coord = Coord4D.get(tileEntity);
@@ -132,7 +131,8 @@ public final class CableUtils {
                     .canReceiveEnergy(side.getOpposite())) {
                 return true;
             }
-        } else if (MekanismUtils.useIC2() && getIC2Tile(tileEntity) instanceof IEnergyAcceptor) {
+        } else if (MekanismUtils.useIC2()
+                   && getIC2Tile(tileEntity) instanceof IEnergyAcceptor) {
             if (((IEnergyAcceptor) getIC2Tile(tileEntity))
                     .acceptsEnergyFrom(orig, side.getOpposite())) {
                 return true;
@@ -170,10 +170,10 @@ public final class CableUtils {
                     }
                     if (MekanismUtils.useHBM()) {
                         emitter.tryProvide(
-                            ((TileEntity)emitter).getWorldObj(), 
-                            ((TileEntity)emitter).xCoord + side.offsetX,
-                            ((TileEntity)emitter).yCoord + side.offsetY,
-                            ((TileEntity)emitter).zCoord + side.offsetZ,
+                            ((TileEntity) emitter).getWorldObj(),
+                            ((TileEntity) emitter).xCoord + side.offsetX,
+                            ((TileEntity) emitter).yCoord + side.offsetY,
+                            ((TileEntity) emitter).zCoord + side.offsetZ,
                             side
                         );
                     }
@@ -263,7 +263,8 @@ public final class CableUtils {
                 int used = handler.receiveEnergy(side.getOpposite(), toSend, false);
                 sent += used * general.FROM_TE;
             }
-        } else if (MekanismUtils.useIC2() && getIC2Tile(tileEntity) instanceof IEnergySink) {
+        } else if (MekanismUtils.useIC2()
+                   && getIC2Tile(tileEntity) instanceof IEnergySink) {
             IEnergySink sink = (IEnergySink) getIC2Tile(tileEntity);
             if (sink.acceptsEnergyFrom((TileEntity) from, side.getOpposite())) {
                 double toSend = Math.min(

@@ -218,9 +218,9 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     );
                     GL11.glTranslatef(
                         (float) (vec.x + pos[0]),
-                        (float
-                        ) (vec.y + pos[1] - entityItem.yOffset
-                           - ((stack.itemStack.getItem() instanceof ItemBlock) ? 0.1 : 0)
+                        (float) (vec.y + pos[1] - entityItem.yOffset
+                                 - ((stack.itemStack.getItem() instanceof ItemBlock) ? 0.1
+                                                                                     : 0)
                         ),
                         (float) (vec.z + pos[2])
                     );
@@ -441,7 +441,8 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     toReturn.minZ = getFluidValue1() + offset;
 
                     toReturn.maxX = getFluidValue2() - offset;
-                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxY = getFluidValue1() + offset
+                        + ((float) i / (float) stages) * height;
                     toReturn.maxZ = getFluidValue2() - offset;
                     break;
                 }
@@ -457,7 +458,8 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                 }
                 case UP: {
                     toReturn.minX = 0.5 - (((float) i / (float) stages) * height) / 2;
-                    toReturn.minY = getFluidValue1() - offset + ((float) i / (float) stages) * height;
+                    toReturn.minY = getFluidValue1() - offset
+                        + ((float) i / (float) stages) * height;
                     toReturn.minZ = 0.5 - (((float) i / (float) stages) * height) / 2;
 
                     toReturn.maxX = 0.5 + (((float) i / (float) stages) * height) / 2;
@@ -471,7 +473,8 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     toReturn.minZ = 0.0;
 
                     toReturn.maxX = getFluidValue2() - offset;
-                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxY = getFluidValue1() + offset
+                        + ((float) i / (float) stages) * height;
                     toReturn.maxZ = getFluidValue1() + offset;
                     break;
                 }
@@ -481,7 +484,8 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     toReturn.minZ = getFluidValue2() - offset;
 
                     toReturn.maxX = getFluidValue2() - offset;
-                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxY = getFluidValue1() + offset
+                        + ((float) i / (float) stages) * height;
                     toReturn.maxZ = 1.0;
                     break;
                 }
@@ -491,7 +495,8 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     toReturn.minZ = getFluidValue1() + offset;
 
                     toReturn.maxX = getFluidValue1() + offset;
-                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxY = getFluidValue1() + offset
+                        + ((float) i / (float) stages) * height;
                     toReturn.maxZ = getFluidValue2() - offset;
                     break;
                 }
@@ -501,7 +506,8 @@ public class RenderPartTransmitter implements IIconSelfRegister {
                     toReturn.minZ = getFluidValue1() + offset;
 
                     toReturn.maxX = 1.0;
-                    toReturn.maxY = getFluidValue1() + offset + ((float) i / (float) stages) * height;
+                    toReturn.maxY = getFluidValue1() + offset
+                        + ((float) i / (float) stages) * height;
                     toReturn.maxZ = getFluidValue2() - offset;
                     break;
                 }

@@ -91,7 +91,8 @@ public final class BoxBlacklistParser {
         BufferedWriter writer = new BufferedWriter(new FileWriter(boxBlacklistFile));
 
         writer.append(
-            "# Use this file to tell Mekanism which blocks should not be picked up by a cardboard box."
+            "# Use this file to tell Mekanism which blocks should not be picked up by a "
+            + "cardboard box."
         );
         writer.newLine();
 

@@ -56,15 +56,15 @@ public class EntityLaser extends EntityFX {
             new ResourceLocation("mekanism", "particles/laser.png")
         );
 
-        float newX = (float
-        ) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTick - interpPosX
-        );
-        float newY = (float
-        ) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTick - interpPosY
-        );
-        float newZ = (float
-        ) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTick - interpPosZ
-        );
+        float newX
+            = (float) (this.prevPosX + (this.posX - this.prevPosX) * (double) partialTick
+                       - interpPosX);
+        float newY
+            = (float) (this.prevPosY + (this.posY - this.prevPosY) * (double) partialTick
+                       - interpPosY);
+        float newZ
+            = (float) (this.prevPosZ + (this.posZ - this.prevPosZ) * (double) partialTick
+                       - interpPosZ);
 
         GL11.glTranslatef(newX, newY, newZ);
 

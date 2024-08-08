@@ -46,7 +46,9 @@ public class PacketNewFilter implements IMessageHandler<NewFilterMessage, IMessa
                         (EntityPlayerMP) iterPlayer
                     );
                 }
-            } else if (message.type == 1 && message.coord4D.getTileEntity(worldServer) instanceof TileEntityDigitalMiner) {
+            } else if (message.type == 1
+                       && message.coord4D.getTileEntity(worldServer)
+                               instanceof TileEntityDigitalMiner) {
                 TileEntityDigitalMiner miner
                     = (TileEntityDigitalMiner) message.coord4D.getTileEntity(worldServer);
 
@@ -60,7 +62,9 @@ public class PacketNewFilter implements IMessageHandler<NewFilterMessage, IMessa
                         (EntityPlayerMP) iterPlayer
                     );
                 }
-            } else if (message.type == 2 && message.coord4D.getTileEntity(worldServer) instanceof TileEntityOredictionificator) {
+            } else if (message.type == 2
+                       && message.coord4D.getTileEntity(worldServer)
+                               instanceof TileEntityOredictionificator) {
                 TileEntityOredictionificator oredictionificator
                     = (TileEntityOredictionificator
                     ) message.coord4D.getTileEntity(worldServer);

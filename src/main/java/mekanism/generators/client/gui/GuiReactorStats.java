@@ -41,14 +41,16 @@ public class GuiReactorStats extends GuiMekanism {
             public List<String> getInfo() {
                 return tileEntity.isFormed()
                     ? ListUtils.asList(
-                        LangUtils.localize("gui.storing") + ": "
-                            + MekanismUtils.getEnergyDisplay(tileEntity.getEnergy()),
-                        LangUtils.localize("gui.producing") + ": "
-                            + MekanismUtils.getEnergyDisplay(
-                                tileEntity.getReactor().getPassiveGeneration(false, true)
-                            )
-                            + "/t"
-                    )
+                          LangUtils.localize("gui.storing") + ": "
+                              + MekanismUtils.getEnergyDisplay(tileEntity.getEnergy()),
+                          LangUtils.localize("gui.producing") + ": "
+                              + MekanismUtils.getEnergyDisplay(
+                                  tileEntity.getReactor().getPassiveGeneration(
+                                      false, true
+                                  )
+                              )
+                              + "/t"
+                      )
                     : new ArrayList();
             }
         }, this, MekanismUtils.getResource(ResourceType.GUI, "GuiTall.png")));

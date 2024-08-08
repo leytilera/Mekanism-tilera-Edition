@@ -136,7 +136,8 @@ public class GuiLogisticalSorter extends GuiMekanism {
                         || entry.getValue().stackIndex
                             == entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex = 0;
-                    } else if (entry.getValue().stackIndex < entry.getValue().iterStacks.size() - 1) {
+                    } else if (entry.getValue().stackIndex
+                               < entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex++;
                     }
 
@@ -153,7 +154,8 @@ public class GuiLogisticalSorter extends GuiMekanism {
                         || entry.getValue().stackIndex
                             == entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex = 0;
-                    } else if (entry.getValue().stackIndex < entry.getValue().iterStacks.size() - 1) {
+                    } else if (entry.getValue().stackIndex
+                               < entry.getValue().iterStacks.size() - 1) {
                         entry.getValue().stackIndex++;
                     }
 
@@ -188,7 +190,8 @@ public class GuiLogisticalSorter extends GuiMekanism {
             if (tileEntity.filters.get(getFilterIndex() + i) instanceof TOreDictFilter) {
                 oreDictFilters.add((TOreDictFilter
                 ) tileEntity.filters.get(getFilterIndex() + i));
-            } else if (tileEntity.filters.get(getFilterIndex() + i) instanceof TModIDFilter) {
+            } else if (tileEntity.filters.get(getFilterIndex() + i)
+                           instanceof TModIDFilter) {
                 modIDFilters.add((TModIDFilter
                 ) tileEntity.filters.get(getFilterIndex() + i));
             }

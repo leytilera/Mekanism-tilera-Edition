@@ -116,7 +116,8 @@ public class ChemicalWasherRecipeHandler extends BaseRecipeHandler {
             for (WasherRecipe irecipe : getRecipes()) {
                 arecipes.add(new CachedIORecipe(irecipe));
             }
-        } else if (outputId.equals("gas") && results.length == 1 && results[0] instanceof GasStack) {
+        } else if (outputId.equals("gas") && results.length == 1
+                   && results[0] instanceof GasStack) {
             for (WasherRecipe irecipe : getRecipes()) {
                 if (((GasStack) results[0]).isGasEqual(irecipe.getOutput().output)) {
                     arecipes.add(new CachedIORecipe(irecipe));
@@ -136,7 +137,8 @@ public class ChemicalWasherRecipeHandler extends BaseRecipeHandler {
                     arecipes.add(new CachedIORecipe(irecipe));
                 }
             }
-        } else if (inputId.equals("gas") && ingredients.length == 1 && ingredients[0] instanceof GasStack) {
+        } else if (inputId.equals("gas") && ingredients.length == 1
+                   && ingredients[0] instanceof GasStack) {
             for (WasherRecipe irecipe : getRecipes()) {
                 if (irecipe.getInput().ingredient.isGasEqual((GasStack) ingredients[0])) {
                     arecipes.add(new CachedIORecipe(irecipe));

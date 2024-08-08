@@ -93,9 +93,11 @@ public final class InventoryUtils {
 
                         toInsert = remains;
                     }
-                }
-				else if(areItemsStackable(toInsert, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()))
-				{
+                } else if (areItemsStackable(toInsert, inSlot)
+                           && inSlot.stackSize < Math.min(
+                                  inSlot.getMaxStackSize(),
+                                  inventory.getInventoryStackLimit()
+                              )) {
                     int max = Math.min(
                         inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()
                     );
@@ -171,9 +173,11 @@ public final class InventoryUtils {
 
                             toInsert = remains;
                         }
-                    }
-					else if(areItemsStackable(toInsert, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()))
-					{
+                    } else if (areItemsStackable(toInsert, inSlot)
+                               && inSlot.stackSize < Math.min(
+                                      inSlot.getMaxStackSize(),
+                                      inventory.getInventoryStackLimit()
+                                  )) {
                         int max = Math.min(
                             inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()
                         );
@@ -423,9 +427,11 @@ public final class InventoryUtils {
                             return true;
                         }
                     }
-                }
-				else if(areItemsStackable(itemStack, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()))
-				{
+                } else if (areItemsStackable(itemStack, inSlot)
+                           && inSlot.stackSize < Math.min(
+                                  inSlot.getMaxStackSize(),
+                                  inventory.getInventoryStackLimit()
+                              )) {
                     int max = Math.min(
                         inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()
                     );
@@ -478,9 +484,11 @@ public final class InventoryUtils {
                                 return true;
                             }
                         }
-                    }
-					else if(areItemsStackable(itemStack, inSlot) && inSlot.stackSize < Math.min(inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()))
-					{
+                    } else if (areItemsStackable(itemStack, inSlot)
+                               && inSlot.stackSize < Math.min(
+                                      inSlot.getMaxStackSize(),
+                                      inventory.getInventoryStackLimit()
+                                  )) {
                         int max = Math.min(
                             inSlot.getMaxStackSize(), inventory.getInventoryStackLimit()
                         );

@@ -1,11 +1,9 @@
 package dev.tilera.capes;
 
 import com.jadarstudios.developercapes.DevCapes;
-
 import net.minecraftforge.common.MinecraftForge;
 
 public class Capes {
-    
     private static boolean capesInitialized = false;
 
     public static void initCapes() {
@@ -21,5 +19,4 @@ public class Capes {
             }
         }
     }
-
 }

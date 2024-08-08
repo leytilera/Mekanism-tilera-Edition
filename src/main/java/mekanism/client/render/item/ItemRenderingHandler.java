@@ -226,9 +226,8 @@ public class ItemRenderingHandler implements IItemRenderer {
 
                 GL11.glPopMatrix();
             }
-        }
-		else if(BasicType.get(item) == BasicType.INDUCTION_CELL || BasicType.get(item) == BasicType.INDUCTION_PROVIDER)
-		{
+        } else if (BasicType.get(item) == BasicType.INDUCTION_CELL
+                   || BasicType.get(item) == BasicType.INDUCTION_PROVIDER) {
             MekanismRenderer.renderCustomItem((RenderBlocks) data[0], item);
         } else if (BasicType.get(item) == BasicType.BIN) {
             GL11.glRotatef(270, 0.0F, 1.0F, 0.0F);
@@ -572,10 +571,9 @@ public class ItemRenderingHandler implements IItemRenderer {
                 MekanismUtils.getResource(ResourceType.RENDER, "FluidTank.png")
             );
             ItemBlockMachine itemMachine = (ItemBlockMachine) item.getItem();
-            float targetScale = (float
-                                ) (itemMachine.getFluidStack(item) != null
-                                       ? itemMachine.getFluidStack(item).amount
-                                       : 0)
+            float targetScale = (float) (itemMachine.getFluidStack(item) != null
+                                             ? itemMachine.getFluidStack(item).amount
+                                             : 0)
                 / itemMachine.getCapacity(item);
             FluidTankTier tier
                 = FluidTankTier.values()[itemMachine.getBaseTier(item).ordinal()];

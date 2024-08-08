@@ -30,8 +30,8 @@ public class GuiNumberGauge extends GuiGauge {
 
     @Override
     public int getScaledLevel() {
-        return (int
-        ) ((height - 2) * min(infoHandler.getLevel() / infoHandler.getMaxLevel(), 1));
+        return (int) ((height - 2)
+                      * min(infoHandler.getLevel() / infoHandler.getMaxLevel(), 1));
     }
 
     @Override

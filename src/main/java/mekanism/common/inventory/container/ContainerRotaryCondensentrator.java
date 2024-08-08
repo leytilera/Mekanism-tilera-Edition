@@ -76,9 +76,8 @@ public class ContainerRotaryCondensentrator extends Container {
                         return null;
                     }
                 }
-            }
-			else if(FluidContainerRegistry.isEmptyContainer(slotStack) || FluidContainerRegistry.isFilledContainer(slotStack))
-			{
+            } else if (FluidContainerRegistry.isEmptyContainer(slotStack)
+                       || FluidContainerRegistry.isFilledContainer(slotStack)) {
                 if (slotID != 2 && slotID != 3) {
                     if (!mergeItemStack(slotStack, 2, 3, false)) {
                         return null;

@@ -67,7 +67,8 @@ public class PacketOredictionificatorGui
                                 -1
                             )
                         );
-                    } else if (message.packetType == OredictionificatorGuiPacket.CLIENT_INDEX) {
+                    } else if (message.packetType
+                               == OredictionificatorGuiPacket.CLIENT_INDEX) {
                         FMLCommonHandler.instance().showGuiScreen(
                             OredictionificatorGuiMessage.getGui(
                                 message.packetType,

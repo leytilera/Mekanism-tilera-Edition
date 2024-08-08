@@ -81,9 +81,9 @@ public class TileEntityOredictionificator extends TileEntityContainerBlock
 
                         inventory[1] = result;
                         didProcess = true;
-                    }
-					else if(inventory[1].isItemEqual(result) && inventory[1].stackSize < inventory[1].getMaxStackSize())
-					{
+                    } else if (inventory[1].isItemEqual(result)
+                               && inventory[1].stackSize
+                                   < inventory[1].getMaxStackSize()) {
                         inventory[0].stackSize--;
 
                         if (inventory[0].stackSize <= 0) {

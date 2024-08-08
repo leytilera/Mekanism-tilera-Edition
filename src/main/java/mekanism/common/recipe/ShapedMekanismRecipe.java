@@ -202,7 +202,8 @@ public class ShapedMekanismRecipe implements IRecipe {
     public static ShapedMekanismRecipe create(NBTTagCompound nbtTags) {
         if (!nbtTags.hasKey("result") || !nbtTags.hasKey("input")) {
             Mekanism.logger.error(
-                "[Mekanism] Shaped recipe parse error: missing input or result compound tag."
+                "[Mekanism] Shaped recipe parse error: missing input or result compound "
+                + "tag."
             );
             return null;
         }
@@ -213,7 +214,8 @@ public class ShapedMekanismRecipe implements IRecipe {
 
         if (result == null || list.tagCount() == 0) {
             Mekanism.logger.error(
-                "[Mekanism] Shaped recipe parse error: invalid result stack or input data list."
+                "[Mekanism] Shaped recipe parse error: invalid result stack or input "
+                + "data list."
             );
             return null;
         }
@@ -232,7 +234,8 @@ public class ShapedMekanismRecipe implements IRecipe {
 
                 if (s.length() > 1) {
                     Mekanism.logger.error(
-                        "[Mekanism] Shaped recipe parse error: invalid pattern character data."
+                        "[Mekanism] Shaped recipe parse error: invalid pattern character "
+                        + "data."
                     );
                     return null;
                 }

@@ -71,17 +71,15 @@ public class ItemGlowPanel extends JItemMultiPart {
             }
 
             return ForgeDirection.WEST;
-        }
-		else if(Math.abs(vector.y) > Math.abs(vector.x) && Math.abs(vector.y) > Math.abs(vector.z))
-		{
+        } else if (Math.abs(vector.y) > Math.abs(vector.x)
+                   && Math.abs(vector.y) > Math.abs(vector.z)) {
             if ((vector.y < 0.5 && vector.y > 0) || vector.y == -0.5) {
                 return ForgeDirection.UP;
             }
 
             return ForgeDirection.DOWN;
-        }
-		else if(Math.abs(vector.z) > Math.abs(vector.x) && Math.abs(vector.z) > Math.abs(vector.y))
-		{
+        } else if (Math.abs(vector.z) > Math.abs(vector.x)
+                   && Math.abs(vector.z) > Math.abs(vector.y)) {
             if ((vector.z < 0.5 && vector.z > 0) || vector.z == -0.5) {
                 return ForgeDirection.SOUTH;
             }

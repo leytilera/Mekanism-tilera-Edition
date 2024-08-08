@@ -218,7 +218,6 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
-
     @Override
     public void loadConfiguration() {
         super.loadConfiguration();
@@ -244,7 +243,8 @@ public class ClientProxy extends CommonProxy {
                       "client",
                       "ReplaceSoundsWhenResuming",
                       true,
-                      "If true, will reduce lagging between player sounds. Setting to false will reduce GC load"
+                      "If true, will reduce lagging between player sounds. Setting to "
+                      + "false will reduce GC load"
                   )
                   .getBoolean();
         client.renderCTM
@@ -272,7 +272,8 @@ public class ClientProxy extends CommonProxy {
             client.modelType = modelType;
         }
 
-        client.smallPipeFluid = Mekanism.configuration.get("client", "SmallPipeFluid", false).getBoolean();
+        client.smallPipeFluid
+            = Mekanism.configuration.get("client", "SmallPipeFluid", false).getBoolean();
 
         if (Mekanism.configuration.hasChanged()) {
             Mekanism.configuration.save();

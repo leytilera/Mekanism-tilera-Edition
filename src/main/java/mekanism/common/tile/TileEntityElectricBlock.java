@@ -366,13 +366,13 @@ public abstract class TileEntityElectricBlock
 
     @Override
     @Method(modid = "hbm")
-	public void setPower(long power) {
+    public void setPower(long power) {
         setEnergy(power * general.FROM_IC2);
     }
 
     @Override
     @Method(modid = "hbm")
-	public long getMaxPower() {
+    public long getMaxPower() {
         return Math.round(getMaxEnergy() * general.TO_IC2);
     }
 
@@ -407,5 +407,4 @@ public abstract class TileEntityElectricBlock
     public boolean canConnect(ForgeDirection from) {
         return getConsumingSides().contains(from) || getOutputtingSides().contains(from);
     }
-    
 }

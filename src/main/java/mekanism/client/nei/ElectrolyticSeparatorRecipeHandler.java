@@ -237,7 +237,8 @@ public class ElectrolyticSeparatorRecipeHandler extends BaseRecipeHandler {
             for (SeparatorRecipe irecipe : getRecipes()) {
                 arecipes.add(new CachedIORecipe(irecipe));
             }
-        } else if (outputId.equals("gas") && results.length == 1 && results[0] instanceof GasStack) {
+        } else if (outputId.equals("gas") && results.length == 1
+                   && results[0] instanceof GasStack) {
             for (SeparatorRecipe irecipe : getRecipes()) {
                 if (irecipe.recipeOutput.containsType((GasStack) results[0])) {
                     arecipes.add(new CachedIORecipe(irecipe));

@@ -120,7 +120,8 @@ public class RotaryCondensentratorRecipeHandler extends BaseRecipeHandler {
                     ));
                 }
             }
-        } else if (outputId.equals("gas") && results.length == 1 && results[0] instanceof GasStack) {
+        } else if (outputId.equals("gas") && results.length == 1
+                   && results[0] instanceof GasStack) {
             GasStack gas = (GasStack) results[0];
 
             if (gas.getGas().hasFluid()) {
@@ -130,7 +131,8 @@ public class RotaryCondensentratorRecipeHandler extends BaseRecipeHandler {
                     false
                 ));
             }
-        } else if (outputId.equals("fluid") && results.length == 1 && results[0] instanceof FluidStack) {
+        } else if (outputId.equals("fluid") && results.length == 1
+                   && results[0] instanceof FluidStack) {
             FluidStack fluid = (FluidStack) results[0];
             Gas gas = GasRegistry.getGas(fluid.getFluid());
 
@@ -157,7 +159,8 @@ public class RotaryCondensentratorRecipeHandler extends BaseRecipeHandler {
                     true
                 ));
             }
-        } else if (inputId.equals("fluid") && ingredients.length == 1 && ingredients[0] instanceof FluidStack) {
+        } else if (inputId.equals("fluid") && ingredients.length == 1
+                   && ingredients[0] instanceof FluidStack) {
             FluidStack fluid = (FluidStack) ingredients[0];
             Gas gas = GasRegistry.getGas(fluid.getFluid());
 

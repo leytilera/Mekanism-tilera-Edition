@@ -24,9 +24,9 @@ public class ItemStackOutput extends MachineOutput<ItemStackOutput> {
             }
 
             return true;
-        } 
-		else if(inventory[index].isItemEqual(output) && inventory[index].stackSize + output.stackSize <= inventory[index].getMaxStackSize())
-		{
+        } else if (inventory[index].isItemEqual(output)
+                   && inventory[index].stackSize + output.stackSize
+                       <= inventory[index].getMaxStackSize()) {
             if (doEmit) {
                 inventory[index].stackSize += output.stackSize;
             }

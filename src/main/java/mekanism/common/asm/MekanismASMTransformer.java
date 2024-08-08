@@ -1,9 +1,8 @@
 package mekanism.common.asm;
 
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-
-import net.minecraft.launchwrapper.IClassTransformer;
 
 public class MekanismASMTransformer implements IClassTransformer {
     @Override

@@ -61,7 +61,8 @@ public class IMCHandler {
                         }
 
                         found = true;
-                    } else if (message.equals("DeleteMekanismRecipes") || message.equals("RemoveMekanismRecipes")) {
+                    } else if (message.equals("DeleteMekanismRecipes")
+                               || message.equals("RemoveMekanismRecipes")) {
                         ItemStack stack
                             = RecipeUtils.loadRecipeItemStack(msg.getNBTValue());
 

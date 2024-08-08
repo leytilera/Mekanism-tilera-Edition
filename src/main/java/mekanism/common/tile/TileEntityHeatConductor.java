@@ -34,10 +34,10 @@ public class TileEntityHeatConductor extends TileEntity
             return;
 
         if (ADAPTER_HBM != null)
-          ADAPTER_HBM.onTick(this);
+            ADAPTER_HBM.onTick(this);
 
         if (ADAPTER_IC2 != null)
-          ADAPTER_IC2.onTick(this);
+            ADAPTER_IC2.onTick(this);
 
         this.simulateHeat();
         this.applyTemperatureChange();
@@ -123,7 +123,8 @@ public class TileEntityHeatConductor extends TileEntity
     @Override
     @Optional.Method(modid = "IC2")
     public int requestHeat(ForgeDirection directionFrom, int requestheat) {
-        int toTransfer = Math.min(requestheat, ADAPTER_IC2.fromTemperature(this.temperature));
+        int toTransfer
+            = Math.min(requestheat, ADAPTER_IC2.fromTemperature(this.temperature));
         this.heatToAbsorb -= ADAPTER_IC2.toTemperature(toTransfer);
         return toTransfer;
     }

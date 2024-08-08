@@ -126,9 +126,8 @@ public class BinRecipe implements IRecipe {
                 for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
                     if (isBin(event.craftMatrix.getStackInSlot(i))) {
                         bin = i;
-                    }
-					else if(!isBin(event.craftMatrix.getStackInSlot(i)) && event.craftMatrix.getStackInSlot(i) != null)
-					{
+                    } else if (!isBin(event.craftMatrix.getStackInSlot(i))
+                               && event.craftMatrix.getStackInSlot(i) != null) {
                         other = i;
                     }
                 }

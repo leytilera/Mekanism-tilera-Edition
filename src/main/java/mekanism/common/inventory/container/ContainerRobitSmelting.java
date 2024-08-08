@@ -120,7 +120,8 @@ public class ContainerRobitSmelting extends Container {
                     if (!mergeItemStack(slotStack, 30, 39, false)) {
                         return null;
                     }
-                } else if (slotID >= 30 && slotID < 39 && !mergeItemStack(slotStack, 3, 30, false)) {
+                } else if (slotID >= 30 && slotID < 39
+                           && !mergeItemStack(slotStack, 3, 30, false)) {
                     return null;
                 }
             } else if (!mergeItemStack(slotStack, 3, 39, false)) {

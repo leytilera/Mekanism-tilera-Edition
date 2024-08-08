@@ -376,10 +376,10 @@ public class PartMechanicalPipe extends PartTransmitter<IFluidHandler, FluidNetw
     }
 
     /**
-     * This method checks if there are any HBM tiles on non-push sides of the pipe, and only then
-     * allows HBM fluid input for this pipe. This is a workaround to reject incoming fluid from
-     * push (and none) sides in *most* cases. A proper implementation is impossible because we
-     * don't get a direction in `transferFluid`.
+     * This method checks if there are any HBM tiles on non-push sides of the pipe, and
+     * only then allows HBM fluid input for this pipe. This is a workaround to reject
+     * incoming fluid from push (and none) sides in *most* cases. A proper implementation
+     * is impossible because we don't get a direction in `transferFluid`.
      */
     @Optional.Method(modid = "hbm")
     private boolean canAcceptHBMFluid() {

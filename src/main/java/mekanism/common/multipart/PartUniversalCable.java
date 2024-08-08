@@ -106,7 +106,8 @@ public class PartUniversalCable
                                         - toDraw
                                     );
                             }
-                        } else if (MekanismUtils.useRF() && outputter instanceof IEnergyProvider) {
+                        } else if (MekanismUtils.useRF()
+                                   && outputter instanceof IEnergyProvider) {
                             double received = ((IEnergyProvider) outputter)
                                                   .extractEnergy(
                                                       side.getOpposite(),
@@ -126,7 +127,9 @@ public class PartUniversalCable
                                     (int) (toDraw * general.TO_TE),
                                     false
                                 );
-                        } else if (MekanismUtils.useIC2() && CableUtils.getIC2Tile(outputter) instanceof IEnergySource) {
+                        } else if (MekanismUtils.useIC2()
+                                   && CableUtils.getIC2Tile(outputter)
+                                           instanceof IEnergySource) {
                             double received = Math.min(
                                 ((IEnergySource) CableUtils.getIC2Tile(outputter))
                                         .getOfferedEnergy()
@@ -141,14 +144,19 @@ public class PartUniversalCable
 
                             ((IEnergySource) CableUtils.getIC2Tile(outputter))
                                 .drawEnergy(toDraw * general.TO_IC2);
-                        } else if (MekanismUtils.useHBM() && outputter instanceof IEnergyProviderMK2) {
+                        } else if (MekanismUtils.useHBM()
+                                   && outputter instanceof IEnergyProviderMK2) {
                             IEnergyProviderMK2 tile = (IEnergyProviderMK2) outputter;
-                            double received = Math.min(Math.min(tile.getPower(), tile.getProviderSpeed()) * general.FROM_IC2, canDraw);
+                            double received = Math.min(
+                                Math.min(tile.getPower(), tile.getProviderSpeed())
+                                    * general.FROM_IC2,
+                                canDraw
+                            );
                             double toDraw = received;
                             if (received > 0) {
                                 toDraw -= takeEnergy(received, true);
                             }
-                            tile.usePower((long)(toDraw * general.TO_IC2));
+                            tile.usePower((long) (toDraw * general.TO_IC2));
                         }
                     }
                 }
@@ -459,11 +467,7 @@ public class PartUniversalCable
     public void receiveHe() {
         for (ForgeDirection dir : getConnections(ConnectionType.NORMAL))
             this.trySubscribe(
-                world(),
-                x() + dir.offsetX,
-                y() + dir.offsetY,
-                z() + dir.offsetZ,
-                dir
+                world(), x() + dir.offsetX, y() + dir.offsetY, z() + dir.offsetZ, dir
             );
     }
 
@@ -472,5 +476,4 @@ public class PartUniversalCable
     public boolean isLoaded() {
         return isLoaded;
     }
-
 }

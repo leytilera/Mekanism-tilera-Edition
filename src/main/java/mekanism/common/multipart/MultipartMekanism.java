@@ -74,8 +74,12 @@ public class MultipartMekanism implements IPartFactory {
         );
         MultipartGenerator.registerPassThroughInterface("cofh.api.energy.IEnergyHandler");
         if (Loader.isModLoaded("hbm")) {
-            MultipartGenerator.registerPassThroughInterface("api.hbm.energymk2.IEnergyReceiverMK2");
-            MultipartGenerator.registerPassThroughInterface("api.hbm.fluid.IFluidConnector");
+            MultipartGenerator.registerPassThroughInterface(
+                "api.hbm.energymk2.IEnergyReceiverMK2"
+            );
+            MultipartGenerator.registerPassThroughInterface(
+                "api.hbm.fluid.IFluidConnector"
+            );
         }
 
         registerMicroMaterials();
@@ -103,7 +107,8 @@ public class MultipartMekanism implements IPartFactory {
             return new PartMechanicalPipe(Tier.PipeTier.ELITE);
         } else if (name.equals("mekanism:mechanical_pipe_ultimate")) {
             return new PartMechanicalPipe(Tier.PipeTier.ULTIMATE);
-        } else if (name.equals("mekanism:pressurized_tube_basic") || name.equals("mekanism:pressurized_tube")) {
+        } else if (name.equals("mekanism:pressurized_tube_basic")
+                   || name.equals("mekanism:pressurized_tube")) {
             return new PartPressurizedTube(Tier.TubeTier.BASIC);
         } else if (name.equals("mekanism:pressurized_tube_advanced")) {
             return new PartPressurizedTube(Tier.TubeTier.ADVANCED);
@@ -111,7 +116,8 @@ public class MultipartMekanism implements IPartFactory {
             return new PartPressurizedTube(Tier.TubeTier.ELITE);
         } else if (name.equals("mekanism:pressurized_tube_ultimate")) {
             return new PartPressurizedTube(Tier.TubeTier.ULTIMATE);
-        } else if (name.equals("mekanism:logistical_transporter_basic") || name.equals("mekanism:logistical_transporter")) {
+        } else if (name.equals("mekanism:logistical_transporter_basic")
+                   || name.equals("mekanism:logistical_transporter")) {
             return new PartLogisticalTransporter(Tier.TransporterTier.BASIC);
         } else if (name.equals("mekanism:logistical_transporter_advanced")) {
             return new PartLogisticalTransporter(Tier.TransporterTier.ADVANCED);

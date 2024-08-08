@@ -97,9 +97,8 @@ public class RenderThermoelectricBoiler extends TileEntitySpecialRenderer {
                     } else {
                         displayList[Math.min(
                                         getStages(data.height) - 1,
-                                        (int
-                                        ) (tileEntity.prevWaterScale
-                                           * ((float) getStages(data.height) - 1))
+                                        (int) (tileEntity.prevWaterScale
+                                               * ((float) getStages(data.height) - 1))
                                     )]
                             .render();
                     }

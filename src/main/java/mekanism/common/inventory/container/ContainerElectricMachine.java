@@ -67,7 +67,10 @@ public class ContainerElectricMachine extends Container {
                 if (!mergeItemStack(slotStack, 3, inventorySlots.size(), true)) {
                     return null;
                 }
-            } else if (RecipeHandler.getRecipe(new ItemStackInput(slotStack), tileEntity.getRecipes()) != null) {
+            } else if (RecipeHandler.getRecipe(
+                           new ItemStackInput(slotStack), tileEntity.getRecipes()
+                       )
+                       != null) {
                 if (slotID != 0 && slotID != 1 && slotID != 2) {
                     if (!mergeItemStack(slotStack, 0, 1, false)) {
                         return null;

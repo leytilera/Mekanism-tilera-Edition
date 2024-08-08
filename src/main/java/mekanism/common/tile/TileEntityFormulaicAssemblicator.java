@@ -382,9 +382,8 @@ public class TileEntityFormulaicAssemblicator extends TileEntityElectricBlock
                 inventory[i] = stack;
 
                 return null;
-            }
-			else if(InventoryUtils.areItemsStackable(stack, inventory[i]) && inventory[i].stackSize < inventory[i].getMaxStackSize())
-			{
+            } else if (InventoryUtils.areItemsStackable(stack, inventory[i])
+                       && inventory[i].stackSize < inventory[i].getMaxStackSize()) {
                 int toUse = Math.min(
                     stack.stackSize,
                     inventory[i].getMaxStackSize() - inventory[i].stackSize
@@ -412,9 +411,8 @@ public class TileEntityFormulaicAssemblicator extends TileEntityElectricBlock
                 }
 
                 return true;
-            }
-			else if(InventoryUtils.areItemsStackable(stack, inventory[i]) && inventory[i].stackSize < inventory[i].getMaxStackSize())
-			{
+            } else if (InventoryUtils.areItemsStackable(stack, inventory[i])
+                       && inventory[i].stackSize < inventory[i].getMaxStackSize()) {
                 int toUse = Math.min(
                     stack.stackSize,
                     inventory[i].getMaxStackSize() - inventory[i].stackSize

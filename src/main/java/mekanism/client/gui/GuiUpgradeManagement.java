@@ -233,7 +233,8 @@ public class GuiUpgradeManagement extends GuiMekanism {
 
             if (upgrade == selectedType) {
                 yRender = 166 + 24;
-            } else if (xAxis >= xPos && xAxis <= xPos + 58 && yAxis >= yPos && yAxis <= yPos + 12) {
+            } else if (xAxis >= xPos && xAxis <= xPos + 58 && yAxis >= yPos
+                       && yAxis <= yPos + 12) {
                 yRender = 166;
             } else {
                 yRender = 166 + 12;
@@ -260,9 +261,8 @@ public class GuiUpgradeManagement extends GuiMekanism {
             return 0;
         }
 
-        return (int
-        ) ((getCurrentUpgrades().size() * scroll)
-           - ((4F / (float) getCurrentUpgrades().size())) * scroll);
+        return (int) ((getCurrentUpgrades().size() * scroll)
+                      - ((4F / (float) getCurrentUpgrades().size())) * scroll);
     }
 
     @Override

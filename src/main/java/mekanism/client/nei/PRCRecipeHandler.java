@@ -221,7 +221,8 @@ public class PRCRecipeHandler extends BaseRecipeHandler {
             for (Map.Entry irecipe : getRecipes()) {
                 arecipes.add(new CachedIORecipe(irecipe));
             }
-        } else if (outputId.equals("gas") && results.length == 1 && results[0] instanceof GasStack) {
+        } else if (outputId.equals("gas") && results.length == 1
+                   && results[0] instanceof GasStack) {
             for (Map.Entry<PressurizedInput, PressurizedRecipe> irecipe : getRecipes()) {
                 if (irecipe.getValue().getOutput().getGasOutput().isGasEqual((GasStack
                     ) results[0])) {
@@ -253,7 +254,8 @@ public class PRCRecipeHandler extends BaseRecipeHandler {
                     arecipes.add(new CachedIORecipe(irecipe));
                 }
             }
-        } else if (inputId.equals("fluid") && ingredients.length == 1 && ingredients[0] instanceof FluidStack) {
+        } else if (inputId.equals("fluid") && ingredients.length == 1
+                   && ingredients[0] instanceof FluidStack) {
             for (Map.Entry<PressurizedInput, PressurizedRecipe> irecipe : getRecipes()) {
                 if (irecipe.getKey().containsType((FluidStack) ingredients[0])) {
                     arecipes.add(new CachedIORecipe(irecipe));
@@ -298,13 +300,15 @@ public class PRCRecipeHandler extends BaseRecipeHandler {
                                                  .pressurizedRecipe.getInput()
                                                  .getFluid())
             );
-        } else if (xAxis >= 29 - 5 && xAxis <= 45 - 5 && yAxis >= 11 - 10 && yAxis <= 69 - 10) {
+        } else if (xAxis >= 29 - 5 && xAxis <= 45 - 5 && yAxis >= 11 - 10
+                   && yAxis <= 69 - 10) {
             currenttip.add(
                 LangUtils.localizeGasStack(((CachedIORecipe) arecipes.get(recipe))
                                                .pressurizedRecipe.getInput()
                                                .getGas())
             );
-        } else if (xAxis >= 141 - 5 && xAxis <= 157 - 5 && yAxis >= 41 - 10 && yAxis <= 69 - 10) {
+        } else if (xAxis >= 141 - 5 && xAxis <= 157 - 5 && yAxis >= 41 - 10
+                   && yAxis <= 69 - 10) {
             currenttip.add(
                 LangUtils.localizeGasStack(((CachedIORecipe) arecipes.get(recipe))
                                                .pressurizedRecipe.getOutput()
@@ -338,11 +342,13 @@ public class PRCRecipeHandler extends BaseRecipeHandler {
             fluid = ((CachedIORecipe) arecipes.get(recipe))
                         .pressurizedRecipe.getInput()
                         .getFluid();
-        } else if (xAxis >= 29 - 5 && xAxis <= 45 - 5 && yAxis >= 11 - 10 && yAxis <= 69 - 10) {
+        } else if (xAxis >= 29 - 5 && xAxis <= 45 - 5 && yAxis >= 11 - 10
+                   && yAxis <= 69 - 10) {
             gas = ((CachedIORecipe) arecipes.get(recipe))
                       .pressurizedRecipe.getInput()
                       .getGas();
-        } else if (xAxis >= 141 - 5 && xAxis <= 157 - 5 && yAxis >= 41 - 10 && yAxis <= 69 - 10) {
+        } else if (xAxis >= 141 - 5 && xAxis <= 157 - 5 && yAxis >= 41 - 10
+                   && yAxis <= 69 - 10) {
             gas = ((CachedIORecipe) arecipes.get(recipe))
                       .pressurizedRecipe.getOutput()
                       .getGasOutput();
@@ -396,11 +402,13 @@ public class PRCRecipeHandler extends BaseRecipeHandler {
             fluid = ((CachedIORecipe) arecipes.get(recipe))
                         .pressurizedRecipe.getInput()
                         .getFluid();
-        } else if (xAxis >= 29 - 5 && xAxis <= 45 - 5 && yAxis >= 11 - 10 && yAxis <= 69 - 10) {
+        } else if (xAxis >= 29 - 5 && xAxis <= 45 - 5 && yAxis >= 11 - 10
+                   && yAxis <= 69 - 10) {
             gas = ((CachedIORecipe) arecipes.get(recipe))
                       .pressurizedRecipe.getInput()
                       .getGas();
-        } else if (xAxis >= 141 - 5 && xAxis <= 157 - 5 && yAxis >= 41 - 10 && yAxis <= 69 - 10) {
+        } else if (xAxis >= 141 - 5 && xAxis <= 157 - 5 && yAxis >= 41 - 10
+                   && yAxis <= 69 - 10) {
             gas = ((CachedIORecipe) arecipes.get(recipe))
                       .pressurizedRecipe.getOutput()
                       .getGasOutput();

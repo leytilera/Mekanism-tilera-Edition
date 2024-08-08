@@ -171,7 +171,8 @@ public class EntityRobit
                             inventory[27], MAX_ELECTRICITY - getEnergy()
                         )
                     );
-                } else if (MekanismUtils.useIC2() && inventory[27].getItem() instanceof IElectricItem) {
+                } else if (MekanismUtils.useIC2()
+                           && inventory[27].getItem() instanceof IElectricItem) {
                     IElectricItem item = (IElectricItem) inventory[27].getItem();
 
                     if (item.canProvideEnergy(inventory[27])) {
@@ -187,7 +188,8 @@ public class EntityRobit
                             * general.FROM_IC2;
                         setEnergy(getEnergy() + gain);
                     }
-                } else if (MekanismUtils.useRF() && inventory[27].getItem() instanceof IEnergyContainerItem) {
+                } else if (MekanismUtils.useRF()
+                           && inventory[27].getItem() instanceof IEnergyContainerItem) {
                     ItemStack itemStack = inventory[27];
                     IEnergyContainerItem item
                         = (IEnergyContainerItem) inventory[27].getItem();
@@ -205,9 +207,9 @@ public class EntityRobit
                         + (item.extractEnergy(itemStack, toTransfer, false)
                            * general.FROM_TE)
                     );
-                }
-				else if(inventory[27].getItem() == Items.redstone && getEnergy()+ general.ENERGY_PER_REDSTONE <= MAX_ELECTRICITY)
-				{
+                } else if (inventory[27].getItem() == Items.redstone
+                           && getEnergy() + general.ENERGY_PER_REDSTONE
+                               <= MAX_ELECTRICITY) {
                     setEnergy(getEnergy() + general.ENERGY_PER_REDSTONE);
                     inventory[27].stackSize--;
 
@@ -280,9 +282,8 @@ public class EntityRobit
                         );
 
                         break;
-                    }
-					else if(itemStack.isItemEqual(item.getEntityItem()) && itemStack.stackSize < itemStack.getMaxStackSize())
-					{
+                    } else if (itemStack.isItemEqual(item.getEntityItem())
+                               && itemStack.stackSize < itemStack.getMaxStackSize()) {
                         int needed = itemStack.getMaxStackSize() - itemStack.stackSize;
                         int toAdd = Math.min(needed, item.getEntityItem().stackSize);
 

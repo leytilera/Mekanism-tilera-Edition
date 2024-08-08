@@ -128,9 +128,10 @@ public class ContainerFormulaicAssemblicator extends Container {
                 if (!mergeItemStack(slotStack, 34, inventorySlots.size(), true)) {
                     return null;
                 }
-            }
-			else if(tileEntity.formula == null || tileEntity.formula.isIngredient(tileEntity.getWorldObj(), slotStack))
-			{
+            } else if (tileEntity.formula == null
+                       || tileEntity.formula.isIngredient(
+                           tileEntity.getWorldObj(), slotStack
+                       )) {
                 if (!mergeItemStack(slotStack, 2, 20, false)) {
                     return null;
                 }

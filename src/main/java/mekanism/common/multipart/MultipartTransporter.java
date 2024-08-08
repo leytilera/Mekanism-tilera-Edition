@@ -155,9 +155,15 @@ public class MultipartTransporter
                                 remove.add(stack);
                                 continue;
                             }
-                        }
-						else if(stack.pathType == Path.HOME && (!checkSideForInsert(stack) || !InventoryUtils.canInsert(stack.getDest().getTileEntity(world()), stack.color, stack.itemStack, stack.getSide(this), true)))
-						{
+                        } else if (stack.pathType == Path.HOME
+                                   && (!checkSideForInsert(stack)
+                                       || !InventoryUtils.canInsert(
+                                           stack.getDest().getTileEntity(world()),
+                                           stack.color,
+                                           stack.itemStack,
+                                           stack.getSide(this),
+                                           true
+                                       ))) {
                             if (!recalculate(stack, null)) {
                                 remove.add(stack);
                                 continue;

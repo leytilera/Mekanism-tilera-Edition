@@ -139,9 +139,10 @@ public abstract class ChanceMachineRecipeHandler extends BaseRecipeHandler {
                     irecipe.getOutput().primaryOutput, result
                 )) {
                 arecipes.add(new CachedIORecipe(irecipe));
-            }
-			else if(irecipe.getOutput().hasSecondary() && NEIServerUtils.areStacksSameTypeCrafting(irecipe.getOutput().secondaryOutput, result))
-			{
+            } else if (irecipe.getOutput().hasSecondary()
+                       && NEIServerUtils.areStacksSameTypeCrafting(
+                           irecipe.getOutput().secondaryOutput, result
+                       )) {
                 arecipes.add(new CachedIORecipe(irecipe));
             }
         }

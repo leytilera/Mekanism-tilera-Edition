@@ -145,7 +145,8 @@ public class CommandMekanism extends CommandBase {
                         EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY
                         + " Invalid parameters."
                     ));
-                } else if (params[1].equalsIgnoreCase("freq") || params[1].equalsIgnoreCase("frequencies")) {
+                } else if (params[1].equalsIgnoreCase("freq")
+                           || params[1].equalsIgnoreCase("frequencies")) {
                     if (params[2].equalsIgnoreCase("list")) {
                         sender.addChatMessage(new ChatComponentText(
                             EnumColor.GREY + "------------- " + EnumColor.DARK_BLUE
@@ -239,7 +240,8 @@ public class CommandMekanism extends CommandBase {
 
                                 sender.addChatMessage(new ChatComponentText(
                                     EnumColor.DARK_BLUE + "[Mekanism]" + EnumColor.GREY
-                                    + " Successfully removed " + amount + " frequencies."
+                                    + " Successfully removed " + amount
+                                    + " frequencies."
                                 ));
                             } else {
                                 sender.addChatMessage(new ChatComponentText(

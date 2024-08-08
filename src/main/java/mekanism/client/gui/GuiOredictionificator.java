@@ -101,9 +101,8 @@ public class GuiOredictionificator extends GuiMekanism {
             return 0;
         }
 
-        return (int
-        ) ((tileEntity.filters.size() * scroll)
-           - ((3F / (float) tileEntity.filters.size())) * scroll);
+        return (int) ((tileEntity.filters.size() * scroll)
+                      - ((3F / (float) tileEntity.filters.size())) * scroll);
     }
 
     @Override

@@ -52,9 +52,9 @@ public class TileEntityBoilerCasing
 
         if (worldObj.isRemote) {
             if (structure != null && clientHasStructure && isRendering) {
-                float targetScale
-                    = (float
-                      ) (structure.waterStored != null ? structure.waterStored.amount : 0)
+                float targetScale = (float) (structure.waterStored != null
+                                                 ? structure.waterStored.amount
+                                                 : 0)
                     / clientWaterCapacity;
 
                 if (Math.abs(prevWaterScale - targetScale) > 0.01) {

@@ -5,7 +5,8 @@ import mekanism.client.render.MekanismRenderer;
 import net.minecraft.client.model.ModelRenderer;
 import org.lwjgl.opengl.GL11;
 
-public class LegacyModelChemicalOxidizer extends ModelMekanismBase implements IModelGlass {
+public class LegacyModelChemicalOxidizer
+    extends ModelMekanismBase implements IModelGlass {
     ModelRenderer Base;
     ModelRenderer TSSW;
     ModelRenderer TSNW;

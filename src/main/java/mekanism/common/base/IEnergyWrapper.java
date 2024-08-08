@@ -25,7 +25,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 })
 public interface IEnergyWrapper
     extends IStrictEnergyStorage, IEnergyHandler, IEnergySink, IEnergySource,
-            IEnergyStorage, IStrictEnergyAcceptor, ICableOutputter, IInventory, IEnergyReceiverMK2, IEnergyProviderMK2 {
+            IEnergyStorage, IStrictEnergyAcceptor, ICableOutputter, IInventory,
+            IEnergyReceiverMK2, IEnergyProviderMK2 {
     public EnumSet<ForgeDirection> getOutputtingSides();
 
     public EnumSet<ForgeDirection> getConsumingSides();

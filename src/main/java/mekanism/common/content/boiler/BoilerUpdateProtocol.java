@@ -216,17 +216,17 @@ public class BoilerUpdateProtocol extends UpdateProtocol<SynchronizedBoilerData>
     ) {
         if (((BoilerCache) cache).water == null) {
             ((BoilerCache) cache).water = ((BoilerCache) merge).water;
-        }
-		else if(((BoilerCache)merge).water != null && ((BoilerCache)cache).water.isFluidEqual(((BoilerCache)merge).water))
-		{
+        } else if (((BoilerCache) merge).water != null
+                   && ((BoilerCache) cache)
+                          .water.isFluidEqual(((BoilerCache) merge).water)) {
             ((BoilerCache) cache).water.amount += ((BoilerCache) merge).water.amount;
         }
 
         if (((BoilerCache) cache).steam == null) {
             ((BoilerCache) cache).steam = ((BoilerCache) merge).steam;
-        }
-		else if(((BoilerCache)merge).steam != null && ((BoilerCache)cache).steam.isFluidEqual(((BoilerCache)merge).steam))
-		{
+        } else if (((BoilerCache) merge).steam != null
+                   && ((BoilerCache) cache)
+                          .steam.isFluidEqual(((BoilerCache) merge).steam)) {
             ((BoilerCache) cache).steam.amount += ((BoilerCache) merge).steam.amount;
         }
 

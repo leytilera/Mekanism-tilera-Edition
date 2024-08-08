@@ -1,14 +1,12 @@
 package mekanism.generators.client.model;
 
-import org.lwjgl.opengl.GL11;
-
 import mekanism.client.ModelMekanismBase;
 import mekanism.client.model.IModelOnOff;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
+import org.lwjgl.opengl.GL11;
 
-public class LegacyModelHeatGenerator
-    extends ModelMekanismBase implements IModelOnOff {
+public class LegacyModelHeatGenerator extends ModelMekanismBase implements IModelOnOff {
     ModelRenderer A;
     ModelRenderer B;
     ModelRenderer C;

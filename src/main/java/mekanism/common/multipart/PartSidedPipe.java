@@ -161,9 +161,8 @@ public abstract class PartSidedPipe
 
     public static byte
     setConnectionBit(byte connections, boolean toSet, ForgeDirection side) {
-        return (byte
-        ) ((connections & ~(byte) (1 << side.ordinal()))
-           | (byte) ((toSet ? 1 : 0) << side.ordinal()));
+        return (byte) ((connections & ~(byte) (1 << side.ordinal()))
+                       | (byte) ((toSet ? 1 : 0) << side.ordinal()));
     }
 
     public abstract IIcon getCenterIcon(boolean opaque);
@@ -214,21 +213,17 @@ public abstract class PartSidedPipe
         if (type == ConnectionType.NONE) {
             if (client.oldTransmitterRender || renderCenter()) {
                 return getCenterIcon(opaque);
-            }
-			else if(getAllCurrentConnections() == 3 && side != ForgeDirection.DOWN && side != ForgeDirection.UP)
-			{
+            } else if (getAllCurrentConnections() == 3 && side != ForgeDirection.DOWN
+                       && side != ForgeDirection.UP) {
                 return getSideIcon(opaque);
-            }
-			else if(getAllCurrentConnections() == 12 && (side == ForgeDirection.DOWN || side == ForgeDirection.UP))
-			{
+            } else if (getAllCurrentConnections() == 12
+                       && (side == ForgeDirection.DOWN || side == ForgeDirection.UP)) {
                 return getSideIcon(opaque);
-            }
-			else if(getAllCurrentConnections() == 12 && (side == ForgeDirection.EAST || side == ForgeDirection.WEST))
-			{
+            } else if (getAllCurrentConnections() == 12
+                       && (side == ForgeDirection.EAST || side == ForgeDirection.WEST)) {
                 return getSideIconRotated(opaque);
-            }
-			else if(getAllCurrentConnections() == 48 && side != ForgeDirection.EAST && side != ForgeDirection.WEST)
-			{
+            } else if (getAllCurrentConnections() == 48 && side != ForgeDirection.EAST
+                       && side != ForgeDirection.WEST) {
                 return getSideIconRotated(opaque);
             }
 

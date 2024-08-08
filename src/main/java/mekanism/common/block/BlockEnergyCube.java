@@ -109,11 +109,19 @@ public class BlockEnergyCube extends BlockContainer implements ICustomBlockIcon 
         ForgeDirection front = ForgeDirection.getOrientation(te.facing);
 
         IIcon[] icons = this.icons.get(te.tier);
-        return icons[te.configComponent.getOutput(TransmissionType.ENERGY, mapRotation(front, dir).ordinal()).ioState == IOState.OUTPUT ? 1 : 0];
+        return icons
+            [te.configComponent
+                         .getOutput(
+                             TransmissionType.ENERGY, mapRotation(front, dir).ordinal()
+                         )
+                         .ioState
+                     == IOState.OUTPUT
+                 ? 1
+                 : 0];
     }
 
-    public ForgeDirection mapRotation(final ForgeDirection forward, final ForgeDirection dir) {
-
+    public ForgeDirection
+    mapRotation(final ForgeDirection forward, final ForgeDirection dir) {
         ForgeDirection up = ForgeDirection.UNKNOWN;
 
         if (forward == ForgeDirection.UP) {

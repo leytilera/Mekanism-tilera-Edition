@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.hbm.inventory.fluid.Fluids;
-
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.common.event.FMLInterModComms;

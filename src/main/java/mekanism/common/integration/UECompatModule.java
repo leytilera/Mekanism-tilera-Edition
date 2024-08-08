@@ -78,7 +78,8 @@ public class UECompatModule extends CompatibilityModule {
         if (obj instanceof IStrictEnergyAcceptor
             && ((IStrictEnergyAcceptor) obj).canReceiveEnergy(direction)) {
             return true;
-        } else if (obj instanceof ICableOutputter && ((ICableOutputter) obj).canOutputTo(direction)) {
+        } else if (obj instanceof ICableOutputter
+                   && ((ICableOutputter) obj).canOutputTo(direction)) {
             return true;
         }
         return false;

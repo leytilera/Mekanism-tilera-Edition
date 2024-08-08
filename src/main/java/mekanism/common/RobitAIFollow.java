@@ -55,7 +55,8 @@ public class RobitAIFollow extends EntityAIBase {
 
         if (player == null) {
             return false;
-        } else if (theRobit.worldObj.provider.dimensionId != player.worldObj.provider.dimensionId) {
+        } else if (theRobit.worldObj.provider.dimensionId
+                   != player.worldObj.provider.dimensionId) {
             return false;
         } else if (!theRobit.getFollowing()) {
             //Still looks up at the player if on chargepad or not following

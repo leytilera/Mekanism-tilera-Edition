@@ -42,9 +42,8 @@ public class GuiEnergyGauge extends GuiGauge {
             return height - 2;
         }
 
-        return (int
-        ) (infoHandler.getEnergyStorage().getEnergy() * (height - 2)
-           / infoHandler.getEnergyStorage().getMaxEnergy());
+        return (int) (infoHandler.getEnergyStorage().getEnergy() * (height - 2)
+                      / infoHandler.getEnergyStorage().getMaxEnergy());
     }
 
     @Override

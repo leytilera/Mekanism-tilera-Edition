@@ -391,7 +391,10 @@ public class TileEntityThermalEvaporationController
                 if (corner != -1) {
                     if (addSolarPanel(pointer.getTileEntity(worldObj), corner)) {
                         continue;
-                    } else if (pointer.getFromSide(ForgeDirection.UP).getTileEntity(worldObj) instanceof TileEntityThermalEvaporationBlock || !addTankPart(pointerTile)) {
+                    } else if (pointer.getFromSide(ForgeDirection.UP)
+                                       .getTileEntity(worldObj)
+                                       instanceof TileEntityThermalEvaporationBlock
+                               || !addTankPart(pointerTile)) {
                         return false;
                     }
                 } else {
@@ -502,11 +505,10 @@ public class TileEntityThermalEvaporationController
     }
 
     public int getScaledInputLevel(int i) {
-        return getMaxFluid() > 0
-            ? (inputTank.getFluid() != null
-                   ? inputTank.getFluid().amount * i / getMaxFluid()
-                   : 0)
-            : 0;
+        return getMaxFluid() > 0 ? (inputTank.getFluid() != null
+                                        ? inputTank.getFluid().amount * i / getMaxFluid()
+                                        : 0)
+                                 : 0;
     }
 
     public int getScaledOutputLevel(int i) {

@@ -72,7 +72,8 @@ public class GroupManager {
 
         if (!(usersObj instanceof ArrayList) || !(capeUrlObj instanceof String)) {
             DevCapes.logger.error(String.format(
-                "Group %s could not be parsed because it either is invalid or missing elements.",
+                "Group %s could not be parsed because it either is invalid or missing "
+                + "elements.",
                 name
             ));
             return null;

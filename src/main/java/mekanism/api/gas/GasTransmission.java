@@ -19,9 +19,8 @@ import net.minecraftforge.common.util.ForgeDirection;
  *
  */
 public final class GasTransmission {
-    public static IGasHandler[] getConnectedAcceptors(
-        TileEntity tileEntity, Collection<ForgeDirection> sides
-    ) {
+    public static IGasHandler[]
+    getConnectedAcceptors(TileEntity tileEntity, Collection<ForgeDirection> sides) {
         IGasHandler[] acceptors
             = new IGasHandler[] { null, null, null, null, null, null };
 

@@ -293,9 +293,8 @@ public class ClientTickHandler {
                     == JetpackMode.NORMAL) {
                     mc.thePlayer.motionY = Math.min(mc.thePlayer.motionY + 0.15D, 0.5D);
                     mc.thePlayer.fallDistance = 0.0F;
-                }
-				else if(jetpack.getMode(mc.thePlayer.getEquipmentInSlot(3)) == JetpackMode.HOVER)
-				{
+                } else if (jetpack.getMode(mc.thePlayer.getEquipmentInSlot(3))
+                           == JetpackMode.HOVER) {
                     if ((!mc.gameSettings.keyBindJump.getIsKeyPressed()
                          && !mc.gameSettings.keyBindSneak.getIsKeyPressed())
                         || (mc.gameSettings.keyBindJump.getIsKeyPressed()
@@ -315,7 +314,8 @@ public class ClientTickHandler {
                             && mc.currentScreen == null) {
                             mc.thePlayer.motionY
                                 = Math.min(mc.thePlayer.motionY + 0.15D, 0.2D);
-                        } else if (mc.gameSettings.keyBindSneak.getIsKeyPressed() && mc.currentScreen == null) {
+                        } else if (mc.gameSettings.keyBindSneak.getIsKeyPressed()
+                                   && mc.currentScreen == null) {
                             if (!CommonPlayerTickHandler.isOnGround(mc.thePlayer)) {
                                 mc.thePlayer.motionY
                                     = Math.max(mc.thePlayer.motionY - 0.15D, -0.2D);
@@ -388,7 +388,8 @@ public class ClientTickHandler {
                                 && mc.gameSettings.keyBindSneak.getIsKeyPressed())
                             || mc.currentScreen != null) {
                             return !player.onGround;
-                        } else if (mc.gameSettings.keyBindSneak.getIsKeyPressed() && mc.currentScreen == null) {
+                        } else if (mc.gameSettings.keyBindSneak.getIsKeyPressed()
+                                   && mc.currentScreen == null) {
                             return !player.onGround;
                         }
 

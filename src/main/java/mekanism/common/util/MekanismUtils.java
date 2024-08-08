@@ -520,11 +520,11 @@ public final class MekanismUtils {
      * @return required operating ticks
      */
     public static int getTicks(IUpgradeTile mgmt, int def) {
-        return (int
-        ) (def
-           * Math.pow(
-               general.maxUpgradeMultiplier, -fractionUpgrades(mgmt, Upgrade.SPEED)
-           ));
+        return (int) (def
+                      * Math.pow(
+                          general.maxUpgradeMultiplier,
+                          -fractionUpgrades(mgmt, Upgrade.SPEED)
+                      ));
     }
 
     /**
@@ -628,9 +628,14 @@ public final class MekanismUtils {
 
                 if (weakPower && isDirectlyGettingPowered(world, sideCoord)) {
                     return true;
-                }
-				else if(!weakPower && block.isProvidingWeakPower(world, sideCoord.xCoord, sideCoord.yCoord, sideCoord.zCoord, side.ordinal()) > 0)
-				{
+                } else if (!weakPower
+                           && block.isProvidingWeakPower(
+                                  world,
+                                  sideCoord.xCoord,
+                                  sideCoord.yCoord,
+                                  sideCoord.zCoord,
+                                  side.ordinal()
+                              ) > 0) {
                     return true;
                 }
             }

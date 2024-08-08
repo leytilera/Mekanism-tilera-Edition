@@ -87,9 +87,9 @@ public class GuiBoilerStats extends GuiMekanism {
                 }
             )
         );
-        maxGraph.enableFixedScale((int
-        ) ((tentity.structure.superheatingElements * general.superheatingHeatTransfer)
-           / SynchronizedBoilerData.getHeatEnthalpy()));
+        maxGraph.enableFixedScale((int) ((tentity.structure.superheatingElements
+                                          * general.superheatingHeatTransfer)
+                                         / SynchronizedBoilerData.getHeatEnthalpy()));
     }
 
     @Override
@@ -129,9 +129,9 @@ public class GuiBoilerStats extends GuiMekanism {
             0x404040
         );
 
-        int boilCapacity = (int
-        ) ((tileEntity.structure.superheatingElements * general.superheatingHeatTransfer)
-           / SynchronizedBoilerData.getHeatEnthalpy());
+        int boilCapacity = (int) ((tileEntity.structure.superheatingElements
+                                   * general.superheatingHeatTransfer)
+                                  / SynchronizedBoilerData.getHeatEnthalpy());
         fontRendererObj.drawString(
             LangUtils.localize("gui.boilCapacity") + ": " + boilCapacity + " mB/t",
             8,

@@ -53,7 +53,8 @@ public class TileEntityGasGenerator
 
                 if (fuelTank.getGas() != null) {
                     gasType = fuelTank.getGas().getGas();
-                } else if (inventory[0] != null && inventory[0].getItem() instanceof IGasItem) {
+                } else if (inventory[0] != null
+                           && inventory[0].getItem() instanceof IGasItem) {
                     if (((IGasItem) inventory[0].getItem()).getGas(inventory[0])
                         != null) {
                         gasType = ((IGasItem) inventory[0].getItem())

@@ -114,7 +114,8 @@ public class ThermalEvaporationRecipeHandler extends BaseRecipeHandler {
             for (ThermalEvaporationRecipe irecipe : getRecipes()) {
                 arecipes.add(new CachedIORecipe(irecipe));
             }
-        } else if (outputId.equals("fluid") && results.length == 1 && results[0] instanceof FluidStack) {
+        } else if (outputId.equals("fluid") && results.length == 1
+                   && results[0] instanceof FluidStack) {
             for (ThermalEvaporationRecipe irecipe : getRecipes()) {
                 if (((FluidStack) results[0]).isFluidEqual(irecipe.recipeOutput.output)) {
                     arecipes.add(new CachedIORecipe(irecipe));

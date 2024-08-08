@@ -54,9 +54,9 @@ public class TileEntityDynamicTank
 
         if (worldObj.isRemote) {
             if (structure != null && clientHasStructure && isRendering) {
-                float targetScale
-                    = (float
-                      ) (structure.fluidStored != null ? structure.fluidStored.amount : 0)
+                float targetScale = (float) (structure.fluidStored != null
+                                                 ? structure.fluidStored.amount
+                                                 : 0)
                     / clientCapacity;
 
                 if (Math.abs(prevScale - targetScale) > 0.01) {
@@ -136,9 +136,9 @@ public class TileEntityDynamicTank
                         null
                     );
                 }
-            }
-			else if(FluidContainerRegistry.isEmptyContainer(structure.inventory[0]) && (structure.editMode == ContainerEditMode.BOTH || structure.editMode == ContainerEditMode.FILL))
-			{
+            } else if (FluidContainerRegistry.isEmptyContainer(structure.inventory[0])
+                       && (structure.editMode == ContainerEditMode.BOTH
+                           || structure.editMode == ContainerEditMode.FILL)) {
                 structure.fluidStored = FluidContainerUtils.handleRegistryItemFill(
                     this, structure.inventory, structure.fluidStored, 0, 1
                 );
@@ -149,9 +149,9 @@ public class TileEntityDynamicTank
                     ),
                     new Range4D(Coord4D.get(this))
                 );
-            }
-			else if(FluidContainerRegistry.isFilledContainer(structure.inventory[0]) && (structure.editMode == ContainerEditMode.BOTH || structure.editMode == ContainerEditMode.EMPTY))
-			{
+            } else if (FluidContainerRegistry.isFilledContainer(structure.inventory[0])
+                       && (structure.editMode == ContainerEditMode.BOTH
+                           || structure.editMode == ContainerEditMode.EMPTY)) {
                 structure.fluidStored = FluidContainerUtils.handleRegistryItemEmpty(
                     this, structure.inventory, structure.fluidStored, needed, 0, 1, null
                 );

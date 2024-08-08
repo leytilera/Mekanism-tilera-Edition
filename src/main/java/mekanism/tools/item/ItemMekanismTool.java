@@ -49,15 +49,20 @@ public class ItemMekanismTool extends ItemTool {
         if (material == MekanismTools.toolOBSIDIAN
             || material == MekanismTools.toolOBSIDIAN2) {
             return new ItemStack(MekanismItems.Ingot, 1, 0);
-        } else if (material == MekanismTools.toolLAZULI || material == MekanismTools.toolLAZULI2) {
+        } else if (material == MekanismTools.toolLAZULI
+                   || material == MekanismTools.toolLAZULI2) {
             return new ItemStack(Items.dye, 1, 4);
-        } else if (material == MekanismTools.toolOSMIUM || material == MekanismTools.toolOSMIUM2) {
+        } else if (material == MekanismTools.toolOSMIUM
+                   || material == MekanismTools.toolOSMIUM2) {
             return new ItemStack(MekanismItems.Ingot, 1, 1);
-        } else if (material == MekanismTools.toolBRONZE || material == MekanismTools.toolBRONZE2) {
+        } else if (material == MekanismTools.toolBRONZE
+                   || material == MekanismTools.toolBRONZE2) {
             return new ItemStack(MekanismItems.Ingot, 1, 2);
-        } else if (material == MekanismTools.toolGLOWSTONE || material == MekanismTools.toolGLOWSTONE2) {
+        } else if (material == MekanismTools.toolGLOWSTONE
+                   || material == MekanismTools.toolGLOWSTONE2) {
             return new ItemStack(MekanismItems.Ingot, 1, 3);
-        } else if (material == MekanismTools.toolSTEEL || material == MekanismTools.toolSTEEL2) {
+        } else if (material == MekanismTools.toolSTEEL
+                   || material == MekanismTools.toolSTEEL2) {
             return new ItemStack(MekanismItems.Ingot, 1, 4);
         }
 

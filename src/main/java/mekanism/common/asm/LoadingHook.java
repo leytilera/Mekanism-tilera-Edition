@@ -15,7 +15,7 @@ public class LoadingHook implements IFMLLoadingPlugin {
     }
 
     public String[] getASMTransformerClass() {
-        return new String[] { "mekanism.common.asm.MekanismASMTransformer" };
+        return new String[0];
     }
 
     public String getModContainerClass() {

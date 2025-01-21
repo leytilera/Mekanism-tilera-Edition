@@ -69,6 +69,7 @@ dependencies {
     compile "universalelectricity:basiccomponents:2.0.0:deobf"
     compile "universalelectricity:universalelectricity:5.1.0:deobf"
     compile "com.hbm:HBM-NTM:1.0.27_X5000:deobf"
+    compile "net.anvilcraft:anvillib-7:0.1.0"
 }
 
 version = "${config.minecraft_version}-${config.mod_version}"

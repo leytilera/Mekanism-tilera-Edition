@@ -8,13 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import api.hbm.fluid.IFluidConnector;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event;
 import mekanism.api.Coord4D;
 import mekanism.api.transmitters.DynamicNetwork;
 import mekanism.api.transmitters.IGridTransmitter;
-import mekanism.common.util.HBMTileFluidHandler;
+import mekanism.common.base.FluidHandlerWrapper;
 import mekanism.common.util.LangUtils;
 import mekanism.common.util.PipeUtils;
 import net.minecraft.tileentity.TileEntity;
@@ -132,8 +131,8 @@ public class FluidNetwork extends DynamicNetwork<IFluidHandler, FluidNetwork> {
             for (IFluidHandler acceptor : availableAcceptors) {
                 int currentSending = sending;
                 EnumSet<ForgeDirection> sides = acceptorDirections.get(
-                    acceptor instanceof HBMTileFluidHandler
-                        ? ((HBMTileFluidHandler) acceptor).pos
+                    acceptor instanceof FluidHandlerWrapper
+                        ? ((FluidHandlerWrapper) acceptor).coord
                         : Coord4D.get((TileEntity) acceptor)
                 );
 
@@ -262,15 +261,12 @@ public class FluidNetwork extends DynamicNetwork<IFluidHandler, FluidNetwork> {
 
             if (sides == null || sides.isEmpty()
                 || !(
-                    tile instanceof IFluidHandler
-                    || (Mekanism.hooks.HBMLoaded && tile instanceof IFluidConnector)
+                    FluidHandlerWrapper.get(tile) != null
                 )) {
                 continue;
             }
 
-            IFluidHandler acceptor = tile instanceof IFluidHandler
-                ? (IFluidHandler) tile
-                : new HBMTileFluidHandler((IFluidConnector) tile);
+            IFluidHandler acceptor = FluidHandlerWrapper.get(tile);
 
             for (ForgeDirection side : sides) {
                 if (acceptor != null && acceptor.canFill(side, fluidToSend.getFluid())) {

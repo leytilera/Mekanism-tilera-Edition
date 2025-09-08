@@ -78,7 +78,7 @@ public class MultipartMekanism implements IPartFactory {
                 "api.hbm.energymk2.IEnergyReceiverMK2"
             );
             MultipartGenerator.registerPassThroughInterface(
-                "api.hbm.fluid.IFluidConnector"
+                "api.hbm.fluidmk2.IFluidConnectorMK2"
             );
         }
 

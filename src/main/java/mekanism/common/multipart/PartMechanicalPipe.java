@@ -3,7 +3,7 @@ package mekanism.common.multipart;
 import java.util.Arrays;
 import java.util.Collection;
 
-import api.hbm.fluid.IFluidConnector;
+import api.hbm.fluidmk2.IFluidConnectorMK2;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Vector3;
@@ -35,9 +35,9 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-@Optional.Interface(iface = "api.hbm.fluid.IFluidConnector", modid = "hbm")
+@Optional.Interface(iface = "api.hbm.fluidmk2.IFluidConnectorMK2", modid = "hbm")
 public class PartMechanicalPipe extends PartTransmitter<IFluidHandler, FluidNetwork>
-    implements IFluidHandler, IFluidConnector {
+    implements IFluidHandler, IFluidConnectorMK2 {
     public static TransmitterIcons pipeIcons = new TransmitterIcons(4, 8);
 
     public float currentScale;
@@ -342,58 +342,5 @@ public class PartMechanicalPipe extends PartTransmitter<IFluidHandler, FluidNetw
 
         super.writeDesc(packet);
     }
-
-    @Override
-    public boolean isLoaded() {
-        return true;
-    }
-
-    @Optional.Method(modid = "hbm")
-    @Override
-    public long transferFluid(FluidType type, int pressure, long fluid) {
-        if (pressure != 0)
-            return fluid;
-        Fluid forgeFluid = HBMIntegration.INSTANCE.fluidMap.inverse().get(type);
-        if (forgeFluid == null)
-            return fluid;
-
-        if (!this.canAcceptHBMFluid())
-            return fluid;
-
-        return fluid - this.takeFluid(new FluidStack(forgeFluid, (int) fluid), true);
-    }
-
-    @Optional.Method(modid = "hbm")
-    @Override
-    public long getDemand(FluidType type, int pressure) {
-        if (pressure != 0)
-            return 0;
-        Fluid forgeFluid = HBMIntegration.INSTANCE.fluidMap.inverse().get(type);
-        if (forgeFluid == null)
-            return 0;
-
-        return this.takeFluid(new FluidStack(forgeFluid, Integer.MAX_VALUE), false);
-    }
-
-    /**
-     * This method checks if there are any HBM tiles on non-push sides of the pipe, and
-     * only then allows HBM fluid input for this pipe. This is a workaround to reject
-     * incoming fluid from push (and none) sides in *most* cases. A proper implementation
-     * is impossible because we don't get a direction in `transferFluid`.
-     */
-    @Optional.Method(modid = "hbm")
-    private boolean canAcceptHBMFluid() {
-        return Arrays.stream(ForgeDirection.VALID_DIRECTIONS)
-            .filter(d -> {
-                ConnectionType type = this.connectionTypes[d.ordinal()];
-                return type != ConnectionType.PUSH && type != ConnectionType.NONE;
-            })
-            .map(
-                d
-                -> new Coord4D(this.x(), this.y(), this.z())
-                       .step(d)
-                       .getTileEntity(this.world())
-            )
-            .anyMatch(t -> !(t instanceof TileMultipart) && t instanceof IFluidConnector);
-    }
+    
 }

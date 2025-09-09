@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.hbm.inventory.fluid.FluidType;
+import com.hbm.inventory.fluid.Fluids;
 import com.hbm.inventory.fluid.tank.FluidTank;
 import com.hbm.tileentity.TileEntityProxyBase;
 
@@ -131,7 +132,7 @@ public abstract class FluidHandlerWrapper implements IFluidHandler {
         public boolean canDrain(ForgeDirection direction, Fluid fluid) {
             if (!(this.inner instanceof IFluidProviderMK2))
                 return false;
-            FluidType hbmFluid = HBMIntegration.INSTANCE.fluidMap.get(fluid);
+            FluidType hbmFluid = HBMIntegration.INSTANCE.convert(fluid);
             if (hbmFluid == null)
                 return false;
 
@@ -145,7 +146,7 @@ public abstract class FluidHandlerWrapper implements IFluidHandler {
         public boolean canFill(ForgeDirection direction, Fluid fluid) {
             if (!(this.inner instanceof IFluidReceiverMK2))
                 return false;
-            FluidType hbmFluid = HBMIntegration.INSTANCE.fluidMap.get(fluid);
+            FluidType hbmFluid = HBMIntegration.INSTANCE.convert(fluid);
             if (hbmFluid == null)
                 return false;
 
@@ -159,7 +160,7 @@ public abstract class FluidHandlerWrapper implements IFluidHandler {
         public FluidStack drain(ForgeDirection direction, FluidStack fstack, boolean doDrain) {
             if (!(this.inner instanceof IFluidProviderMK2))
                 return null;
-            FluidType hbmFluid = HBMIntegration.INSTANCE.fluidMap.get(fstack.getFluid());
+            FluidType hbmFluid = HBMIntegration.INSTANCE.convert(fstack.getFluid());
             if (hbmFluid == null)
                 return null;
 
@@ -188,7 +189,7 @@ public abstract class FluidHandlerWrapper implements IFluidHandler {
                     continue;
                 int toDrain = Math.min(avail, amount);
 
-                Fluid forgeFluid = HBMIntegration.INSTANCE.fluidMap.inverse().get(tank.getTankType());
+                Fluid forgeFluid = HBMIntegration.INSTANCE.convert(tank.getTankType());
                 if (forgeFluid == null)
                     continue;
 
@@ -204,7 +205,7 @@ public abstract class FluidHandlerWrapper implements IFluidHandler {
         public int fill(ForgeDirection direction, FluidStack fstack, boolean doFill) {
             if (!(this.inner instanceof IFluidReceiverMK2))
                 return 0;
-            FluidType hbmFluid = HBMIntegration.INSTANCE.fluidMap.get(fstack.getFluid());
+            FluidType hbmFluid = HBMIntegration.INSTANCE.convert(fstack.getFluid());
             if (hbmFluid == null)
                 return 0;
 
@@ -225,7 +226,7 @@ public abstract class FluidHandlerWrapper implements IFluidHandler {
                     .map(
                             t -> new FluidTankInfo(
                                     new FluidStack(
-                                            HBMIntegration.INSTANCE.fluidMap.inverse().get(t.getTankType()),
+                                            HBMIntegration.INSTANCE.convert(t.getTankType()),
                                             t.getFill()),
                                     t.getMaxFill()))
                     .toArray(FluidTankInfo[]::new);

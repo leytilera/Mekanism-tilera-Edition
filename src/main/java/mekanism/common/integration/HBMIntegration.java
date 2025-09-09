@@ -1,7 +1,5 @@
 package mekanism.common.integration;
 
-import java.util.HashSet;
-
 import com.google.common.collect.HashBiMap;
 import com.hbm.inventory.fluid.FluidType;
 import com.hbm.inventory.fluid.Fluids;
@@ -13,6 +11,10 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class HBMIntegration {
@@ -21,7 +23,8 @@ public class HBMIntegration {
         MinecraftForge.EVENT_BUS.register(HBMIntegration.INSTANCE);
     }
 
-    public final HashBiMap<Fluid, FluidType> fluidMap = HashBiMap.create();
+    private final HashBiMap<Fluid, FluidType> fluidMap = HashBiMap.create();
+    private final Map<String, Fluid> namedFluids = new HashMap<>();
 
     public void registerHBMFluids() {
         for (FluidType fluid : Fluids.getAll()) {
@@ -35,7 +38,24 @@ public class HBMIntegration {
             }
 
             fluidMap.put(forgeFluid, fluid);
+            namedFluids.put(forgeFluid.getName().toLowerCase(), forgeFluid);
         }
+    }
+
+    public FluidType convert(Fluid fluid) {
+        if (fluid == null) {
+            return null;
+        } else if (fluidMap.containsKey(fluid)) {
+            return fluidMap.get(fluid);
+        } else if (namedFluids.containsKey(fluid.getName().toLowerCase())) {
+            return fluidMap.get(namedFluids.get(fluid.getName().toLowerCase()));
+        }
+        return null;
+    }
+
+    public Fluid convert(FluidType fluid) {
+        if (fluid == null) return null;
+        return fluidMap.inverse().get(fluid);
     }
 
     @SideOnly(Side.CLIENT)

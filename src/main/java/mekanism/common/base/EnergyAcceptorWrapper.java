@@ -232,11 +232,11 @@ public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
         }
 
         public long toHE(double joules) {
-            return (long) Math.floor(joules * general.TO_IC2);
+            return (long) Math.floor(joules * general.TO_HE);
         }
 
         public double fromHE(long he) {
-            return he * general.FROM_IC2;
+            return he * general.FROM_HE;
         }
     }
 }

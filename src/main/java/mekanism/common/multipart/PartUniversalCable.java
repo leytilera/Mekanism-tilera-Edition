@@ -149,14 +149,14 @@ public class PartUniversalCable
                             IEnergyProviderMK2 tile = (IEnergyProviderMK2) outputter;
                             double received = Math.min(
                                 Math.min(tile.getPower(), tile.getProviderSpeed())
-                                    * general.FROM_IC2,
+                                    * general.FROM_HE,
                                 canDraw
                             );
                             double toDraw = received;
                             if (received > 0) {
                                 toDraw -= takeEnergy(received, true);
                             }
-                            tile.usePower((long) (toDraw * general.TO_IC2));
+                            tile.usePower((long) (toDraw * general.TO_HE));
                         }
                     }
                 }
@@ -448,19 +448,19 @@ public class PartUniversalCable
     @Override
     @Method(modid = "hbm")
     public long getPower() {
-        return Math.round(getEnergy() * general.TO_IC2);
+        return Math.round(getEnergy() * general.TO_HE);
     }
 
     @Override
     @Method(modid = "hbm")
     public void setPower(long power) {
-        setEnergy(power * general.FROM_IC2);
+        setEnergy(power * general.FROM_HE);
     }
 
     @Override
     @Method(modid = "hbm")
     public long getMaxPower() {
-        return Math.round(getMaxEnergy() * general.TO_IC2);
+        return Math.round(getMaxEnergy() * general.TO_HE);
     }
 
     @Method(modid = "hbm")

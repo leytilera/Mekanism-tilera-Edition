@@ -16,7 +16,7 @@ import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyConductor;
 import ic2.api.energy.tile.IEnergyTile;
 import mekanism.api.Coord4D;
-import mekanism.api.MekanismConfig.general;
+import mekanism.common.Units;
 import mekanism.common.base.IEnergyWrapper;
 import mekanism.common.integration.ae2.MekaEnergyGridBlock;
 import mekanism.common.tile.TileEntityGasTank.GasMode;
@@ -201,14 +201,14 @@ public class TileEntityTurbineValve
     public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
         if (getOutputtingSides().contains(from)) {
             double toSend = Math.min(
-                getEnergy(), Math.min(getMaxOutput(), maxExtract * general.FROM_TE)
+                getEnergy(), Math.min(getMaxOutput(), Units.convertToJoules(maxExtract, Units.RF))
             );
 
             if (!simulate) {
                 setEnergy(getEnergy() - toSend);
             }
 
-            return (int) Math.round(toSend * general.TO_TE);
+            return (int) Math.round(Units.convertFromJoules(toSend, Units.RF));
         }
 
         return 0;
@@ -221,12 +221,12 @@ public class TileEntityTurbineValve
 
     @Override
     public int getEnergyStored(ForgeDirection from) {
-        return (int) Math.round(getEnergy() * general.TO_TE);
+        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.RF));
     }
 
     @Override
     public int getMaxEnergyStored(ForgeDirection from) {
-        return (int) Math.round(getMaxEnergy() * general.TO_TE);
+        return (int) Math.round(Units.convertFromJoules(getMaxEnergy(), Units.RF));
     }
 
     @Override
@@ -244,13 +244,13 @@ public class TileEntityTurbineValve
     @Override
     @Method(modid = "IC2")
     public void setStored(int energy) {
-        setEnergy(energy * general.FROM_IC2);
+        setEnergy(Units.convertToJoules(energy, Units.EU));
     }
 
     @Override
     @Method(modid = "IC2")
     public int addEnergy(int amount) {
-        return (int) Math.round(getEnergy() * general.TO_IC2);
+        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.EU));
     }
 
     @Override
@@ -280,19 +280,19 @@ public class TileEntityTurbineValve
     @Override
     @Method(modid = "IC2")
     public int getStored() {
-        return (int) Math.round(getEnergy() * general.TO_IC2);
+        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.EU));
     }
 
     @Override
     @Method(modid = "IC2")
     public int getCapacity() {
-        return (int) Math.round(getMaxEnergy() * general.TO_IC2);
+        return (int) Math.round(Units.convertFromJoules(getMaxEnergy(), Units.EU));
     }
 
     @Override
     @Method(modid = "IC2")
     public int getOutput() {
-        return (int) Math.round(getMaxOutput() * general.TO_IC2);
+        return (int) Math.round(Units.convertFromJoules(getMaxOutput(), Units.EU));
     }
 
     @Override
@@ -304,7 +304,7 @@ public class TileEntityTurbineValve
     @Override
     @Method(modid = "IC2")
     public double getOfferedEnergy() {
-        return Math.min(getEnergy(), getMaxOutput()) * general.TO_IC2;
+        return Units.convertFromJoules(Math.min(getEnergy(), getMaxOutput()), Units.EU);
     }
 
     @Override
@@ -315,7 +315,7 @@ public class TileEntityTurbineValve
     @Override
     @Method(modid = "IC2")
     public double getOutputEnergyUnitsPerTick() {
-        return getMaxOutput() * general.TO_IC2;
+        return Units.convertFromJoules(getMaxOutput(), Units.EU);
     }
 
     @Override
@@ -328,7 +328,7 @@ public class TileEntityTurbineValve
     @Method(modid = "IC2")
     public void drawEnergy(double amount) {
         if (structure != null) {
-            double toDraw = Math.min(amount * general.FROM_IC2, getMaxOutput());
+            double toDraw = Math.min(Units.convertToJoules(amount, Units.EU), getMaxOutput());
             setEnergy(Math.max(getEnergy() - toDraw, 0));
         }
     }
@@ -401,25 +401,25 @@ public class TileEntityTurbineValve
     @Override
     @Method(modid = "hbm")
     public long getPower() {
-        return Math.round(getEnergy() * general.TO_HE);
+        return Math.round(Units.convertFromJoules(getEnergy(), Units.HE));
     }
 
     @Override
     @Method(modid = "hbm")
     public void setPower(long power) {
-        setEnergy(power * general.FROM_HE);
+        setEnergy(Units.convertToJoules(power, Units.HE));
     }
 
     @Override
     @Method(modid = "hbm")
     public long getMaxPower() {
-        return Math.round(getMaxEnergy() * general.TO_HE);
+        return Math.round(Units.convertFromJoules(getMaxEnergy(), Units.HE));
     }
 
     @Override
     @Method(modid = "hbm")
     public long getProviderSpeed() {
-        return Math.round(getMaxOutput() * general.TO_HE);
+        return Math.round(Units.convertFromJoules(getMaxOutput(), Units.HE));
     }
 
     @Method(modid = "hbm")

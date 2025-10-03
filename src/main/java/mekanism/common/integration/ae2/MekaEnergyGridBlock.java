@@ -76,6 +76,16 @@ public class MekaEnergyGridBlock<T extends TileEntity & IEnergyWrapper & IGridHo
             if (this.getGridNode(side) == null) {
                 return;
             }
+            /*if (this.getPowerFlow() == AccessRestriction.WRITE && this.getGridNode(side).getGrid() != null) {
+                IEnergyGrid grid = this.getGridNode(side).getGrid().getCache(IEnergyGrid.class);
+                double idle = grid.getIdlePowerUsage();
+                double stored = grid.getStoredPower();
+                double available = stored - idle * 20;
+                double demand = Math.min(PowerUnits.MK.convertTo(PowerUnits.AE, host.getMaxEnergy() - host.getEnergy()), available);
+                if (demand < 0) demand = 0;
+                double provided = grid.extractAEPower(demand, Actionable.MODULATE, PowerMultiplier.ONE);
+                host.setEnergy(host.getEnergy() + PowerUnits.AE.convertTo(PowerUnits.MK, provided));
+            }*/
         }
     }
 

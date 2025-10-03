@@ -15,11 +15,11 @@ import ic2.api.energy.tile.IEnergyAcceptor;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
 import mekanism.api.Coord4D;
-import mekanism.api.MekanismConfig.general;
 import mekanism.api.energy.ICableOutputter;
 import mekanism.api.energy.IStrictEnergyAcceptor;
 import mekanism.api.transmitters.ITransmitterTile;
 import mekanism.api.transmitters.TransmissionType;
+import mekanism.common.base.EnergyAcceptorWrapper;
 import mekanism.common.base.IEnergyWrapper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -168,15 +168,6 @@ public final class CableUtils {
                     if (connectable[side.ordinal()]) {
                         outputtingSides.add(side);
                     }
-                    if (MekanismUtils.useHBM()) {
-                        emitter.tryProvide(
-                            ((TileEntity) emitter).getWorldObj(),
-                            ((TileEntity) emitter).xCoord + side.offsetX,
-                            ((TileEntity) emitter).yCoord + side.offsetY,
-                            ((TileEntity) emitter).zCoord + side.offsetZ,
-                            side
-                        );
-                    }
                 }
 
                 if (outputtingSides.size() > 0) {
@@ -196,6 +187,18 @@ public final class CableUtils {
                     } while (tryAgain);
 
                     emitter.setEnergy(emitter.getEnergy() - sent);
+                }
+
+                if (MekanismUtils.useHBM()) {
+                    for (ForgeDirection side : emitter.getOutputtingSides()) {
+                        emitter.tryProvide(
+                            ((TileEntity) emitter).getWorldObj(),
+                            ((TileEntity) emitter).xCoord + side.offsetX,
+                            ((TileEntity) emitter).yCoord + side.offsetY,
+                            ((TileEntity) emitter).zCoord + side.offsetZ,
+                            side
+                        );
+                    }
                 }
             }
         }
@@ -244,44 +247,13 @@ public final class CableUtils {
         boolean tryAgain
     ) {
         double sent = 0;
-
-        if (tileEntity instanceof IStrictEnergyAcceptor) {
-            IStrictEnergyAcceptor acceptor = (IStrictEnergyAcceptor) tileEntity;
+        IStrictEnergyAcceptor acceptor = EnergyAcceptorWrapper.get(tileEntity);
+        if (acceptor != null) {
 
             if (acceptor.canReceiveEnergy(side.getOpposite())) {
                 sent += acceptor.transferEnergyToAcceptor(
                     side.getOpposite(), currentSending
                 );
-            }
-        } else if (MekanismUtils.useRF() && tileEntity instanceof IEnergyReceiver) {
-            IEnergyReceiver handler = (IEnergyReceiver) tileEntity;
-
-            if (handler.canConnectEnergy(side.getOpposite())) {
-                int toSend = Math.min(
-                    (int) Math.round(currentSending * general.TO_TE), Integer.MAX_VALUE
-                );
-                int used = handler.receiveEnergy(side.getOpposite(), toSend, false);
-                sent += used * general.FROM_TE;
-            }
-        } else if (MekanismUtils.useIC2()
-                   && getIC2Tile(tileEntity) instanceof IEnergySink) {
-            IEnergySink sink = (IEnergySink) getIC2Tile(tileEntity);
-            if (sink.acceptsEnergyFrom((TileEntity) from, side.getOpposite())) {
-                double toSend = Math.min(
-                    currentSending,
-                    EnergyNet.instance.getPowerFromTier(sink.getSinkTier())
-                        * general.FROM_IC2
-                );
-                toSend = Math.min(
-                    Math.min(toSend, sink.getDemandedEnergy() * general.FROM_IC2),
-                    Integer.MAX_VALUE
-                );
-                sent
-                    += (toSend
-                        - (sink.injectEnergy(
-                               side.getOpposite(), toSend * general.TO_IC2, 0
-                           )
-                           * general.FROM_IC2));
             }
         }
 

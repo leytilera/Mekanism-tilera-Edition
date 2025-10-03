@@ -9,6 +9,7 @@ import mekanism.api.MekanismConfig.general;
 import mekanism.api.energy.EnergizedItemManager;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.api.energy.IStrictEnergyStorage;
+import mekanism.common.Units;
 import mekanism.common.tile.TileEntityContainerBlock;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -38,16 +39,14 @@ public final class ChargeUtils {
                 IElectricItem item = (IElectricItem) inv.getStackInSlot(slotID).getItem();
 
                 if (item.canProvideEnergy(inv.getStackInSlot(slotID))) {
-                    double gain = ElectricItem.manager.discharge(
+                    double gain = Units.convertToJoules(ElectricItem.manager.discharge(
                                       inv.getStackInSlot(slotID),
-                                      (int) ((storer.getMaxEnergy() - storer.getEnergy())
-                                             * general.TO_IC2),
+                                      (int) Units.convertFromJoules((storer.getMaxEnergy() - storer.getEnergy()), Units.EU),
                                       4,
                                       true,
                                       true,
                                       false
-                                  )
-                        * general.FROM_IC2;
+                                  ), Units.EU);
                     storer.setEnergy(storer.getEnergy() + gain);
                 }
             } else if (MekanismUtils.useRF()
@@ -63,12 +62,12 @@ public final class ChargeUtils {
                 ));
                 int toTransfer = (int) Math.round(Math.min(
                     itemEnergy,
-                    ((storer.getMaxEnergy() - storer.getEnergy()) * general.TO_TE)
+                    Units.convertFromJoules((storer.getMaxEnergy() - storer.getEnergy()), Units.RF)
                 ));
 
                 storer.setEnergy(
                     storer.getEnergy()
-                    + (item.extractEnergy(itemStack, toTransfer, false) * general.FROM_TE)
+                    + Units.convertToJoules(item.extractEnergy(itemStack, toTransfer, false), Units.RF)
                 );
             } else if (inv.getStackInSlot(slotID).getItem() == Items.redstone
                        && storer.getEnergy() + general.ENERGY_PER_REDSTONE
@@ -101,14 +100,13 @@ public final class ChargeUtils {
                 );
             } else if (MekanismUtils.useIC2()
                        && inv.getStackInSlot(slotID).getItem() instanceof IElectricItem) {
-                double sent = ElectricItem.manager.charge(
+                double sent = Units.convertToJoules(ElectricItem.manager.charge(
                                   inv.getStackInSlot(slotID),
-                                  (int) (storer.getEnergy() * general.TO_IC2),
+                                  (int) Units.convertFromJoules(storer.getEnergy(), Units.EU),
                                   4,
                                   true,
                                   false
-                              )
-                    * general.FROM_IC2;
+                              ), Units.EU);
                 storer.setEnergy(storer.getEnergy() - sent);
             } else if (MekanismUtils.useRF()
                        && inv.getStackInSlot(slotID).getItem()
@@ -122,11 +120,11 @@ public final class ChargeUtils {
                     item.getMaxEnergyStored(itemStack) - item.getEnergyStored(itemStack)
                 ));
                 int toTransfer = (int
-                ) Math.round(Math.min(itemEnergy, (storer.getEnergy() * general.TO_TE)));
+                ) Math.round(Math.min(itemEnergy, Units.convertFromJoules(storer.getEnergy(), Units.RF)));
 
                 storer.setEnergy(
                     storer.getEnergy()
-                    - (item.receiveEnergy(itemStack, toTransfer, false) * general.FROM_TE)
+                    - Units.convertToJoules(item.receiveEnergy(itemStack, toTransfer, false), Units.RF)
                 );
             }
         }

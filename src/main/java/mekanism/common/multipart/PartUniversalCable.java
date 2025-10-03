@@ -17,7 +17,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import ic2.api.energy.tile.IEnergySource;
 import mekanism.api.MekanismConfig.client;
-import mekanism.api.MekanismConfig.general;
 import mekanism.api.energy.EnergyStack;
 import mekanism.api.energy.ICableOutputter;
 import mekanism.api.energy.IStrictEnergyAcceptor;
@@ -26,6 +25,7 @@ import mekanism.api.transmitters.TransmissionType;
 import mekanism.client.render.RenderPartTransmitter;
 import mekanism.common.EnergyNetwork;
 import mekanism.common.Tier;
+import mekanism.common.Units;
 import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.CableTier;
 import mekanism.common.base.EnergyAcceptorWrapper;
@@ -108,13 +108,12 @@ public class PartUniversalCable
                             }
                         } else if (MekanismUtils.useRF()
                                    && outputter instanceof IEnergyProvider) {
-                            double received = ((IEnergyProvider) outputter)
+                            double received = Units.convertToJoules(((IEnergyProvider) outputter)
                                                   .extractEnergy(
                                                       side.getOpposite(),
-                                                      (int) (canDraw * general.TO_TE),
+                                                      (int) Units.convertFromJoules(canDraw, Units.RF),
                                                       true
-                                                  )
-                                * general.FROM_TE;
+                                                  ), Units.RF);
                             double toDraw = received;
 
                             if (received > 0) {
@@ -124,16 +123,15 @@ public class PartUniversalCable
                             ((IEnergyProvider) outputter)
                                 .extractEnergy(
                                     side.getOpposite(),
-                                    (int) (toDraw * general.TO_TE),
+                                    (int) Units.convertFromJoules(toDraw, Units.RF),
                                     false
                                 );
                         } else if (MekanismUtils.useIC2()
                                    && CableUtils.getIC2Tile(outputter)
                                            instanceof IEnergySource) {
                             double received = Math.min(
-                                ((IEnergySource) CableUtils.getIC2Tile(outputter))
-                                        .getOfferedEnergy()
-                                    * general.FROM_IC2,
+                                Units.convertToJoules(((IEnergySource) CableUtils.getIC2Tile(outputter))
+                                        .getOfferedEnergy(), Units.EU),
                                 canDraw
                             );
                             double toDraw = received;
@@ -143,20 +141,19 @@ public class PartUniversalCable
                             }
 
                             ((IEnergySource) CableUtils.getIC2Tile(outputter))
-                                .drawEnergy(toDraw * general.TO_IC2);
+                                .drawEnergy(Units.convertFromJoules(toDraw, Units.EU));
                         } else if (MekanismUtils.useHBM()
                                    && outputter instanceof IEnergyProviderMK2) {
                             IEnergyProviderMK2 tile = (IEnergyProviderMK2) outputter;
                             double received = Math.min(
-                                Math.min(tile.getPower(), tile.getProviderSpeed())
-                                    * general.FROM_HE,
+                                Units.convertToJoules(Math.min(tile.getPower(), tile.getProviderSpeed()), Units.HE),
                                 canDraw
                             );
                             double toDraw = received;
                             if (received > 0) {
                                 toDraw -= takeEnergy(received, true);
                             }
-                            tile.usePower((long) (toDraw * general.TO_HE));
+                            tile.usePower((long) Units.convertFromJoules(toDraw, Units.HE));
                         }
                     }
                 }
@@ -313,7 +310,7 @@ public class PartUniversalCable
         if (canReceiveEnergy(from)) {
             return maxReceive
                 - (int) Math.round(
-                    takeEnergy(maxReceive * general.FROM_TE, !simulate) * general.TO_TE
+                    Units.convertFromJoules(takeEnergy(Units.convertToJoules(maxReceive, Units.RF), !simulate), Units.RF)
                 );
         }
 
@@ -332,12 +329,12 @@ public class PartUniversalCable
 
     @Override
     public int getEnergyStored(ForgeDirection from) {
-        return (int) Math.round(getEnergy() * general.TO_TE);
+        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.RF));
     }
 
     @Override
     public int getMaxEnergyStored(ForgeDirection from) {
-        return (int) Math.round(getMaxEnergy() * general.TO_TE);
+        return (int) Math.round(Units.convertFromJoules(getMaxEnergy(), Units.RF));
     }
 
     @Override
@@ -448,19 +445,19 @@ public class PartUniversalCable
     @Override
     @Method(modid = "hbm")
     public long getPower() {
-        return Math.round(getEnergy() * general.TO_HE);
+        return Math.round(Units.convertFromJoules(getEnergy(), Units.HE));
     }
 
     @Override
     @Method(modid = "hbm")
     public void setPower(long power) {
-        setEnergy(power * general.FROM_HE);
+        setEnergy(Units.convertToJoules(power, Units.HE));
     }
 
     @Override
     @Method(modid = "hbm")
     public long getMaxPower() {
-        return Math.round(getMaxEnergy() * general.TO_HE);
+        return Math.round(Units.convertFromJoules(getMaxEnergy(), Units.HE));
     }
 
     @Method(modid = "hbm")

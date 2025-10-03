@@ -25,6 +25,7 @@ import mekanism.common.FuelHandler;
 import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.MekanismItems;
+import mekanism.common.Units;
 import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.GasTankTier;
 import mekanism.common.base.IModule;
@@ -107,7 +108,7 @@ public class MekanismGenerators implements IModule {
 
             BuildcraftFuelRegistry.fuel.addFuel(
                 FluidRegistry.getFluid("ethene"),
-                (int) (240 * general.TO_TE),
+                (int) Units.convertFromJoules(240, Units.RF),
                 40 * FluidContainerRegistry.BUCKET_VOLUME
             );
         }

@@ -16,6 +16,7 @@ import mekanism.common.Mekanism;
 import mekanism.common.MekanismItems;
 import mekanism.common.RobitAIFollow;
 import mekanism.common.RobitAIPickup;
+import mekanism.common.Units;
 import mekanism.common.base.ISustainedInventory;
 import mekanism.common.item.ItemConfigurator;
 import mekanism.common.item.ItemRobit;
@@ -177,15 +178,14 @@ public class EntityRobit
 
                     if (item.canProvideEnergy(inventory[27])) {
                         double gain
-                            = ElectricItem.manager.discharge(
+                            = Units.convertToJoules(ElectricItem.manager.discharge(
                                   inventory[27],
-                                  (MAX_ELECTRICITY - getEnergy()) * general.TO_IC2,
+                                  Units.convertFromJoules(MAX_ELECTRICITY - getEnergy(), Units.EU),
                                   4,
                                   true,
                                   true,
                                   false
-                              )
-                            * general.FROM_IC2;
+                              ), Units.EU);
                         setEnergy(getEnergy() + gain);
                     }
                 } else if (MekanismUtils.useRF()
@@ -199,13 +199,12 @@ public class EntityRobit
                         item.getEnergyStored(itemStack)
                     ));
                     int toTransfer = (int) Math.round(Math.min(
-                        itemEnergy, ((MAX_ELECTRICITY - getEnergy()) * general.TO_TE)
+                        itemEnergy, Units.convertFromJoules((MAX_ELECTRICITY - getEnergy()), Units.RF)
                     ));
 
                     setEnergy(
                         getEnergy()
-                        + (item.extractEnergy(itemStack, toTransfer, false)
-                           * general.FROM_TE)
+                        + Units.convertToJoules(item.extractEnergy(itemStack, toTransfer, false), Units.RF)
                     );
                 } else if (inventory[27].getItem() == Items.redstone
                            && getEnergy() + general.ENERGY_PER_REDSTONE

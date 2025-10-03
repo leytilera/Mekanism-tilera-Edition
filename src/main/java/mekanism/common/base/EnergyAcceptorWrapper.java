@@ -4,8 +4,8 @@ import api.hbm.energymk2.IEnergyReceiverMK2;
 import cofh.api.energy.IEnergyReceiver;
 import ic2.api.energy.tile.IEnergySink;
 import mekanism.api.Coord4D;
-import mekanism.api.MekanismConfig.general;
 import mekanism.api.energy.IStrictEnergyAcceptor;
+import mekanism.common.Units;
 import mekanism.common.util.CableUtils;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.tileentity.TileEntity;
@@ -124,11 +124,11 @@ public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
         }
 
         public int toRF(double joules) {
-            return (int) Math.round(joules * general.TO_TE);
+            return (int) Math.round(Units.convertFromJoules(joules, Units.RF));
         }
 
         public double fromRF(int rf) {
-            return rf * general.FROM_TE;
+            return Units.convertToJoules(rf, Units.RF);
         }
 
         public int getEnergyNeeded(ForgeDirection side) {
@@ -179,11 +179,11 @@ public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
         }
 
         public double toEU(double joules) {
-            return joules * general.TO_IC2;
+            return Units.convertFromJoules(joules, Units.EU);
         }
 
         public double fromEU(double eu) {
-            return eu * general.FROM_IC2;
+            return Units.convertToJoules(eu, Units.EU);
         }
     }
 
@@ -232,11 +232,11 @@ public abstract class EnergyAcceptorWrapper implements IStrictEnergyAcceptor {
         }
 
         public long toHE(double joules) {
-            return (long) Math.floor(joules * general.TO_HE);
+            return (long) Math.floor(Units.convertFromJoules(joules, Units.HE));
         }
 
         public double fromHE(long he) {
-            return he * general.FROM_HE;
+            return Units.convertToJoules(he, Units.HE);
         }
     }
 }

@@ -35,9 +35,7 @@ public class PacketConfigSync implements IMessageHandler<ConfigSyncMessage, IMes
             dataStream.writeInt(general.obsidianTNTBlastRadius);
             dataStream.writeInt(general.UPDATE_DELAY);
             dataStream.writeDouble(general.FROM_IC2);
-            dataStream.writeDouble(general.TO_IC2);
-            dataStream.writeDouble(general.FROM_TE);
-            dataStream.writeDouble(general.TO_TE);
+            dataStream.writeDouble(general.FROM_HE);
             dataStream.writeDouble(general.FROM_H2);
             dataStream.writeInt(general.ETHENE_BURN_TIME);
             dataStream.writeInt(general.METHANE_BURN_TIME);
@@ -129,9 +127,7 @@ public class PacketConfigSync implements IMessageHandler<ConfigSyncMessage, IMes
             general.obsidianTNTBlastRadius = dataStream.readInt();
             general.UPDATE_DELAY = dataStream.readInt();
             general.FROM_IC2 = dataStream.readDouble();
-            general.TO_IC2 = dataStream.readDouble();
-            general.FROM_TE = dataStream.readDouble();
-            general.TO_TE = dataStream.readDouble();
+            general.FROM_HE = dataStream.readDouble();
             general.FROM_H2 = dataStream.readDouble();
             general.ETHENE_BURN_TIME = dataStream.readInt();
             general.METHANE_BURN_TIME = dataStream.readInt();

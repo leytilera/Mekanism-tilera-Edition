@@ -15,6 +15,7 @@ import mekanism.api.MekanismConfig.general;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.client.MekKeyHandler;
 import mekanism.client.MekanismKeyHandler;
+import mekanism.common.Units;
 import mekanism.common.base.ISustainedData;
 import mekanism.common.base.ISustainedInventory;
 import mekanism.common.base.ISustainedTank;
@@ -439,13 +440,13 @@ public class ItemBlockGenerator extends ItemBlock
     public int receiveEnergy(ItemStack theItem, int energy, boolean simulate) {
         if (canReceive(theItem)) {
             double energyNeeded = getMaxEnergy(theItem) - getEnergy(theItem);
-            double toReceive = Math.min(energy * general.FROM_TE, energyNeeded);
+            double toReceive = Math.min(Units.convertToJoules(energy, Units.RF), energyNeeded);
 
             if (!simulate) {
                 setEnergy(theItem, getEnergy(theItem) + toReceive);
             }
 
-            return (int) Math.round(toReceive * general.TO_TE);
+            return (int) Math.round(Units.convertFromJoules(toReceive, Units.RF));
         }
 
         return 0;
@@ -455,13 +456,13 @@ public class ItemBlockGenerator extends ItemBlock
     public int extractEnergy(ItemStack theItem, int energy, boolean simulate) {
         if (canSend(theItem)) {
             double energyRemaining = getEnergy(theItem);
-            double toSend = Math.min((energy * general.FROM_TE), energyRemaining);
+            double toSend = Math.min(Units.convertToJoules(energy, Units.RF), energyRemaining);
 
             if (!simulate) {
                 setEnergy(theItem, getEnergy(theItem) - toSend);
             }
 
-            return (int) Math.round(toSend * general.TO_TE);
+            return (int) Math.round(Units.convertFromJoules(toSend, Units.RF));
         }
 
         return 0;
@@ -469,12 +470,12 @@ public class ItemBlockGenerator extends ItemBlock
 
     @Override
     public int getEnergyStored(ItemStack theItem) {
-        return (int) (getEnergy(theItem) * general.TO_TE);
+        return (int) Units.convertFromJoules(getEnergy(theItem), Units.RF);
     }
 
     @Override
     public int getMaxEnergyStored(ItemStack theItem) {
-        return (int) (getMaxEnergy(theItem) * general.TO_TE);
+        return (int) Units.convertFromJoules(getMaxEnergy(theItem), Units.RF);
     }
 
     @Override

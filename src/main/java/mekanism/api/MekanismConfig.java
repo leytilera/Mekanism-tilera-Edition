@@ -33,12 +33,8 @@ public class MekanismConfig {
         public static double DISASSEMBLER_USAGE = 10;
         public static EnergyType energyUnit = EnergyType.J;
         public static TempType tempUnit = TempType.K;
-        public static double TO_IC2;
-        public static double TO_TE;
-        public static double TO_HE;
         public static double FROM_H2;
         public static double FROM_IC2;
-        public static double FROM_TE;
         public static double FROM_HE;
         public static int laserRange;
         public static double laserEnergyNeededPerHardness;

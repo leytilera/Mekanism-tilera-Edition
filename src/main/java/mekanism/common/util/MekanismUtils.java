@@ -36,6 +36,7 @@ import mekanism.common.Mekanism;
 import mekanism.common.MekanismBlocks;
 import mekanism.common.MekanismItems;
 import mekanism.common.OreDictCache;
+import mekanism.common.Units;
 import mekanism.common.Tier.BaseTier;
 import mekanism.common.Tier.BinTier;
 import mekanism.common.Tier.EnergyCubeTier;
@@ -1119,15 +1120,15 @@ public final class MekanismUtils {
                 return UnitDisplayUtils.getDisplayShort(energy, ElectricUnit.JOULES);
             case RF:
                 return UnitDisplayUtils.getDisplayShort(
-                    energy * general.TO_TE, ElectricUnit.REDSTONE_FLUX
+                    convertToDisplay(energy), ElectricUnit.REDSTONE_FLUX
                 );
             case EU:
                 return UnitDisplayUtils.getDisplayShort(
-                    energy * general.TO_IC2, ElectricUnit.ELECTRICAL_UNITS
+                    convertToDisplay(energy), ElectricUnit.ELECTRICAL_UNITS
                 );
             case MJ:
                 return UnitDisplayUtils.getDisplayShort(
-                    energy * general.TO_TE / 10, ElectricUnit.MINECRAFT_JOULES
+                    convertToDisplay(energy), ElectricUnit.MINECRAFT_JOULES
                 );
         }
 
@@ -1140,16 +1141,7 @@ public final class MekanismUtils {
      * @return energy converted to joules
      */
     public static double convertToJoules(double energy) {
-        switch (general.energyUnit) {
-            case RF:
-                return energy * general.FROM_TE;
-            case EU:
-                return energy * general.FROM_IC2;
-            case MJ:
-                return energy * general.FROM_TE * 10;
-            default:
-                return energy;
-        }
+        return Units.convertToJoules(energy, Units.fromType(general.energyUnit));
     }
 
     /**
@@ -1158,16 +1150,7 @@ public final class MekanismUtils {
      * @return energy converted to configured unit
      */
     public static double convertToDisplay(double energy) {
-        switch (general.energyUnit) {
-            case RF:
-                return energy * general.TO_TE;
-            case EU:
-                return energy * general.TO_IC2;
-            case MJ:
-                return energy * general.TO_TE / 10;
-            default:
-                return energy;
-        }
+        return Units.convertFromJoules(energy, Units.fromType(general.energyUnit));
     }
 
     /**

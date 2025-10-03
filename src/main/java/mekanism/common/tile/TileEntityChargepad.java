@@ -12,11 +12,11 @@ import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import io.netty.buffer.ByteBuf;
 import mekanism.api.Coord4D;
-import mekanism.api.MekanismConfig.general;
 import mekanism.api.Range4D;
 import mekanism.api.energy.EnergizedItemManager;
 import mekanism.api.energy.IEnergizedItem;
 import mekanism.common.Mekanism;
+import mekanism.common.Units;
 import mekanism.common.block.BlockMachine.MachineType;
 import mekanism.common.entity.EntityRobit;
 import mekanism.common.network.PacketTileEntity.TileEntityMessage;
@@ -126,10 +126,9 @@ public class TileEntityChargepad extends TileEntityNoisyElectricBlock {
             } else if (MekanismUtils.useIC2()
                        && itemstack.getItem() instanceof IElectricItem) {
                 double sent
-                    = ElectricItem.manager.charge(
-                          itemstack, (int) (getEnergy() * general.TO_IC2), 4, true, false
-                      )
-                    * general.FROM_IC2;
+                    = Units.convertToJoules(ElectricItem.manager.charge(
+                          itemstack, (int) Units.convertFromJoules(getEnergy(), Units.EU), 4, true, false
+                      ), Units.EU);
                 setEnergy(getEnergy() - sent);
             } else if (MekanismUtils.useRF()
                        && itemstack.getItem() instanceof IEnergyContainerItem) {
@@ -140,11 +139,11 @@ public class TileEntityChargepad extends TileEntityNoisyElectricBlock {
                     item.getMaxEnergyStored(itemstack) - item.getEnergyStored(itemstack)
                 ));
                 int toTransfer = (int
-                ) Math.round(Math.min(itemEnergy, (getEnergy() * general.TO_TE)));
+                ) Math.round(Math.min(itemEnergy, Units.convertFromJoules(getEnergy(), Units.RF)));
 
                 setEnergy(
                     getEnergy()
-                    - (item.receiveEnergy(itemstack, toTransfer, false) * general.FROM_TE)
+                    - Units.convertToJoules(item.receiveEnergy(itemstack, toTransfer, false), Units.RF)
                 );
             }
         }

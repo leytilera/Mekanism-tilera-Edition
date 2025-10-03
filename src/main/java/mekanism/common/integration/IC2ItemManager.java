@@ -1,8 +1,8 @@
 package mekanism.common.integration;
 
 import ic2.api.item.IElectricItemManager;
-import mekanism.api.MekanismConfig.general;
 import mekanism.api.energy.IEnergizedItem;
+import mekanism.common.Units;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 
@@ -29,7 +29,7 @@ public class IC2ItemManager implements IElectricItemManager {
                 - energizedItem.getEnergy(itemStack);
             double energyToStore = Math.min(
                 Math.min(
-                    amount * general.FROM_IC2,
+                    Units.convertToJoules(amount, Units.EU),
                     energizedItem.getMaxEnergy(itemStack) * 0.01
                 ),
                 energyNeeded
@@ -41,7 +41,7 @@ public class IC2ItemManager implements IElectricItemManager {
                 );
             }
 
-            return (int) Math.round(energyToStore * general.TO_IC2);
+            return (int) Math.round(Units.convertFromJoules(energyToStore, Units.EU));
         }
 
         return 0;
@@ -57,7 +57,7 @@ public class IC2ItemManager implements IElectricItemManager {
         boolean simulate
     ) {
         if (energizedItem.canSend(itemStack)) {
-            double energyWanted = amount * general.FROM_IC2;
+            double energyWanted = Units.convertToJoules(amount, Units.EU);
             double energyToGive = Math.min(
                 Math.min(energyWanted, energizedItem.getMaxEnergy(itemStack) * 0.01),
                 energizedItem.getEnergy(itemStack)
@@ -69,7 +69,7 @@ public class IC2ItemManager implements IElectricItemManager {
                 );
             }
 
-            return (int) Math.round(energyToGive * general.TO_IC2);
+            return (int) Math.round(Units.convertFromJoules(energyToGive, Units.EU));
         }
 
         return 0;
@@ -77,12 +77,12 @@ public class IC2ItemManager implements IElectricItemManager {
 
     @Override
     public boolean canUse(ItemStack itemStack, double amount) {
-        return energizedItem.getEnergy(itemStack) >= amount * general.FROM_IC2;
+        return energizedItem.getEnergy(itemStack) >= Units.convertToJoules(amount, Units.EU);
     }
 
     @Override
     public double getCharge(ItemStack itemStack) {
-        return (int) Math.round(energizedItem.getEnergy(itemStack) * general.TO_IC2);
+        return (int) Math.round(Units.convertFromJoules(energizedItem.getEnergy(itemStack), Units.EU));
     }
 
     @Override

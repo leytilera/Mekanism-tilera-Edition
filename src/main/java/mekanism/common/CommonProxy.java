@@ -389,21 +389,9 @@ public class CommonProxy implements IGuiProvider {
         general.FROM_IC2 = Mekanism.configuration
                                .get(Configuration.CATEGORY_GENERAL, "JoulesToEU", 10D)
                                .getDouble();
-        general.TO_IC2 = Mekanism.configuration
-                             .get(Configuration.CATEGORY_GENERAL, "EUToJoules", .1D)
-                             .getDouble();
         general.FROM_HE = Mekanism.configuration
                              .get(Configuration.CATEGORY_GENERAL, "JoulesToHE", 0.5D)
                              .getDouble();
-        general.TO_HE = Mekanism.configuration
-                           .get(Configuration.CATEGORY_GENERAL, "HEToJoules", 2D)
-                           .getDouble();
-        general.FROM_TE = Mekanism.configuration
-                              .get(Configuration.CATEGORY_GENERAL, "JoulesToRF", 2.5D)
-                              .getDouble();
-        general.TO_TE = Mekanism.configuration
-                            .get(Configuration.CATEGORY_GENERAL, "RFToJoules", 0.4D)
-                            .getDouble();
         general.FROM_H2 = Mekanism.configuration
                               .get(
                                   Configuration.CATEGORY_GENERAL,

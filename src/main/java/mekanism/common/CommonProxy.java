@@ -557,6 +557,10 @@ public class CommonProxy implements IGuiProvider {
             = Mekanism.configuration
                   .get(Configuration.CATEGORY_GENERAL, "BlacklistHBMPower", false)
                   .getBoolean();
+        general.blacklistAE
+            = Mekanism.configuration
+                  .get(Configuration.CATEGORY_GENERAL, "BlacklistAEPower", true)
+                  .getBoolean();
 
         general.EnableQuartzCompat
             = Mekanism.configuration

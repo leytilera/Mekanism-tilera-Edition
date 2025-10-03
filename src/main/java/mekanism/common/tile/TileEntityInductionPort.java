@@ -3,6 +3,11 @@ package mekanism.common.tile;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import appeng.api.config.AccessRestriction;
+import appeng.api.config.Actionable;
+import appeng.api.config.PowerMultiplier;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
@@ -21,6 +26,7 @@ import mekanism.api.transmitters.ITransmitterTile;
 import mekanism.common.Mekanism;
 import mekanism.common.base.IActiveState;
 import mekanism.common.base.IEnergyWrapper;
+import mekanism.common.integration.ae2.MekaEnergyGridBlock;
 import mekanism.common.network.PacketTileEntity.TileEntityMessage;
 import mekanism.common.util.CableUtils;
 import mekanism.common.util.LangUtils;
@@ -45,6 +51,8 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
     /** false = input, true = output */
     public boolean mode;
 
+    public MekaEnergyGridBlock<TileEntityInductionPort> gridBlock = new MekaEnergyGridBlock<>(this);
+
     public TileEntityInductionPort() {
         super("InductionPort");
     }
@@ -58,6 +66,9 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         }
         if (MekanismUtils.useHBM()) {
             receiveHe();
+        }
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.update();
         }
         isLoaded = true;
 
@@ -173,6 +184,9 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         if (MekanismUtils.useIC2()) {
             deregister();
         }
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.destroy();
+        }
         isLoaded = false;
         super.onChunkUnload();
     }
@@ -184,6 +198,9 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         if (MekanismUtils.useIC2()) {
             deregister();
         }
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.destroy();
+        }
     }
 
     @Override
@@ -191,6 +208,10 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         super.readFromNBT(nbtTags);
 
         mode = nbtTags.getBoolean("mode");
+
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.readFromNBT(nbtTags);
+        }
     }
 
     @Override
@@ -198,6 +219,10 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
         super.writeToNBT(nbtTags);
 
         nbtTags.setBoolean("mode", mode);
+
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.writeToNBT(nbtTags);
+        }
     }
 
     @Override
@@ -475,5 +500,59 @@ public class TileEntityInductionPort extends TileEntityInductionCasing
     @Method(modid = "hbm")
     public boolean isLoaded() {
         return isLoaded;
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double getAECurrentPower() {
+        return this.gridBlock.getAECurrentPower();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double getAEMaxPower() {
+        return this.gridBlock.getAEMaxPower();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public AccessRestriction getPowerFlow() {
+        return this.gridBlock.getPowerFlow();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double injectAEPower(double amt, Actionable mode) {
+        return this.gridBlock.injectAEPower(amt, mode);
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public boolean isAEPublicPowerStorage() {
+        return this.gridBlock.isAEPublicPowerStorage();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double extractAEPower(double amt, Actionable mode, PowerMultiplier usePowerMultiplier) {
+        return this.gridBlock.extractAEPower(amt, mode, usePowerMultiplier);
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public AECableType getCableConnectionType(ForgeDirection dir) {
+        return AECableType.COVERED;
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public IGridNode getGridNode(ForgeDirection dir) {
+        return gridBlock.getGridNode(dir);
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public void securityBreak() {
+        
     }
 }

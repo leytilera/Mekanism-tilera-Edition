@@ -1217,6 +1217,10 @@ public final class MekanismUtils {
         return Mekanism.hooks.HBMLoaded && !general.blacklistHBM;
     }
 
+    public static boolean useAE() {
+        return Mekanism.hooks.AE2Loaded && !general.blacklistAE;
+    }
+
     /**
      * Gets a clean view of a coordinate value without the dimension ID.
      * @param obj - coordinate to check

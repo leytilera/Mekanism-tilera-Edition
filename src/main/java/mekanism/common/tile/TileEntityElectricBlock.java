@@ -3,6 +3,14 @@ package mekanism.common.tile;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import appeng.api.config.AccessRestriction;
+import appeng.api.config.Actionable;
+import appeng.api.config.PowerMultiplier;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.energy.IAEPowerStorage;
+import appeng.api.util.AECableType;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional.Method;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -14,6 +22,7 @@ import mekanism.api.Coord4D;
 import mekanism.api.MekanismConfig.general;
 import mekanism.api.transmitters.ITransmitterTile;
 import mekanism.common.base.IEnergyWrapper;
+import mekanism.common.integration.ae2.MekaEnergyGridBlock;
 import mekanism.common.util.MekanismUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -35,6 +44,8 @@ public abstract class TileEntityElectricBlock
     public boolean ic2Registered = false;
 
     public boolean isLoaded = false;
+
+    public MekaEnergyGridBlock<TileEntityElectricBlock> gridBlock = new MekaEnergyGridBlock<>(this);
 
     /**
      * The base of all blocks that deal with electricity. It has a facing state,
@@ -86,6 +97,9 @@ public abstract class TileEntityElectricBlock
         }
         if (MekanismUtils.useHBM()) {
             receiveHe();
+        }
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.update();
         }
         isLoaded = true;
     }
@@ -153,6 +167,9 @@ public abstract class TileEntityElectricBlock
         if (MekanismUtils.useIC2()) {
             deregister();
         }
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.destroy();
+        }
         isLoaded = false;
         super.onChunkUnload();
     }
@@ -164,6 +181,9 @@ public abstract class TileEntityElectricBlock
         if (MekanismUtils.useIC2()) {
             deregister();
         }
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.destroy();
+        }
     }
 
     @Override
@@ -171,6 +191,10 @@ public abstract class TileEntityElectricBlock
         super.readFromNBT(nbtTags);
 
         electricityStored = nbtTags.getDouble("electricityStored");
+
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.readFromNBT(nbtTags);
+        }
     }
 
     @Override
@@ -178,6 +202,10 @@ public abstract class TileEntityElectricBlock
         super.writeToNBT(nbtTags);
 
         nbtTags.setDouble("electricityStored", getEnergy());
+
+        if (MekanismUtils.useAE()) {
+            this.gridBlock.writeToNBT(nbtTags);
+        }
     }
 
     /**
@@ -407,4 +435,59 @@ public abstract class TileEntityElectricBlock
     public boolean canConnect(ForgeDirection from) {
         return getConsumingSides().contains(from) || getOutputtingSides().contains(from);
     }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double getAECurrentPower() {
+        return this.gridBlock.getAECurrentPower();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double getAEMaxPower() {
+        return this.gridBlock.getAEMaxPower();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public AccessRestriction getPowerFlow() {
+        return this.gridBlock.getPowerFlow();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double injectAEPower(double amt, Actionable mode) {
+        return this.gridBlock.injectAEPower(amt, mode);
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public boolean isAEPublicPowerStorage() {
+        return this.gridBlock.isAEPublicPowerStorage();
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public double extractAEPower(double amt, Actionable mode, PowerMultiplier usePowerMultiplier) {
+        return this.gridBlock.extractAEPower(amt, mode, usePowerMultiplier);
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public AECableType getCableConnectionType(ForgeDirection dir) {
+        return AECableType.COVERED;
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public IGridNode getGridNode(ForgeDirection dir) {
+        return gridBlock.getGridNode(dir);
+    }
+
+    @Override
+    @Method(modid = "appliedenergistics2")
+    public void securityBreak() {
+        
+    }
+    
 }

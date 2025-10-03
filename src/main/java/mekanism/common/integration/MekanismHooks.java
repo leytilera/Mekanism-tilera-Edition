@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.hbm.inventory.fluid.Fluids;
+import appeng.api.AEApi;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -16,10 +16,12 @@ import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 import li.cil.oc.api.Driver;
 import mekanism.api.MekanismConfig;
+import mekanism.api.me.IGasStorageChannel;
 import mekanism.api.transmitters.TransmissionType;
 import mekanism.common.Mekanism;
 import mekanism.common.MekanismItems;
 import mekanism.common.Resource;
+import mekanism.common.integration.ae2.GasStorageChannel;
 import mekanism.common.multipart.TransmitterType;
 import mekanism.common.recipe.RecipeHandler;
 import mekanism.common.util.MekanismUtils;
@@ -229,5 +231,8 @@ public final class MekanismHooks {
                 continue;
             }
         }
+
+        AEApi.instance().storage().registerStorageChannel(IGasStorageChannel.class, new GasStorageChannel());
+        AEApi.instance().partHelper().registerNewLayer("mekanism.common.integration.ae2.LayerGasHandler", "mekanism.api.gas.IGasHandler");
     }
 }

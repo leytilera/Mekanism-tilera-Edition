@@ -31,22 +31,7 @@ public enum ModelType {
         Supplier<? extends T> legacy,
         Supplier<? extends T> classic
     ) {
-        T instance = null;
-        switch (this) {
-            case MODERN:
-                instance = modern.get();
-                break;
-            case LEGACY:
-                instance = legacy.get();
-                break;
-            case CLASSIC:
-                instance = classic.get();
-                break;
-            default:
-                throw new RuntimeException("ALECUS MAXIMUS");
-        }
-        final T value = instance;
-        return () -> value;
+        return new MultiModel<T>(modern.get(), legacy.get(), classic.get());
     }
 
     public <T extends IModelMekanism>

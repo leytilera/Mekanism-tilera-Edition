@@ -710,7 +710,9 @@ public abstract class PartSidedPipe
         if (internal) {
             return RenderPartTransmitter.contents_models.get(name);
         } else {
-            if (getTransmitterType().getSize() == Size.LARGE) {
+            if (getTransmitterType().getTransmission() == TransmissionType.FLUID && client.smallPipeFluid) {
+                return RenderPartTransmitter.small_models.get(name);
+            } else if (getTransmitterType().getSize() == Size.LARGE) {
                 return RenderPartTransmitter.large_models.get(name);
             } else {
                 return RenderPartTransmitter.small_models.get(name);

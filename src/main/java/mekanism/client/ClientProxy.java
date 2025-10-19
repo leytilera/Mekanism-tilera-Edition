@@ -1,6 +1,11 @@
 package mekanism.client;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -202,6 +207,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -263,17 +269,6 @@ public class ClientProxy extends CommonProxy {
         client.multiblockSparkleIntensity
             = Mekanism.configuration.get("client", "MultiblockSparkleIntesity", 6)
                   .getInt();
-
-        ModelType modelType = ModelType.fromString(
-            Mekanism.configuration.get("client", "ModelType", "MODERN").getString()
-        );
-
-        if (modelType != null) {
-            client.modelType = modelType;
-        }
-
-        client.smallPipeFluid
-            = Mekanism.configuration.get("client", "SmallPipeFluid", false).getBoolean();
 
         if (Mekanism.configuration.hasChanged()) {
             Mekanism.configuration.save();
@@ -905,6 +900,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit() {
         MekanismRenderer.init();
+        ((IReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new ModelTypeLoader());
     }
 
     @Override

@@ -26,25 +26,31 @@ public enum ModelType {
         return this != MODERN;
     }
 
-    public <T extends IModelMekanism> T createModel(
+    public <T extends IModelMekanism> Supplier<T> createModel(
         Supplier<? extends T> modern,
         Supplier<? extends T> legacy,
         Supplier<? extends T> classic
     ) {
+        T instance = null;
         switch (this) {
             case MODERN:
-                return modern.get();
+                instance = modern.get();
+                break;
             case LEGACY:
-                return legacy.get();
+                instance = legacy.get();
+                break;
             case CLASSIC:
-                return classic.get();
+                instance = classic.get();
+                break;
             default:
                 throw new RuntimeException("ALECUS MAXIMUS");
         }
+        final T value = instance;
+        return () -> value;
     }
 
     public <T extends IModelMekanism>
-        T createModel(Supplier<? extends T> modern, Supplier<? extends T> legacy) {
+        Supplier<T> createModel(Supplier<? extends T> modern, Supplier<? extends T> legacy) {
         return this.createModel(modern, legacy, legacy);
     }
 

@@ -11,11 +11,14 @@ import mekanism.generators.client.model.ModelHeatGenerator;
 import mekanism.generators.common.tile.TileEntityHeatGenerator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderHeatGenerator extends TileEntitySpecialRenderer {
-    private IModelOnOff model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelOnOff> model = MekanismConfig.client.modelType.createModel(
         ModelHeatGenerator::new, LegacyModelHeatGenerator::new
     );
 
@@ -36,7 +39,7 @@ public class RenderHeatGenerator extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         bindTexture(MekanismUtils.getResource(
-            ResourceType.RENDER, this.model.getTextureNameForState(tileEntity.isActive)
+            ResourceType.RENDER, this.model.get().getTextureNameForState(tileEntity.isActive)
         ));
 
         switch (MekanismConfig.client.modelType.mapFacing(tileEntity.facing)) {
@@ -55,7 +58,7 @@ public class RenderHeatGenerator extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        model.render(0.0625F, tileEntity.isActive, field_147501_a.field_147553_e);
+        model.get().render(0.0625F, tileEntity.isActive, field_147501_a.field_147553_e);
         GL11.glPopMatrix();
     }
 }

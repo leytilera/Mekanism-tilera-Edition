@@ -76,6 +76,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
@@ -84,13 +87,13 @@ public class ItemRenderingHandler implements IItemRenderer {
 
     public ModelRobit robit = new ModelRobit();
     public ModelChest personalChest = new ModelChest();
-    public IModelEnergyCube energyCube = MekanismConfig.client.modelType.createModel(
+    public Supplier<IModelEnergyCube> energyCube = MekanismConfig.client.modelType.createModel(
         ModelEnergyCube::new, LegacyModelEnergyCube::new
     );
-    public ModelMekanismBase energyCore = MekanismConfig.client.modelType.createModel(
+    public Supplier<ModelMekanismBase> energyCore = MekanismConfig.client.modelType.createModel(
         ModelEnergyCore::new, LegacyModelEnergyCube.LegacyModelEnergyCore::new
     );
-    public IModelTier gasTank = MekanismConfig.client.modelType.createModel(
+    public Supplier<IModelTier> gasTank = MekanismConfig.client.modelType.createModel(
         ModelGasTank::new, LegacyModelGasTank::new
     );
     public ModelObsidianTNT obsidianTNT = new ModelObsidianTNT();
@@ -143,7 +146,7 @@ public class ItemRenderingHandler implements IItemRenderer {
                 IEnergizedItem energized = (IEnergizedItem) item.getItem();
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
                     ResourceType.RENDER,
-                    energyCube.getTextureNameForTier(tier.getBaseTier())
+                    energyCube.get().getTextureNameForTier(tier.getBaseTier())
                 ));
 
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
@@ -152,14 +155,14 @@ public class ItemRenderingHandler implements IItemRenderer {
 
                 MekanismRenderer.blendOn();
 
-                energyCube.render(0.0625F, tier.getBaseTier(), mc.renderEngine);
+                energyCube.get().render(0.0625F, tier.getBaseTier(), mc.renderEngine);
 
                 for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
                     mc.renderEngine.bindTexture(MekanismUtils.getResource(
                         ResourceType.RENDER,
-                        energyCube.getTextureNameForTier(tier.getBaseTier())
+                        energyCube.get().getTextureNameForTier(tier.getBaseTier())
                     ));
-                    energyCube.renderSide(
+                    energyCube.get().renderSide(
                         0.0625F,
                         side,
                         side == ForgeDirection.NORTH ? IOState.OUTPUT : IOState.INPUT,
@@ -173,7 +176,7 @@ public class ItemRenderingHandler implements IItemRenderer {
                 GL11.glPushMatrix();
                 GL11.glTranslated(0.0, 1.0, 0.0);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, energyCore.getTextureName()
+                    ResourceType.RENDER, energyCore.get().getTextureName()
                 ));
 
                 GL11.glShadeModel(GL11.GL_SMOOTH);
@@ -214,7 +217,7 @@ public class ItemRenderingHandler implements IItemRenderer {
                     1,
                     1
                 );
-                energyCore.render(0.0625F);
+                energyCore.get().render(0.0625F);
                 GL11.glPopMatrix();
 
                 MekanismRenderer.glowOff();
@@ -364,12 +367,12 @@ public class ItemRenderingHandler implements IItemRenderer {
 
             BaseTier tier = ((ItemBlockGasTank) item.getItem()).getBaseTier(item);
             mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                ResourceType.RENDER, gasTank.getTextureNameForTier(tier)
+                ResourceType.RENDER, gasTank.get().getTextureNameForTier(tier)
             ));
             GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, -1.0F, 0.0F);
-            gasTank.render(0.0625F);
+            gasTank.get().render(0.0625F);
 
             GL11.glPopMatrix();
         } else if (Block.getBlockFromItem(item.getItem()) == MekanismBlocks.ObsidianTNT) {

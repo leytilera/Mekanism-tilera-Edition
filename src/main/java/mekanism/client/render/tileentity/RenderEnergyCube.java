@@ -18,6 +18,9 @@ import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
@@ -28,10 +31,10 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
                                                  new int[] { 154, 120, 200 },
                                                  new int[] { 0, 0, 0 } };
 
-    private IModelEnergyCube model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelEnergyCube> model = MekanismConfig.client.modelType.createModel(
         ModelEnergyCube::new, LegacyModelEnergyCube::new
     );
-    private ModelMekanismBase core = MekanismConfig.client.modelType.createModel(
+    private Supplier<ModelMekanismBase> core = MekanismConfig.client.modelType.createModel(
         ModelEnergyCore::new, LegacyModelEnergyCube.LegacyModelEnergyCore::new
     );
 
@@ -52,7 +55,7 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
 
         bindTexture(MekanismUtils.getResource(
             ResourceType.RENDER,
-            model.getTextureNameForTier(tileEntity.tier.getBaseTier())
+            model.get().getTextureNameForTier(tileEntity.tier.getBaseTier())
         ));
 
         switch (tileEntity.facing) {
@@ -81,7 +84,7 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        model.render(
+        model.get().render(
             0.0625F, tileEntity.tier.getBaseTier(), field_147501_a.field_147553_e
         );
 
@@ -89,9 +92,9 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
             for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
                 bindTexture(MekanismUtils.getResource(
                     ResourceType.RENDER,
-                    model.getTextureNameForTier(tileEntity.tier.getBaseTier())
+                    model.get().getTextureNameForTier(tileEntity.tier.getBaseTier())
                 ));
-                model.renderSide(
+                model.get().renderSide(
                     0.0625F,
                     side,
                     tileEntity.configComponent
@@ -109,7 +112,7 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
             GL11.glPushMatrix();
             GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
             bindTexture(
-                MekanismUtils.getResource(ResourceType.RENDER, core.getTextureName())
+                MekanismUtils.getResource(ResourceType.RENDER, core.get().getTextureName())
             );
 
             MekanismRenderer.blendOn();
@@ -134,7 +137,7 @@ public class RenderEnergyCube extends TileEntitySpecialRenderer {
             );
             GL11.glRotatef((MekanismClient.ticksPassed + partialTick) * 4, 0, 1, 0);
             GL11.glRotatef(36F + (MekanismClient.ticksPassed + partialTick) * 4, 0, 1, 1);
-            core.render(0.0625F);
+            core.get().render(0.0625F);
             GL11.glPopMatrix();
 
             MekanismRenderer.glowOff();

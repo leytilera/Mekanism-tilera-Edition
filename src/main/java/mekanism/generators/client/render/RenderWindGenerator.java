@@ -10,10 +10,13 @@ import mekanism.generators.client.model.ModelWindGenerator;
 import mekanism.generators.common.tile.TileEntityWindGenerator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 public class RenderWindGenerator extends TileEntitySpecialRenderer {
-    private IModelWindGenerator model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelWindGenerator> model = MekanismConfig.client.modelType.createModel(
         ModelWindGenerator::new, LegacyModelWindGenerator::new
     );
 
@@ -34,7 +37,7 @@ public class RenderWindGenerator extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         bindTexture(
-            MekanismUtils.getResource(ResourceType.RENDER, this.model.getTextureName())
+            MekanismUtils.getResource(ResourceType.RENDER, this.model.get().getTextureName())
         );
 
         switch (tileEntity.facing) {
@@ -59,7 +62,7 @@ public class RenderWindGenerator extends TileEntitySpecialRenderer {
                 = (tileEntity.angle + ((tileEntity.yCoord + 4F) / 256F) * 8) % 360;
         }
 
-        model.render(0.0625F, tileEntity.angle);
+        model.get().render(0.0625F, tileEntity.angle);
         GL11.glPopMatrix();
     }
 }

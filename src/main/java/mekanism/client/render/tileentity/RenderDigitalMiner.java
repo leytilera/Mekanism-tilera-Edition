@@ -12,11 +12,14 @@ import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderDigitalMiner extends TileEntitySpecialRenderer {
-    private IModelOnOff model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelOnOff> model = MekanismConfig.client.modelType.createModel(
         ModelDigitalMiner::new, LegacyModelDigitalMiner::new
     );
 
@@ -33,7 +36,7 @@ public class RenderDigitalMiner extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.get().getTextureName())
         );
 
         // Not using mapFacing here, as this is different.
@@ -74,7 +77,7 @@ public class RenderDigitalMiner extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        model.render(0.0625F, tileEntity.isActive, field_147501_a.field_147553_e);
+        model.get().render(0.0625F, tileEntity.isActive, field_147501_a.field_147553_e);
         GL11.glPopMatrix();
 
         if (!MekanismConfig.client.modelType.isOld() && tileEntity.clientRendering) {

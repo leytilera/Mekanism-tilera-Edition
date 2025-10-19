@@ -2,6 +2,7 @@ package mekanism.generators.client.render;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,7 +26,7 @@ import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderBioGenerator extends TileEntitySpecialRenderer {
-    private IModelBioGenerator model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelBioGenerator> model = MekanismConfig.client.modelType.createModel(
         ModelBioGenerator::new,
         LegacyModelBioGenerator::new,
         ClassicModelBioGenerator::new
@@ -64,7 +65,7 @@ public class RenderBioGenerator extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         bindTexture(
-            MekanismUtils.getResource(ResourceType.RENDER, this.model.getTextureName())
+            MekanismUtils.getResource(ResourceType.RENDER, this.model.get().getTextureName())
         );
 
         switch (tileEntity.facing) {
@@ -83,7 +84,7 @@ public class RenderBioGenerator extends TileEntitySpecialRenderer {
         }
 
         GL11.glRotatef(180, 0F, 0F, 1F);
-        model.render(0.0625F, tileEntity.isActive ? tileEntity.getMatrix() : 0.0F);
+        model.get().render(0.0625F, tileEntity.isActive ? tileEntity.getMatrix() : 0.0F);
         GL11.glPopMatrix();
     }
 

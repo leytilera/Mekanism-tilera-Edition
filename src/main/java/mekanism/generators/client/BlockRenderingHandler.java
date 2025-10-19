@@ -30,33 +30,36 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class BlockRenderingHandler implements ISimpleBlockRenderingHandler {
     private Minecraft mc = Minecraft.getMinecraft();
 
-    public ModelMekanismBase advancedSolarGenerator
+    public Supplier<ModelMekanismBase> advancedSolarGenerator
         = MekanismConfig.client.modelType.createModel(
             ModelAdvancedSolarGenerator::new,
             LegacyModelAdvancedSolarGenerator::new,
             ClassicModelAdvancedSolarGenerator::new
         );
-    public ModelMekanismBase solarGenerator = MekanismConfig.client.modelType.createModel(
+    public Supplier<ModelMekanismBase> solarGenerator = MekanismConfig.client.modelType.createModel(
         ModelSolarGenerator::new, LegacyModelSolarGenerator::new
     );
-    public ModelMekanismBase bioGenerator = MekanismConfig.client.modelType.createModel(
+    public Supplier<ModelMekanismBase> bioGenerator = MekanismConfig.client.modelType.createModel(
         ModelBioGenerator::new,
         LegacyModelBioGenerator::new,
         ClassicModelBioGenerator::new
     );
-    public IModelOnOff heatGenerator = MekanismConfig.client.modelType.createModel(
+    public Supplier<IModelOnOff> heatGenerator = MekanismConfig.client.modelType.createModel(
         ModelHeatGenerator::new, LegacyModelHeatGenerator::new
     );
-    public ModelMekanismBase gasGenerator = MekanismConfig.client.modelType.createModel(
+    public Supplier<ModelMekanismBase> gasGenerator = MekanismConfig.client.modelType.createModel(
         ModelGasGenerator::new, LegacyModelGasGenerator::new
     );
-    public ModelMekanismBase windGenerator = MekanismConfig.client.modelType.createModel(
+    public Supplier<ModelMekanismBase> windGenerator = MekanismConfig.client.modelType.createModel(
         ModelWindGenerator::new, LegacyModelWindGenerator::new
     );
 
@@ -71,50 +74,50 @@ public class BlockRenderingHandler implements ISimpleBlockRenderingHandler {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glTranslated(0.0F, -1.0F, 0.0F);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, bioGenerator.getTextureName()
+                    ResourceType.RENDER, bioGenerator.get().getTextureName()
                 ));
-                bioGenerator.render(0.0625F);
+                bioGenerator.get().render(0.0625F);
             } else if (metadata == GeneratorType.ADVANCED_SOLAR_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);
                 GL11.glTranslatef(0.0F, 0.2F, 0.0F);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, advancedSolarGenerator.getTextureName()
+                    ResourceType.RENDER, advancedSolarGenerator.get().getTextureName()
                 ));
-                advancedSolarGenerator.render(0.022F);
+                advancedSolarGenerator.get().render(0.022F);
             } else if (MekanismConfig.client.modelType != ModelType.CLASSIC
                        && metadata == GeneratorType.SOLAR_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef(90F, 0.0F, -1.0F, 0.0F);
                 GL11.glTranslated(0.0F, -1.0F, 0.0F);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, solarGenerator.getTextureName()
+                    ResourceType.RENDER, solarGenerator.get().getTextureName()
                 ));
-                solarGenerator.render(0.0625F);
+                solarGenerator.get().render(0.0625F);
             } else if (metadata == GeneratorType.HEAT_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glTranslated(0.0F, -1.0F, 0.0F);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, heatGenerator.getTextureName()
+                    ResourceType.RENDER, heatGenerator.get().getTextureName()
                 ));
-                heatGenerator.render(0.0625F, false, mc.renderEngine);
+                heatGenerator.get().render(0.0625F, false, mc.renderEngine);
             } else if (metadata == GeneratorType.GAS_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 1.0F, 1.0F);
                 GL11.glRotatef(90F, -1.0F, 0.0F, 0.0F);
                 GL11.glTranslated(0.0F, -1.0F, 0.0F);
                 GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, gasGenerator.getTextureName()
+                    ResourceType.RENDER, gasGenerator.get().getTextureName()
                 ));
-                gasGenerator.render(0.0625F);
+                gasGenerator.get().render(0.0625F);
             } else if (metadata == GeneratorType.WIND_GENERATOR.meta) {
                 GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
                 GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);
                 GL11.glTranslatef(0.0F, 0.4F, 0.0F);
                 mc.renderEngine.bindTexture(MekanismUtils.getResource(
-                    ResourceType.RENDER, windGenerator.getTextureName()
+                    ResourceType.RENDER, windGenerator.get().getTextureName()
                 ));
-                windGenerator.render(0.016F);
+                windGenerator.get().render(0.016F);
             } else if (metadata != 2) {
                 MekanismRenderer.renderItem(renderer, metadata, block);
             }

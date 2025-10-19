@@ -2,6 +2,7 @@ package mekanism.client.render.tileentity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import mekanism.api.MekanismConfig;
 import mekanism.api.gas.Gas;
@@ -21,7 +22,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 public class RenderChemicalOxidizer extends TileEntitySpecialRenderer {
-    private IModelGlass model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelGlass> model = MekanismConfig.client.modelType.createModel(
         ModelChemicalOxidizer::new, LegacyModelChemicalOxidizer::new
     );
 
@@ -75,7 +76,7 @@ public class RenderChemicalOxidizer extends TileEntitySpecialRenderer {
             GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
             bindTexture(
-                MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+                MekanismUtils.getResource(ResourceType.RENDER, model.get().getTextureName())
             );
 
             switch (tileEntity.facing) {
@@ -95,7 +96,7 @@ public class RenderChemicalOxidizer extends TileEntitySpecialRenderer {
 
             GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 
-            model.render(0.0625F);
+            model.get().render(0.0625F);
 
             GL11.glPopMatrix();
         }
@@ -110,7 +111,7 @@ public class RenderChemicalOxidizer extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.getTextureName())
+        bindTexture(MekanismUtils.getResource(ResourceType.RENDER, model.get().getTextureName())
         );
 
         switch (tileEntity.facing) {
@@ -131,9 +132,9 @@ public class RenderChemicalOxidizer extends TileEntitySpecialRenderer {
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 
         if (!glass) {
-            model.render(0.0625F);
+            model.get().render(0.0625F);
         } else {
-            model.renderGlass(0.0625F);
+            model.get().renderGlass(0.0625F);
         }
 
         GL11.glPopMatrix();

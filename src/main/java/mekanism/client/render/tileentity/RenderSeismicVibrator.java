@@ -11,11 +11,14 @@ import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+
+import java.util.function.Supplier;
+
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RenderSeismicVibrator extends TileEntitySpecialRenderer {
-    private IModelSeismicVibrator model = MekanismConfig.client.modelType.createModel(
+    private Supplier<IModelSeismicVibrator> model = MekanismConfig.client.modelType.createModel(
         ModelSeismicVibrator::new, LegacyModelSeismicVibrator::new
     );
 
@@ -37,7 +40,7 @@ public class RenderSeismicVibrator extends TileEntitySpecialRenderer {
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
         bindTexture(MekanismUtils.getResource(
-            ResourceType.RENDER, model.getTextureNameForState(tileEntity.isActive)
+            ResourceType.RENDER, model.get().getTextureNameForState(tileEntity.isActive)
         ));
 
         switch (tileEntity.facing) {
@@ -60,7 +63,7 @@ public class RenderSeismicVibrator extends TileEntitySpecialRenderer {
         );
 
         GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-        model.renderWithPiston(Math.max(0, actualRate), 0.0625F);
+        model.get().renderWithPiston(Math.max(0, actualRate), 0.0625F);
         GL11.glPopMatrix();
     }
 }

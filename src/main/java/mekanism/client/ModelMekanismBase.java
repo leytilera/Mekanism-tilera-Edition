@@ -1,5 +1,6 @@
 package mekanism.client;
 
+import mekanism.client.model.IModelOnOff;
 import net.minecraft.client.model.ModelBase;
 
 /**
@@ -7,4 +8,4 @@ import net.minecraft.client.model.ModelBase;
  *
  * Abstract class with a render method that takes only a size paramter.
  */
-public abstract class ModelMekanismBase extends ModelBase implements IModelMekanism {}
+public abstract class ModelMekanismBase extends ModelBase implements IModelMekanism, IModelOnOff {}

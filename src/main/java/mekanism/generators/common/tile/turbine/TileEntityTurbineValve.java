@@ -1,33 +1,19 @@
 package mekanism.generators.common.tile.turbine;
 
 import java.util.EnumSet;
+import java.util.Map;
+import java.util.Optional;
 
-import appeng.api.config.AccessRestriction;
-import appeng.api.config.Actionable;
-import appeng.api.config.PowerMultiplier;
-import appeng.api.networking.IGridNode;
-import appeng.api.util.AECableType;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.InterfaceList;
-import cpw.mods.fml.common.Optional.Method;
-import ic2.api.energy.EnergyNet;
-import ic2.api.energy.event.EnergyTileLoadEvent;
-import ic2.api.energy.event.EnergyTileUnloadEvent;
-import ic2.api.energy.tile.IEnergyConductor;
-import ic2.api.energy.tile.IEnergyTile;
 import mekanism.api.Coord4D;
-import mekanism.common.Units;
 import mekanism.common.base.IEnergyWrapper;
-import mekanism.common.integration.ae2.MekaEnergyGridBlock;
+import mekanism.common.base.ITileDelegate;
+import mekanism.common.integration.EnergyDelegateFactory;
 import mekanism.common.tile.TileEntityGasTank.GasMode;
 import mekanism.common.util.CableUtils;
 import mekanism.common.util.LangUtils;
-import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.PipeUtils;
 import mekanism.generators.common.content.turbine.TurbineFluidTank;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -35,19 +21,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-@InterfaceList({
-    @Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2")
-    , @Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2"),
-        @Interface(iface = "ic2.api.tile.IEnergyStorage", modid = "IC2")
-})
 public class TileEntityTurbineValve
     extends TileEntityTurbineCasing implements IFluidHandler, IEnergyWrapper {
-    public boolean ic2Registered = false;
     public boolean isLoaded = false;
 
     public TurbineFluidTank fluidTank;
 
-    public MekaEnergyGridBlock<TileEntityTurbineValve> gridBlock = new MekaEnergyGridBlock<>(this);
+    public Map<Class<? extends ITileDelegate>, ITileDelegate> delegates = EnergyDelegateFactory.createEnergyDelegates(this);
 
     public TileEntityTurbineValve() {
         super("TurbineValve");
@@ -58,15 +38,10 @@ public class TileEntityTurbineValve
     public void onUpdate() {
         super.onUpdate();
 
-        if (!ic2Registered && MekanismUtils.useIC2()) {
-            register();
+        if (!isLoaded) {
+            delegates.values().forEach(ITileDelegate::load);
         }
-        if (MekanismUtils.useHBM()) {
-            receiveHe();
-        }
-        if (MekanismUtils.useAE()) {
-            this.gridBlock.update();
-        }
+        delegates.values().forEach(ITileDelegate::tick);
         isLoaded = true;
 
         if (!worldObj.isRemote) {
@@ -105,91 +80,46 @@ public class TileEntityTurbineValve
         return true;
     }
 
-    @Method(modid = "IC2")
-    public void register() {
-        if (!worldObj.isRemote) {
-            TileEntity registered
-                = EnergyNet.instance.getTileEntity(worldObj, xCoord, yCoord, zCoord);
-
-            if (registered != this) {
-                if (registered instanceof IEnergyTile) {
-                    MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile
-                    ) registered));
-                } else if (registered == null) {
-                    MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
-                    ic2Registered = true;
-                }
-            }
-        }
-    }
-
-    @Method(modid = "IC2")
-    public void deregister() {
-        if (!worldObj.isRemote) {
-            TileEntity registered
-                = EnergyNet.instance.getTileEntity(worldObj, xCoord, yCoord, zCoord);
-
-            if (registered instanceof IEnergyTile) {
-                MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile
-                ) registered));
-            }
-        }
-    }
-
     @Override
     public double getMaxOutput() {
         return structure != null ? structure.getEnergyCapacity() : 0;
     }
 
     @Override
-    public void onAdded() {
-        super.onAdded();
-
-        if (MekanismUtils.useIC2()) {
-            register();
-        }
+    public void onChunkUnload() {
+        delegates.values().forEach(ITileDelegate::unload);
+        isLoaded = false;
+        super.onChunkUnload();
     }
 
     @Override
-    public void onChunkUnload() {
-        if (MekanismUtils.useIC2()) {
-            deregister();
+    public void onChunkLoad() {
+        if (!isLoaded) {
+            isLoaded = true;
+            delegates.values().forEach(ITileDelegate::load);
         }
-        if (MekanismUtils.useAE()) {
-            this.gridBlock.destroy();
-        }
-        isLoaded = false;
-        super.onChunkUnload();
+        super.onChunkLoad();
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
         isLoaded = false;
-        if (MekanismUtils.useIC2()) {
-            deregister();
-        }
-        if (MekanismUtils.useAE()) {
-            this.gridBlock.destroy();
-        }
+        delegates.values().forEach(ITileDelegate::unload);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbtTags) {
         super.readFromNBT(nbtTags);
 
-        if (MekanismUtils.useAE()) {
-            this.gridBlock.readFromNBT(nbtTags);
-        }
+        delegates.values().forEach(d -> d.readFromNBT(nbtTags));
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbtTags) {
         super.writeToNBT(nbtTags);
 
-        if (MekanismUtils.useAE()) {
-            this.gridBlock.writeToNBT(nbtTags);
-        }
+        delegates.values().forEach(d -> d.writeToNBT(nbtTags));
     }
 
     @Override
@@ -198,139 +128,13 @@ public class TileEntityTurbineValve
     }
 
     @Override
-    public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
-        if (getOutputtingSides().contains(from)) {
-            double toSend = Math.min(
-                getEnergy(), Math.min(getMaxOutput(), Units.convertToJoules(maxExtract, Units.RF))
-            );
-
-            if (!simulate) {
-                setEnergy(getEnergy() - toSend);
-            }
-
-            return (int) Math.round(Units.convertFromJoules(toSend, Units.RF));
-        }
-
-        return 0;
-    }
-
-    @Override
-    public boolean canConnectEnergy(ForgeDirection from) {
-        return structure != null;
-    }
-
-    @Override
-    public int getEnergyStored(ForgeDirection from) {
-        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.RF));
-    }
-
-    @Override
-    public int getMaxEnergyStored(ForgeDirection from) {
-        return (int) Math.round(Units.convertFromJoules(getMaxEnergy(), Units.RF));
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public int getSinkTier() {
-        return 4;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public int getSourceTier() {
-        return 4;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public void setStored(int energy) {
-        setEnergy(Units.convertToJoules(energy, Units.EU));
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public int addEnergy(int amount) {
-        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.EU));
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public boolean isTeleporterCompatible(ForgeDirection side) {
-        return canOutputTo(side);
-    }
-
-    @Override
     public boolean canOutputTo(ForgeDirection side) {
         return getOutputtingSides().contains(side);
     }
 
     @Override
-    @Method(modid = "IC2")
-    public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection direction) {
-        return false;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection direction) {
-        return getOutputtingSides().contains(direction)
-            && receiver instanceof IEnergyConductor;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public int getStored() {
-        return (int) Math.round(Units.convertFromJoules(getEnergy(), Units.EU));
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public int getCapacity() {
-        return (int) Math.round(Units.convertFromJoules(getMaxEnergy(), Units.EU));
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public int getOutput() {
-        return (int) Math.round(Units.convertFromJoules(getMaxOutput(), Units.EU));
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public double getDemandedEnergy() {
-        return 0;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public double getOfferedEnergy() {
-        return Units.convertFromJoules(Math.min(getEnergy(), getMaxOutput()), Units.EU);
-    }
-
-    @Override
     public boolean canReceiveEnergy(ForgeDirection side) {
         return false;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public double getOutputEnergyUnitsPerTick() {
-        return Units.convertFromJoules(getMaxOutput(), Units.EU);
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public double injectEnergy(ForgeDirection direction, double amount, double voltage) {
-        return amount;
-    }
-
-    @Override
-    @Method(modid = "IC2")
-    public void drawEnergy(double amount) {
-        if (structure != null) {
-            double toDraw = Math.min(Units.convertToJoules(amount, Units.EU), getMaxOutput());
-            setEnergy(Math.max(getEnergy() - toDraw, 0));
-        }
     }
 
     @Override
@@ -398,101 +202,10 @@ public class TileEntityTurbineValve
         return LangUtils.localize("gui.industrialTurbine");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    @Method(modid = "hbm")
-    public long getPower() {
-        return Math.round(Units.convertFromJoules(getEnergy(), Units.HE));
+    public <E> Optional<E> getDelegate(Class<E> type) {
+        return Optional.ofNullable(ITileDelegate.IMPLEMENTATIONS.get(type)).map(delegates::get).filter(type::isInstance).map(o -> (E) o);
     }
 
-    @Override
-    @Method(modid = "hbm")
-    public void setPower(long power) {
-        setEnergy(Units.convertToJoules(power, Units.HE));
-    }
-
-    @Override
-    @Method(modid = "hbm")
-    public long getMaxPower() {
-        return Math.round(Units.convertFromJoules(getMaxEnergy(), Units.HE));
-    }
-
-    @Override
-    @Method(modid = "hbm")
-    public long getProviderSpeed() {
-        return Math.round(Units.convertFromJoules(getMaxOutput(), Units.HE));
-    }
-
-    @Method(modid = "hbm")
-    public void receiveHe() {
-        if (!worldObj.isRemote) {
-            for (ForgeDirection dir : getConsumingSides())
-                this.trySubscribe(
-                    worldObj,
-                    xCoord + dir.offsetX,
-                    yCoord + dir.offsetY,
-                    zCoord + dir.offsetZ,
-                    dir
-                );
-        }
-    }
-
-    @Override
-    @Method(modid = "hbm")
-    public boolean isLoaded() {
-        return isLoaded;
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public double getAECurrentPower() {
-        return this.gridBlock.getAECurrentPower();
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public double getAEMaxPower() {
-        return this.gridBlock.getAEMaxPower();
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public AccessRestriction getPowerFlow() {
-        return this.gridBlock.getPowerFlow();
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public double injectAEPower(double amt, Actionable mode) {
-        return this.gridBlock.injectAEPower(amt, mode);
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public boolean isAEPublicPowerStorage() {
-        return this.gridBlock.isAEPublicPowerStorage();
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public double extractAEPower(double amt, Actionable mode, PowerMultiplier usePowerMultiplier) {
-        return this.gridBlock.extractAEPower(amt, mode, usePowerMultiplier);
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public AECableType getCableConnectionType(ForgeDirection dir) {
-        return AECableType.COVERED;
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public IGridNode getGridNode(ForgeDirection dir) {
-        return gridBlock.getGridNode(dir);
-    }
-
-    @Override
-    @Method(modid = "appliedenergistics2")
-    public void securityBreak() {
-        
-    }
 }

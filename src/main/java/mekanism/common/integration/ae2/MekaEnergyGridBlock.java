@@ -15,6 +15,7 @@ import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IAEPowerStorage;
+import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -23,6 +24,7 @@ import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import mekanism.common.Units;
 import mekanism.common.base.IEnergyWrapper;
+import mekanism.common.base.ITileDelegate;
 import mekanism.common.util.MekanismUtils;
 import net.anvilcraft.anvillib.vector.WorldVec;
 import net.minecraft.item.ItemStack;
@@ -34,15 +36,21 @@ import net.minecraftforge.common.util.ForgeDirection;
     @Interface(iface = "appeng.api.networking.IGridHost", modid = "appliedenergistics2"),
     @Interface(iface = "appeng.api.networking.energy.IAEPowerStorage", modid = "appliedenergistics2")
 })
-public class MekaEnergyGridBlock<T extends TileEntity & IEnergyWrapper & IGridHost> implements IAEPowerStorage {
+public class MekaEnergyGridBlock<T extends TileEntity & IEnergyWrapper> implements ITileDelegate, IAEPowerStorage, IGridHost {
 
     private T host;
     private Map<ForgeDirection, IGridNode> nodes = new HashMap<>();
+
+    static {
+        ITileDelegate.IMPLEMENTATIONS.put(IAEPowerStorage.class, MekaEnergyGridBlock.class);
+        ITileDelegate.IMPLEMENTATIONS.put(IGridHost.class, MekaEnergyGridBlock.class);
+    }
 
     public MekaEnergyGridBlock(T host) {
         this.host = host;
     }
 
+    @Override
     public void readFromNBT(NBTTagCompound nbt) {
         for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
             String key = "ae2node#" + side.ordinal();
@@ -53,6 +61,7 @@ public class MekaEnergyGridBlock<T extends TileEntity & IEnergyWrapper & IGridHo
         }
     }
 
+    @Override
     public void writeToNBT(NBTTagCompound nbt) {
         for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
             if (nodes.containsKey(side)) {
@@ -66,12 +75,14 @@ public class MekaEnergyGridBlock<T extends TileEntity & IEnergyWrapper & IGridHo
         return MekanismUtils.useAE() && te instanceof IGridHost && !(te instanceof IEnergyWrapper);
     }
 
-    public void destroy() {
+    @Override
+    public void unload() {
         this.nodes.values().forEach(n -> n.destroy());
         this.nodes.clear();
     }
 
-    public void update() {
+    @Override
+    public void tick() {
         for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
             if (this.getGridNode(side) == null) {
                 return;
@@ -225,6 +236,21 @@ public class MekaEnergyGridBlock<T extends TileEntity & IEnergyWrapper & IGridHo
         public ItemStack getMachineRepresentation() {
             return null;
         }
+        
+    }
+
+    @Override
+    public AECableType getCableConnectionType(ForgeDirection dir) {
+        return AECableType.COVERED;
+    }
+
+    @Override
+    public void securityBreak() {
+        
+    }
+
+    @Override
+    public void load() {
         
     }
 

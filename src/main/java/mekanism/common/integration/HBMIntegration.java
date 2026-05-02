@@ -3,10 +3,14 @@ package mekanism.common.integration;
 import com.google.common.collect.HashBiMap;
 import com.hbm.inventory.fluid.FluidType;
 import com.hbm.inventory.fluid.Fluids;
+import com.hbm.render.util.EnumSymbol;
+import com.hbm.util.CompatFluidRegistry;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mekanism.api.MekanismConfig;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
@@ -40,6 +44,10 @@ public class HBMIntegration {
             fluidMap.put(forgeFluid, fluid);
             namedFluids.put(forgeFluid.getName().toLowerCase(), forgeFluid);
         }
+    }
+
+    public void registerUUMatter() {
+        CompatFluidRegistry.registerFluid("ic2uumatter", 431885383, 8388736, 0, 0, 0, EnumSymbol.NONE, new ResourceLocation("ic2", "textures/blocks/fluids/uumatter_still.png"));
     }
 
     public FluidType convert(Fluid fluid) {

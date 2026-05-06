@@ -43,6 +43,7 @@ public class MekanismConfig {
         public static boolean blacklistRF;
         public static boolean blacklistHBM;
         public static boolean blacklistAE;
+        public static boolean blacklistGT;
         public static boolean destroyDisabledBlocks;
         public static boolean prefilledFluidTanks;
         public static boolean prefilledGasTanks;

@@ -25,6 +25,9 @@ public class EnergyDelegateFactory {
         if (MekanismUtils.useHBM()) {
             delegates.put(HBMEnergyDelegate.class, new HBMEnergyDelegate<>(tile));
         }
+        if (MekanismUtils.useGT()) {
+            delegates.put(GTEnergyDelegate.class, new GTEnergyDelegate<>(tile));
+        }
         return delegates;
     }
 

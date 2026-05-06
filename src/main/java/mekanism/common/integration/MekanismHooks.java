@@ -45,6 +45,7 @@ public final class MekanismHooks {
     public boolean CCLoaded = false;
     public boolean AE2Loaded = false;
     public boolean HBMLoaded = false;
+    public boolean GTLoaded = false;
 
     public void hook() {
         if (Loader.isModLoaded("CoFHCore"))
@@ -61,6 +62,8 @@ public final class MekanismHooks {
             AE2Loaded = true;
         if (Loader.isModLoaded("hbm"))
             HBMLoaded = true;
+        if (Loader.isModLoaded("gregtech"))
+            GTLoaded = true;
 
         if (IC2Loaded) {
             hookIC2Recipes();

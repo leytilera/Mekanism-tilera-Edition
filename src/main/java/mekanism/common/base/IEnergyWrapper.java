@@ -33,12 +33,13 @@ import net.minecraftforge.common.util.ForgeDirection;
     @Interface(iface = "api.hbm.energymk2.IEnergyProviderMK2", modid = "hbm"),
     @Interface(iface = "api.hbm.energymk2.IEnergyReceiverMK2", modid = "hbm"),
     @Interface(iface = "appeng.api.networking.IGridHost", modid = "appliedenergistics2"),
-    @Interface(iface = "appeng.api.networking.energy.IAEPowerStorage", modid = "appliedenergistics2")
+    @Interface(iface = "appeng.api.networking.energy.IAEPowerStorage", modid = "appliedenergistics2"),
+    @Interface(iface = "mekanism.common.base.IGregtechEnergy", modid = "gregtech")
 })
 public interface IEnergyWrapper
     extends IDelegated, IStrictEnergyStorage, IEnergyHandler, IEnergySink, IEnergySource,
             IEnergyStorage, IStrictEnergyAcceptor, ICableOutputter, IInventory,
-            IEnergyReceiverMK2, IEnergyProviderMK2, IAEPowerStorage, IGridHost {
+            IEnergyReceiverMK2, IEnergyProviderMK2, IAEPowerStorage, IGridHost, IGregtechEnergy {
     public EnumSet<ForgeDirection> getOutputtingSides();
 
     public EnumSet<ForgeDirection> getConsumingSides();
@@ -248,6 +249,24 @@ public interface IEnergyWrapper
     @Method(modid = "appliedenergistics2")
     default void securityBreak() {
         getDelegate(IGridHost.class).ifPresent(o -> o.securityBreak());
+    }
+
+    @Override
+    @Method(modid = "gregtech")
+    default long injectEnergyUnits(byte side, long voltage, long amperage) {
+        return getDelegate(IGregtechEnergy.class).map(o -> o.injectEnergyUnits(side, voltage, amperage)).orElse(0L);
+    }
+
+    @Override
+    @Method(modid = "gregtech")
+    default boolean inputEnergyFrom(byte side) {
+        return getDelegate(IGregtechEnergy.class).map(o -> o.inputEnergyFrom(side)).orElse(false);
+    }
+
+    @Override
+    @Method(modid = "gregtech")
+    default boolean outputsEnergyTo(byte side) {
+        return getDelegate(IGregtechEnergy.class).map(o -> o.outputsEnergyTo(side)).orElse(false);
     }
     
 }

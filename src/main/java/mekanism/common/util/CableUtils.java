@@ -10,6 +10,7 @@ import api.hbm.energymk2.IEnergyReceiverMK2;
 import cofh.api.energy.IEnergyConnection;
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
+import gregtech.api.interfaces.tileentity.IEnergyConnected;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergyAcceptor;
 import ic2.api.energy.tile.IEnergySink;
@@ -19,6 +20,7 @@ import mekanism.api.energy.ICableOutputter;
 import mekanism.api.energy.IStrictEnergyAcceptor;
 import mekanism.api.transmitters.ITransmitterTile;
 import mekanism.api.transmitters.TransmissionType;
+import mekanism.common.Units;
 import mekanism.common.base.EnergyAcceptorWrapper;
 import mekanism.common.base.IEnergyWrapper;
 import net.minecraft.tileentity.TileEntity;
@@ -158,7 +160,8 @@ public final class CableUtils {
         if (!((TileEntity) emitter).getWorldObj().isRemote
             && MekanismUtils.canFunction((TileEntity) emitter)) {
             double energyToSend = Math.min(emitter.getEnergy(), emitter.getMaxOutput());
-
+            double sent = 0;
+            
             if (energyToSend > 0) {
                 List<ForgeDirection> outputtingSides = new ArrayList<ForgeDirection>();
                 boolean[] connectable
@@ -171,7 +174,7 @@ public final class CableUtils {
                 }
 
                 if (outputtingSides.size() > 0) {
-                    double sent = 0;
+                    
                     boolean tryAgain = false;
                     int i = 0;
 
@@ -185,9 +188,15 @@ public final class CableUtils {
 
                         i++;
                     } while (tryAgain);
-
-                    emitter.setEnergy(emitter.getEnergy() - sent);
                 }
+
+                if (MekanismUtils.useGT()) {
+                    long amps = (long) Units.convertFromJoules((energyToSend - sent), Units.EU) / 32;
+                    long usedAmps = IEnergyConnected.Util.emitEnergyToNetwork(32, amps, emitter);
+                    sent += Units.convertToJoules(usedAmps * 32, Units.EU);
+                }
+
+                emitter.setEnergy(emitter.getEnergy() - sent);
 
                 if (MekanismUtils.useHBM()) {
                     for (ForgeDirection side : emitter.getOutputtingSides()) {

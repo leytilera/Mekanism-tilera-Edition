@@ -1204,6 +1204,10 @@ public final class MekanismUtils {
         return Mekanism.hooks.AE2Loaded && !general.blacklistAE;
     }
 
+    public static boolean useGT() {
+        return Mekanism.hooks.GTLoaded && !general.blacklistGT;
+    }
+
     /**
      * Gets a clean view of a coordinate value without the dimension ID.
      * @param obj - coordinate to check

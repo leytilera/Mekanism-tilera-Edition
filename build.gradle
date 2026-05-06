@@ -79,6 +79,7 @@ dependencies {
     compile "mods:MicdoodleCore:1.7-3.0.12.504"
     compile "mods:PneumaticCraft:1.7.10-1.12.7-152:deobf"
     compile "appeng:appliedenergistics2:rv3-beta-26:dev"
+    compile "mods:gregtech:5.09.31:dev"
 }
 
 version = "${config.minecraft_version}-${config.mod_version}"

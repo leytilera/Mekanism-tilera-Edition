@@ -1,4 +1,5 @@
 {
     "modelType": "modern",
-    "smallFluidPipes": false
+    "smallFluidPipes": false,
+    "oldTransmitterRender": false
 }

@@ -240,9 +240,6 @@ public class ClientProxy extends CommonProxy {
             = (float) Mekanism.configuration.get("client", "SoundVolume", 1D).getDouble();
         client.machineEffects
             = Mekanism.configuration.get("client", "MachineEffects", true).getBoolean();
-        client.oldTransmitterRender
-            = Mekanism.configuration.get("client", "OldTransmitterRender", false)
-                  .getBoolean();
         client.replaceSoundsWhenResuming
             = Mekanism.configuration
                   .get(

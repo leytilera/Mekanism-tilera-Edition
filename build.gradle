@@ -69,7 +69,7 @@ dependencies {
     compile "universalelectricity:basiccomponents:2.0.0:deobf"
     compile "universalelectricity:universalelectricity:5.1.0:deobf"
     compile "com.hbm:HBM-NTM:1.0.27_X5441:deobf"
-    compile "net.anvilcraft:anvillib-7:0.3.0"
+    compile "net.anvilcraft:anvillib-7:0.5.0"
     compile "cofh:CoFHCore:[1.7.10]3.1.4-329:dev"
     compile "buildcraft:buildcraft:7.1.25:dev"
     compile "dan200:ComputerCraft:1.75:deobf"

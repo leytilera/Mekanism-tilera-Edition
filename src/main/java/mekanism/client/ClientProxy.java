@@ -1,11 +1,6 @@
 package mekanism.client;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -203,11 +198,12 @@ import mekanism.common.tile.TileEntityStructuralGlass;
 import mekanism.common.tile.TileEntityTeleporter;
 import mekanism.common.tile.TileEntityTheoreticalElementizer;
 import mekanism.common.tile.TileEntityThermalEvaporationController;
+import net.anvilcraft.anvillib.api.inject.Inject;
+import net.anvilcraft.anvillib.api.resources.IResourceSettingsHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.entity.RenderSkeleton;
-import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -224,6 +220,10 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
+
+    @Inject(IResourceSettingsHandler.class)
+    static IResourceSettingsHandler rsh;
+
     @Override
     public void loadConfiguration() {
         super.loadConfiguration();
@@ -897,7 +897,23 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit() {
         MekanismRenderer.init();
-        ((IReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new ModelTypeLoader());
+        rsh.registerCheckedSetting("mekanism:smallFluidPipes", rsh.getCheckedMapperFor(Boolean.class));
+        rsh.registerCheckedSetting("mekanism:oldTransmitterRender", rsh.getCheckedMapperFor(Boolean.class));
+        rsh.registerCheckedSetting("mekanism:modelType", (o) -> {
+            if (!String.class.isInstance(o)) {
+                throw new IllegalArgumentException("modelType must be a string");
+            }
+            ModelType t = ModelType.fromString((String) o);
+            if (t == null) {
+                throw new IllegalArgumentException(o + " is no a valid model type");
+            }
+            return t;
+        });
+        rsh.registerListener((settings) -> {
+            client.smallPipeFluid = (boolean) settings.get("mekanism:smallFluidPipes");
+            client.oldTransmitterRender = (boolean) settings.get("mekanism:oldTransmitterRender");
+            client.modelType = (ModelType) settings.get("mekanism:modelType");
+        });
     }
 
     @Override

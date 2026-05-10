@@ -71,5 +71,15 @@ public class GTEnergyDelegate<T extends TileEntity & IEnergyWrapper> implements 
     public void readFromNBT(NBTTagCompound nbt) {
         
     }
+
+    @Override
+    public boolean inputEnergyFrom(byte aSide, boolean waitForActive) {
+        return inputEnergyFrom(aSide);
+    }
+
+    @Override
+    public boolean outputsEnergyTo(byte aSide, boolean waitForActive) {
+        return outputsEnergyTo(aSide);
+    }
     
 }

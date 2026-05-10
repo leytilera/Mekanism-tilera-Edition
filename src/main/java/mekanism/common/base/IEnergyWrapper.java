@@ -268,5 +268,17 @@ public interface IEnergyWrapper
     default boolean outputsEnergyTo(byte side) {
         return getDelegate(IGregtechEnergy.class).map(o -> o.outputsEnergyTo(side)).orElse(false);
     }
+
+    @Override
+    @Method(modid = "gregtech")
+    default boolean inputEnergyFrom(byte aSide, boolean waitForActive) {
+        return getDelegate(IGregtechEnergy.class).map(o -> o.inputEnergyFrom(aSide, waitForActive)).orElse(false);
+    }
+
+    @Override
+    @Method(modid = "gregtech")
+    default boolean outputsEnergyTo(byte aSide, boolean waitForActive) {
+        return getDelegate(IGregtechEnergy.class).map(o -> o.outputsEnergyTo(aSide, waitForActive)).orElse(false);
+    }
     
 }
